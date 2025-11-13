@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAIZEN Sushi - Demo de Menú Interactivo</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración de Tailwind y Fuentes -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Habilitar modo oscuro
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand': {
+                            'primary': '#DC2626', // Rojo
+                            'secondary': '#1F2937', // Gris Oscuro
+                            'light': '#F9FAFB',     // Gris Claro
+                            'white': '#FFFFFF',
+                        }
+                    },
+                    boxShadow: {
+                        'top': '0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 -2px 4px -2px rgb(0 0 0 / 0.1)',
+                        'dark-top': '0 -4px 6px -1px rgb(255 255 255 / 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos CSS Personalizados para Efectos y Parallax -->
+    <style>
+        /* Fuente Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Efecto Parallax Simple para el Hero */
+        .parallax-hero {
+            background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* Degradado superpuesto para legibilidad */
+        .parallax-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2) 60%);
+        }
+
+        /* Ocultar scrollbars */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Animación de entrada para modales */
+        .modal-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        /* Animación para el modal de detalle */
+        .modal-slide-in-bottom {
+            animation: slideInBottom 0.3s ease-out;
+        }
+        @keyframes slideInBottom {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-brand-light m-0 p-0 transition-colors duration-300">
+
+    <!-- 
+      CONTENEDOR PRINCIPAL DE LA APP
+      Simula el viewport de un smartphone 
+    -->
+    <div class="max-w-md mx-auto h-screen bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-gray-900">
+
+        <!-- PANTALLA DE INICIO (HERO PARALLAX) -->
+        <section id="hero-screen" class="h-full flex-shrink-0 parallax-hero flex flex-col justify-between text-brand-white">
+            <!-- Contenido del Hero (relativo para estar sobre el degradado) -->
+            <div class="relative z-10 flex flex-col h-full p-8 text-center">
+                <div class="flex-grow flex flex-col items-center justify-center space-y-4">
+                    <!-- Icono de Logo (Cambiado de Estrella a Chispas) -->
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v.01M6.314 15.186l.01.01M17.686 15.186l.01.01M21 12v.01M3 12v.01M17.686 8.814l.01.01M6.314 8.814l.01.01M12 6v.01M12 3v.01"></path></svg>
+                    <h1 class="text-5xl font-extrabold tracking-tight">KAIZEN</h1>
+                    <p class="text-xl font-light">SUSHI INTERACTIVO</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <button id="start-button" class="w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
+                        Arma tu Experiencia
+                    </button>
+                    <p class="text-xs mt-4 opacity-70">La nueva forma de pedir</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA PRINCIPAL DE LA APP (Inicialmente oculta) -->
+        <section id="app-screen" class="hidden h-full flex-grow flex flex-col">
+            
+            <!-- Header de la App (con Carrito y Toggle de Tema) -->
+            <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+                <div>
+                    <h1 class="text-2xl font-bold text-brand-secondary dark:text-white">KAIZEN</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Tu Menú Interactivo</p>
+                </div>
+                <!-- Botones de Header -->
+                <div class="flex items-center space-x-2">
+                    <!-- Botón de Tema (Sol/Luna) -->
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none">
+                        <svg id="theme-icon-sun" class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="theme-icon-moon" class="w-6 h-6 text-brand-secondary dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <!-- Botón de Carrito (Icono de Bolsa) -->
+                    <button id="cart-button" class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path></svg>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Navegación de Pestañas -->
+            <nav class="flex-shrink-0 flex justify-around p-2 bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <button data-tab="builder" class="tab-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-brand-primary text-brand-primary transition-all duration-300">
+                    Arma tu Rollo
+                </button>
+                <button data-tab="gallery" class="tab-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-transparent text-gray-400 dark:text-gray-500 transition-all duration-300">
+                    Menú de la Casa
+                </button>
+                <button data-tab="drinks" class="tab-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-transparent text-gray-400 dark:text-gray-500 transition-all duration-300">
+                    Bebidas
+                </button>
+            </nav>
+
+            <!-- Contenido Principal (Scrollable) -->
+            <main class="flex-grow overflow-y-auto no-scrollbar pb-32">
+                
+                <!-- Pestaña 1: "Arma tu Rollo" (El Taller) -->
+                <div id="builder-panel" class="tab-panel p-4 space-y-6">
+                    <!-- Paso 1: Base -->
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white">1. Elige tu Base</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="builder-option" data-step="base" data-name="Arroz de Sushi" data-price="5.00">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Bol de Arroz (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M75 45H5C2.23858 45 0 47.2386 0 50V60C0 68.2843 6.71573 75 15 75H65C73.2843 75 80 68.2843 80 60V50C80 47.2386 77.7614 45 75 45Z" fill="#374151"/>
+                                        <path d="M68.5 45C68.5 30 60 20 50 15C40 20 31.5 30 31.5 45H68.5Z" fill="#FFFFFF"/>
+                                        <path d="M48.5 45C48.5 30 40 20 30 15C20 20 11.5 30 11.5 45H48.5Z" fill="#FFFFFF"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Arroz de Sushi</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$5.00</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="base" data-name="Arroz Integral" data-price="5.50">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Saco de Arroz (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M60 70H20C14.4772 70 10 65.5228 10 60V30C10 24.4772 14.4772 20 20 20H60C65.5228 20 70 24.4772 70 30V60C70 65.5228 65.5228 70 60 70Z" fill="#D2B48C"/>
+                                        <path d="M20 10L30 25H50L60 10H20Z" fill="#D2B48C"/>
+                                        <path d="M30 40H50V50H30V40Z" fill="#A0522D"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Arroz Integral</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$5.50</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Paso 2: Proteína (Multi-selección) -->
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white">2. Elige Proteína(s)</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="builder-option" data-step="protein" data-name="Salmón Fresco" data-price="4.50" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Corte de Salmón (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M70 20C70 10 60 10 50 10C40 10 30 10 20 20C10 30 10 40 10 50C10 60 20 70 30 70C40 70 50 70 60 60C70 50 70 40 70 30V20Z" fill="#F08080"/>
+                                        <path d="M20 20C25 25 30 30 35 35" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                                        <path d="M30 30C35 35 40 40 45 45" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                                        <path d="M40 40C45 45 50 50 55 55" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Salmón Fresco</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$4.50</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="protein" data-name="Atún Picante" data-price="5.00" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Fuego (Flat) -->
+                                    <svg class="w-8 h-8 mx-auto text-brand-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 11a1 1 0 01-1.878-.671l4-11a1 1 0 011.245-.594zM10 10a1 1 0 01-1 1H7a1 1 0 110-2h2a1 1 0 011 1zM6.31 6.31a1 1 0 010 1.414L3.414 10.6a1 1 0 11-1.414-1.414L4.896 6.31a1 1 0 011.414 0zM13.69 6.31a1 1 0 011.414 0l2.896 2.896a1 1 0 11-1.414 1.414L13.69 7.724a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Atún Picante</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$5.00</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="protein" data-name="Camarón Tempura" data-price="4.00" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Camarón Tempura (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M60 20C70 30 70 50 60 60C50 70 30 70 20 60C10 50 10 30 20 20" fill="#FDE68A"/>
+                                        <path d="M50 30C55 35 55 45 50 50C45 55 35 55 30 50C25 45 25 35 30 30" fill="#FCD34D"/>
+                                        <path d="M60 60C65 65 70 70 75 70" stroke="#F08080" stroke-width="10" stroke-linecap="round"/>
+                                        <path d="M65 65C70 70 75 75 75 70" stroke="#F08080" stroke-width="10" stroke-linecap="round"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Camarón Tempura</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$4.00</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="protein" data-name="Tofu" data-price="3.00" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Bloques de Tofu (Flat) -->
+                                    <svg class="w-8 h-8 mx-auto text-brand-primary" fill="#FEF3C7" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Tofu</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$3.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Paso 3: Relleno (Multi-selección) -->
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white">3. Añade Relleno(s)</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="builder-option" data-step="filling" data-name="Aguacate" data-price="2.00" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Aguacate (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M40 70C20 70 10 55 10 40C10 25 20 10 40 10C60 10 70 25 70 40C70 55 60 70 40 70Z" fill="#3A5311"/>
+                                        <path d="M40 60C25 60 15 50 15 40C15 30 25 20 40 20C55 20 65 30 65 40C65 50 55 60 40 60Z" fill="#84CC16"/>
+                                        <circle cx="40" cy="40" r="15" fill="#854D0E"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Aguacate</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$2.00</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="filling" data-name="Queso Crema" data-price="1.50" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Bloque de Queso (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M10 30L30 20L70 20L70 50L30 50L10 60V30Z" fill="#FFFBEB"/>
+                                        <path d="M30 20L30 50L10 60V30L30 20Z" fill="#FEF3C7"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Queso Crema</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$1.50</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="filling" data-name="Pepino" data-price="1.00" data-multi="true">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Palitos de Pepino (Flat Ilustrativo) -->
+                                    <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="20" y="20" width="10" height="50" rx="5" fill="#166534"/>
+                                        <rect x="25" y="25" width="5" height="40" rx="2.5" fill="#22C55E"/>
+                                        <rect x="35" y="20" width="10" height="50" rx="5" fill="#166534"/>
+                                        <rect x="40" y="25" width="5" height="40" rx="2.5" fill="#22C55E"/>
+                                        <rect x="50" y="20" width="10" height="50" rx="5" fill="#166534"/>
+                                        <rect x="55" y="25" width="5" height="40" rx="2.5" fill="#22C55E"/>
+                                    </svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Pepino</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$1.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Paso 4: Topping -->
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white">4. Elige tu Topping</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="builder-option" data-step="topping" data-name="Sésamo Tostado" data-price="0.50">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Semillas (Flat) -->
+                                    <svg class="w-8 h-8 mx-auto" fill="#D2B48C" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10a1 1 0 11-2 0 1 1 0 012 0zM11 10a1 1 0 11-2 0 1 1 0 012 0zM15 10a1 1 0 11-2 0 1 1 0 012 0zM7 6a1 1 0 11-2 0 1 1 0 012 0zM11 6a1 1 0 11-2 0 1 1 0 012 0zM15 6a1 1 0 11-2 0 1 1 0 012 0zM7 14a1 1 0 11-2 0 1 1 0 012 0zM11 14a1 1 0 11-2 0 1 1 0 012 0zM15 14a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Sésamo Tostado</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$0.50</p>
+                                </div>
+                            </div>
+                            <div class="builder-option" data-step="topping" data-name="Cebollín Crocante" data-price="1.00">
+                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
+                                    <!-- Icono: Sparkles (Crocante) (Flat) -->
+                                    <svg class="w-8 h-8 mx-auto text-brand-primary" fill="#FDE68A" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6h-1a1 1 0 110-2h1V3a1 1 0 011-1zM11 13a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM12 16a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                                    <p class="font-semibold mt-2 dark:text-white">Cebollín Crocante</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">$1.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Pestaña 2: "Menú de la Casa" (La Galería) -->
+                <div id="gallery-panel" class="tab-panel p-4 space-y-4 hidden">
+                    <!-- 
+                        Item de Menú 1 - BOTÓN CORREGIDO
+                    -->
+                    <div class="gallery-item-container cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                         data-id="gallery-1"
+                         data-name="Rollo Dragón"
+                         data-price="15.00"
+                         data-description="Descripción completa y detallada del Rollo Dragón, explicando por qué es tan especial. Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa."
+                         data-image-src="https://placehold.co/400x400/F87171/FFFFFF?text=Rollo%20Dragón">
+                        <img src="https://placehold.co/100x100/F87171/FFFFFF?text=Rollo" alt="Rollo Dragón" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-lg dark:text-white">Rollo Dragón</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Camarón tempura y aguacate, cubierto de anguila y salsa dulce.</p>
+                            <p class="font-bold text-brand-primary mt-1">$15.00</p>
+                        </div>
+                        <!-- BOTÓN CORREGIDO - Estaba faltando -->
+                        <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-1" data-name="Rollo Dragón" data-price="15.00">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                    <!-- 
+                        Item de Menú 2 - BOTÓN CORREGIDO
+                    -->
+                    <div class="gallery-item-container cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                         data-id="gallery-2"
+                         data-name="Rollo Arcoíris"
+                         data-price="14.50"
+                         data-description="Un clásico vibrante. Relleno de cangrejo y pepino fresco, y artísticamente cubierto con finas láminas de salmón, atún y aguacate."
+                         data-image-src="https://placehold.co/400x400/FBBF24/FFFFFF?text=Rollo%20Arcoíris">
+                        <img src="https://placehold.co/100x100/FBBF24/FFFFFF?text=Rollo" alt="Rollo Arcoíris" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-lg dark:text-white">Rollo Arcoíris</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Cangrejo y pepino, cubierto de salmón, atún y aguacate.</p>
+                            <p class="font-bold text-brand-primary mt-1">$14.50</p>
+                        </div>
+                        <!-- BOTÓN CORREGIDO - Estaba faltando -->
+                        <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-2" data-name="Rollo Arcoíris" data-price="14.50">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                    <!-- 
+                        Item de Menú 3 
+                    -->
+                    <div class="gallery-item-container cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                         data-id="gallery-3"
+                         data-name="Rollo Veggie"
+                         data-price="11.00"
+                         data-description="Una opción fresca y saludable. Relleno de tofu marinado, aguacate cremoso, pepino y zanahoria, todo envuelto en arroz y sésamo tostado."
+                         data-image-src="https://placehold.co/400x400/34D399/FFFFFF?text=Rollo%20Veggie">
+                        <img src="https://placehold.co/100x100/34D399/FFFFFF?text=Rollo" alt="Rollo Veggie" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-lg dark:text-white">Rollo Veggie</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Tofu, aguacate, pepino y zanahoria, envuelto en sésamo.</p>
+                            <p class="font-bold text-brand-primary mt-1">$11.00</p>
+                        </div>
+                        <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-3" data-name="Rollo Veggie" data-price="11.00">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: "Bebidas" -->
+                <div id="drinks-panel" class="tab-panel p-4 space-y-4 hidden">
+                    <!-- Item de Bebida 1 -->
+                    <div class="flex items-center justify-between bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-lg dark:text-white">Coca-Cola</h3>
+                            <p class="font-bold text-brand-primary mt-1">$3.00</p>
+                        </div>
+                        <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="drink-1" data-name="Coca-Cola" data-price="3.00">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                    <!-- Item de Bebida 2 -->
+                    <div class="flex items-center justify-between bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-lg dark:text-white">Té Verde</h3>
+                            <p class="font-bold text-brand-primary mt-1">$2.50</p>
+                        </div>
+                        <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="drink-2" data-name="Té Verde" data-price="2.50">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- 
+                BARRA INFERIOR FIJA (Resumen y Añadir al Carrito) 
+                Visible solo en la pestaña "Arma tu Rollo"
+            -->
+            <footer id="builder-footer" class="absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-brand-white dark:bg-gray-800 p-4 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700 rounded-t-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Tu Creación:</p>
+                        <p id="builder-summary-price" class="text-2xl font-extrabold text-brand-secondary dark:text-white">$0.00</p>
+                    </div>
+                    <button id="add-custom-roll-btn" class="bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Añadir Rollo
+                    </button>
+                </div>
+                <!-- Resumen de ingredientes -->
+                <div id="builder-summary-items" class="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">
+                    Base + Proteína + Relleno...
+                </div>
+            </footer>
+        </section>
+
+        <!-- 
+            MODAL DEL CARRITO (Inicialmente oculto)
+        -->
+        <div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-40 modal-fade-in">
+            <!-- Fondo Oscuro -->
+            <div id="cart-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <!-- Contenido del Modal -->
+            <div class="absolute bottom-0 left-0 right-0 h-[90%] bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in">
+                <!-- Header del Modal -->
+                <header class="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-brand-white dark:bg-gray-800 dark:border-gray-700 rounded-t-xl">
+                    <h2 class="text-2xl font-bold dark:text-white">Tu Pedido</h2>
+                    <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </header>
+
+                <!-- Lista de Items en Carrito (Scrollable) -->
+                <div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar">
+                    <!-- Los items se inyectarán aquí -->
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>
+                </div>
+
+                <!-- Footer del Modal (Total y Botón) -->
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-gray-800 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700 rounded-t-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-medium text-gray-600 dark:text-gray-300">Total:</span>
+                        <span id="cart-total-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
+                    </div>
+                    <button id="place-order-btn" class="w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 disabled:opacity-50">
+                        Confirmar Pedido
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- 
+            MODAL DE DETALLE DE PRODUCTO (NUEVO)
+        -->
+        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-50 modal-fade-in">
+            <!-- Fondo Oscuro -->
+            <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <!-- Contenido del Modal -->
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <!-- Imagen del Producto -->
+                <div class="relative">
+                    <img id="detail-modal-image" src="https://placehold.co/400x400/CCCCCC/FFFFFF?text=Sushi" alt="Detalle del rollo" class="w-full h-64 object-cover rounded-t-xl">
+                    <button id="close-detail-btn" class="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/75">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Información del Producto -->
+                <div class="p-6 overflow-y-auto no-scrollbar">
+                    <h2 id="detail-modal-name" class="text-3xl font-bold mb-2 dark:text-white">Nombre del Rollo</h2>
+                    <p id="detail-modal-description" class="text-gray-600 dark:text-gray-300 mb-6">Descripción detallada del producto irá aquí para que el cliente pueda leer todo sobre él.</p>
+                </div>
+
+                <!-- Footer del Modal (Precio y Botón) -->
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-gray-800 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <span id="detail-modal-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
+                        <button id="detail-modal-add-btn" class="bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105">
+                            Añadir al Pedido
+                        </button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <!-- 
+            MODAL DE ÉXITO (NUEVO Y CORREGIDO)
+        -->
+        <div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-50 modal-fade-in">
+            <!-- Fondo Oscuro -->
+            <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <!-- Contenido del Modal -->
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <!-- Contenido de Éxito -->
+                <div class="p-8 text-center">
+                    <svg class="w-20 h-20 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Confirmado!</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Tu pedido ha sido recibido y está en preparación. ¡Gracias por elegir KAIZEN!</p>
+                    <button id="close-success-btn" class="w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- NOTIFICACIÓN "TOASTER" -->
+        <div id="toaster" class="fixed top-28 left-1/2 -translate-x-1/2 z-[45] bg-brand-secondary dark:bg-brand-light text-white dark:text-brand-secondary font-semibold py-3 px-5 rounded-lg shadow-lg opacity-0 transition-all duration-300 transform -translate-y-4 pointer-events-none">
+            <span id="toaster-message">¡Añadido!</span>
+        </div>
+
+    </div> <!-- Fin de .max-w-md -->
+
+    <!-- Lógica de la Aplicación (JavaScript) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- LÓGICA DE MODO OSCURO ---
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+
+            // Función para actualizar el tema
+            const updateTheme = (isDark) => {
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                    localStorage.setItem('theme', 'light');
+                }
+            };
+
+            // Listener para el botón
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                updateTheme(!isDark);
+            });
+
+            // Cargar tema al iniciar
+            const loadTheme = () => {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    updateTheme(true);
+                } else {
+                    updateTheme(false);
+                }
+            };
+            loadTheme();
+            
+            // --- ESTADO DE LA APLICACIÓN ---
+            const appState = {
+                currentTab: 'builder',
+                customRoll: {
+                    base: null,
+                    protein: [],
+                    filling: [],
+                    topping: null
+                },
+                cart: [],
+            };
+
+            // --- BASE DE DATOS DE PRECIOS (Para el Dueño) ---
+            // Fácil de entender y modificar
+            const prices = {
+                base: {
+                    "Arroz de Sushi": 5.00,
+                    "Arroz Integral": 5.50
+                },
+                protein: {
+                    "Salmón Fresco": 4.50,
+                    "Atún Picante": 5.00,
+                    "Camarón Tempura": 4.00,
+                    "Tofu": 3.00
+                },
+                filling: {
+                    "Aguacate": 2.00,
+                    "Queso Crema": 1.50,
+                    "Pepino": 1.00
+                },
+                topping: {
+                    "Sésamo Tostado": 0.50,
+                    "Cebollín Crocante": 1.00
+                }
+            };
+
+            // --- SELECTORES DE ELEMENTOS ---
+            const heroScreen = document.getElementById('hero-screen');
+            const appScreen = document.getElementById('app-screen');
+            const startButton = document.getElementById('start-button');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            const builderFooter = document.getElementById('builder-footer');
+            const builderOptions = document.querySelectorAll('.builder-option');
+            const summaryPrice = document.getElementById('builder-summary-price');
+            const summaryItems = document.getElementById('builder-summary-items');
+            const addCustomRollBtn = document.getElementById('add-custom-roll-btn');
+            const galleryAddButtons = document.querySelectorAll('.add-gallery-btn');
+            const galleryItemContainers = document.querySelectorAll('.gallery-item-container');
+            
+            // Carrito - CÓDIGO CORREGIDO Y COMPLETADO
+            const cartButton = document.getElementById('cart-button');
+            const cartModal = document.getElementById('cart-modal');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const closeCartBtn = document.getElementById('close-cart-btn');
+            const cartItemsList = document.getElementById('cart-items-list');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotalPrice = document.getElementById('cart-total-price');
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            
+            // Modal de Éxito - CÓDIGO CORREGIDO Y COMPLETADO
+            const successModal = document.getElementById('success-modal');
+            const successOverlay = document.getElementById('success-overlay'); // Añadido
+            const closeSuccessBtn = document.getElementById('close-success-btn');
+
+            // Modal de Detalle
+            const detailModal = document.getElementById('detail-modal');
+            const detailOverlay = document.getElementById('detail-overlay');
+            const closeDetailBtn = document.getElementById('close-detail-btn');
+            const detailModalImage = document.getElementById('detail-modal-image');
+            const detailModalName = document.getElementById('detail-modal-name');
+            const detailModalDescription = document.getElementById('detail-modal-description');
+            const detailModalPrice = document.getElementById('detail-modal-price');
+            const detailModalAddBtn = document.getElementById('detail-modal-add-btn');
+
+            // Toaster - CÓDIGO CORREGIDO Y COMPLETADO
+            const toaster = document.getElementById('toaster');
+            const toasterMessage = document.getElementById('toaster-message');
+
+            // --- LÓGICA DE NAVEGACIÓN Y PANTALLAS ---
+
+            // Empezar la app
+            startButton.addEventListener('click', () => {
+                heroScreen.classList.add('hidden');
+                appScreen.classList.remove('hidden');
+                appScreen.classList.add('flex');
+            });
+
+            // Cambiar pestañas
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+                    appState.currentTab = tab;
+                    
+                    // Actualizar UI de pestañas
+                    tabButtons.forEach(btn => {
+                        if (btn.dataset.tab === tab) {
+                            btn.classList.add('border-brand-primary', 'text-brand-primary');
+                            btn.classList.remove('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                        } else {
+                            btn.classList.remove('border-brand-primary', 'text-brand-primary');
+                            btn.classList.add('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                        }
+                    });
+
+                    // Mostrar/Ocultar Paneles
+                    tabPanels.forEach(panel => {
+                        if (panel.id === `${tab}-panel`) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+
+                    // Mostrar/Ocultar Footer del Taller
+                    if (tab === 'builder') {
+                        builderFooter.classList.remove('hidden');
+                    } else {
+                        builderFooter.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- LÓGICA DEL "TALLER" (ARMA TU ROLLO) ---
+            builderOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const step = option.dataset.step;
+                    const name = option.dataset.name;
+                    const price = parseFloat(option.dataset.price);
+                    const isMulti = option.dataset.multi === 'true';
+
+                    const item = { name, price };
+
+                    if (isMulti) {
+                        // Lógica multi-selección (Proteína, Relleno)
+                        const list = appState.customRoll[step];
+                        const index = list.findIndex(i => i.name === name);
+                        
+                        if (index > -1) {
+                            list.splice(index, 1); // Quitar
+                            option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                        } else {
+                            list.push(item); // Añadir
+                            option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                        }
+                    } else {
+                        // Lógica de selección única (Base, Topping)
+                        if (appState.customRoll[step] && appState.customRoll[step].name === name) {
+                            // Des-seleccionar
+                            appState.customRoll[step] = null;
+                            option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                        } else {
+                            // Quitar selección previa
+                            document.querySelectorAll(`[data-step="${step}"]`).forEach(el => {
+                                el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                            });
+                            // Seleccionar nuevo
+                            appState.customRoll[step] = item;
+                            option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                        }
+                    }
+                    
+                    updateBuilderSummary();
+                });
+            });
+
+            function updateBuilderSummary() {
+                let total = 0;
+                let items = [];
+                
+                if (appState.customRoll.base) {
+                    total += appState.customRoll.base.price;
+                    items.push(appState.customRoll.base.name);
+                }
+                appState.customRoll.protein.forEach(item => {
+                    total += item.price;
+                    items.push(item.name);
+                });
+                appState.customRoll.filling.forEach(item => {
+                    total += item.price;
+                    items.push(item.name);
+                });
+                if (appState.customRoll.topping) {
+                    total += appState.customRoll.topping.price;
+                    items.push(appState.customRoll.topping.name);
+                }
+
+                summaryPrice.textContent = `$${total.toFixed(2)}`;
+                
+                if (items.length > 0) {
+                    summaryItems.textContent = items.join(' + ');
+                } else {
+                    summaryItems.textContent = 'Base + Proteína + Relleno...';
+                }
+
+                // Habilitar botón si hay al menos una base
+                if (appState.customRoll.base) {
+                    addCustomRollBtn.disabled = false;
+                } else {
+                    addCustomRollBtn.disabled = true;
+                }
+            }
+
+            // Añadir Rollo Personalizado al Carrito
+            addCustomRollBtn.addEventListener('click', () => {
+                if (!appState.customRoll.base) return; // No se puede añadir sin base
+
+                let total = 0;
+                let items = [];
+                
+                if (appState.customRoll.base) {
+                    total += appState.customRoll.base.price;
+                    items.push(appState.customRoll.base.name);
+                }
+                appState.customRoll.protein.forEach(item => { total += item.price; items.push(item.name); });
+                appState.customRoll.filling.forEach(item => { total += item.price; items.push(item.name); });
+                if (appState.customRoll.topping) {
+                    total += appState.customRoll.topping.price;
+                    items.push(appState.customRoll.topping.name);
+                }
+
+                // const rollName = `Rollo Taller (${items.join(', ')})`; // <-- LÍNEA ANTIGUA
+                const rollName = "Tu rollo personalizado"; // <-- LÍNEA NUEVA
+                
+                const cartItem = {
+                    id: `custom-${new Date().getTime()}`,
+                    name: rollName,
+                    price: total,
+                    quantity: 1,
+                    isCustom: true,
+                    description: items.join(' + ')
+                };
+
+                addItemToCart(cartItem);
+                
+                // Resetear Taller
+                appState.customRoll = { base: null, protein: [], filling: [], topping: null };
+                document.querySelectorAll('.builder-option').forEach(el => {
+                    el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                });
+                updateBuilderSummary();
+            });
+
+            // Añadir Item de Galería al Carrito (Botón +)
+            galleryAddButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation(); // IMPORTANTE: Evita que se abra el modal de detalle
+                    
+                    const cartItem = {
+                        id: button.dataset.id,
+                        name: button.dataset.name,
+                        price: parseFloat(button.dataset.price),
+                        quantity: 1
+                    };
+                    addItemToCart(cartItem);
+                });
+            });
+
+            // --- LÓGICA DEL MODAL DE DETALLES ---
+
+            function openDetailModal(data) {
+                // Poblar el modal
+                detailModalImage.src = data.imageSrc;
+                detailModalImage.alt = data.name;
+                detailModalName.textContent = data.name;
+                detailModalDescription.textContent = data.description;
+                detailModalPrice.textContent = `$${parseFloat(data.price).toFixed(2)}`;
+                
+                // Guardar los datos en el botón de añadir del modal
+                detailModalAddBtn.dataset.id = data.id;
+                detailModalAddBtn.dataset.name = data.name;
+                detailModalAddBtn.dataset.price = data.price;
+                
+                // Mostrar el modal
+                detailModal.style.display = 'block';
+            }
+
+            function closeDetailModal() {
+                detailModal.style.display = 'none';
+            }
+
+            // Abrir modal al hacer clic en un item de la galería
+            galleryItemContainers.forEach(item => {
+                item.addEventListener('click', () => {
+                    openDetailModal({
+                        id: item.dataset.id,
+                        name: item.dataset.name,
+                        price: item.dataset.price,
+                        description: item.dataset.description,
+                        imageSrc: item.dataset.imageSrc
+                    });
+                });
+            });
+
+            // Cerrar modal
+            closeDetailBtn.addEventListener('click', closeDetailModal);
+            detailOverlay.addEventListener('click', closeDetailModal);
+
+            // Botón "Añadir" dentro del modal de detalle
+            detailModalAddBtn.addEventListener('click', () => {
+                const cartItem = {
+                    id: detailModalAddBtn.dataset.id,
+                    name: detailModalAddBtn.dataset.name,
+                    price: parseFloat(detailModalAddBtn.dataset.price),
+                    quantity: 1
+                };
+                addItemToCart(cartItem);
+                closeDetailModal();
+            });
+
+            // --- LÓGICA DEL CARRITO ---
+
+            function addItemToCart(item) {
+                // Verificar si ya existe
+                const existingItem = appState.cart.find(cartItem => cartItem.id === item.id);
+
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    appState.cart.push(item);
+                }
+                
+                showToaster(item.isCustom ? "¡Rollo creado y añadido!" : "¡Añadido al pedido!");
+                updateCart();
+            }
+
+            function updateCart() {
+                // Actualizar contador
+                const totalItems = appState.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = totalItems;
+
+                // Actualizar lista de items
+                if (appState.cart.length === 0) {
+                    cartItemsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>';
+                } else {
+                    cartItemsList.innerHTML = appState.cart.map(item => `
+                        <div class="flex items-start space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg">
+                            <div class="flex-grow">
+                                <p class="font-bold dark:text-white">${item.name}</p>
+                                ${item.isCustom ? `<p class="text-xs text-gray-500 dark:text-gray-400">${item.description}</p>` : ''}
+                                <p class="font-semibold text-brand-primary mt-1">$${item.price.toFixed(2)}</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="cart-quantity-btn" data-id="${item.id}" data-action="decrease">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                </button>
+                                <span class="font-bold w-5 text-center dark:text-white">${item.quantity}</span>
+                                <button class="cart-quantity-btn" data-id="${item.id}" data-action="increase">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                </button>
+                            </div>
+                            <button class="cart-remove-btn p-1" data-id="${item.id}">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+
+                // Actualizar total
+                const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartTotalPrice.textContent = `$${totalPrice.toFixed(2)}`;
+
+                // Habilitar botón de confirmar pedido
+                placeOrderBtn.disabled = appState.cart.length === 0;
+            }
+
+            // Listeners para botones del carrito (añadidos dinámicamente)
+            cartItemsList.addEventListener('click', (e) => {
+                const quantityBtn = e.target.closest('.cart-quantity-btn');
+                const removeBtn = e.target.closest('.cart-remove-btn');
+
+                if (quantityBtn) {
+                    const id = quantityBtn.dataset.id;
+                    const action = quantityBtn.dataset.action;
+                    const item = appState.cart.find(i => i.id === id);
+
+                    if (action === 'increase') {
+                        item.quantity += 1;
+                    } else if (action === 'decrease') {
+                        item.quantity -= 1;
+                        if (item.quantity === 0) {
+                            appState.cart = appState.cart.filter(i => i.id !== id);
+                        }
+                    }
+                }
+
+                if (removeBtn) {
+                    const id = removeBtn.dataset.id;
+                    appState.cart = appState.cart.filter(i => i.id !== id);
+                }
+
+                updateCart();
+            });
+
+            // Abrir/Cerrar Modales
+            cartButton.addEventListener('click', () => cartModal.style.display = 'block');
+            closeCartBtn.addEventListener('click', () => cartModal.style.display = 'none');
+            cartOverlay.addEventListener('click', () => cartModal.style.display = 'none');
+
+            // --- LÓGICA DE CONFIRMAR PEDIDO Y MODAL DE ÉXITO ---
+            placeOrderBtn.addEventListener('click', () => {
+                // En un app real, aquí se enviaría el pedido al backend
+                console.log("Pedido Confirmado:", appState.cart);
+
+                // Mostrar modal de éxito
+                cartModal.style.display = 'none';
+                successModal.style.display = 'block';
+
+                // Resetear estado
+                appState.cart = [];
+                updateCart(); // Esto limpiará el carrito en la UI
+            });
+
+            const closeSuccessModal = () => {
+                successModal.style.display = 'none';
+            }
+
+            closeSuccessBtn.addEventListener('click', closeSuccessModal);
+            // Permitir cerrar el modal de éxito (corregido)
+            if(successOverlay) {
+                successOverlay.addEventListener('click', closeSuccessModal);
+            }
+
+            // --- LÓGICA DEL TOASTER ---
+            let toasterTimeout;
+            function showToaster(message) {
+                toasterMessage.textContent = message;
+                toaster.classList.remove('opacity-0', '-translate-y-4');
+                toaster.classList.add('opacity-100', 'translate-y-0');
+
+                clearTimeout(toasterTimeout);
+                toasterTimeout = setTimeout(() => {
+                    toaster.classList.add('opacity-0', '-translate-y-4');
+                    toaster.classList.remove('opacity-100', 'translate-y-0');
+                }, 2000);
+            }
+
+        }); // Fin de DOMContentLoaded
+    </script>
+</body>
+</html>
