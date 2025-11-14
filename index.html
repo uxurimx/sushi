@@ -109,8 +109,7 @@
       CONTENEDOR PRINCIPAL DE LA APP
       Simula el viewport de un smartphone 
     -->
-    <div class="max-w-md mx-auto h-screen bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-gray-900">
-
+<div class="max-w-md mx-auto h-dvh bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-gray-900">
         <!-- PANTALLA DE INICIO (HERO PARALLAX) -->
         <section id="hero-screen" class="h-full flex-shrink-0 parallax-hero flex flex-col justify-between text-brand-white">
             <!-- Contenido del Hero (relativo para estar sobre el degradado) -->
@@ -131,7 +130,7 @@
         </section>
 
         <!-- PANTALLA PRINCIPAL DE LA APP (Inicialmente oculta) -->
-        <section id="app-screen" class="hidden h-full flex-grow flex flex-col">
+        <section id="app-screen" class="hidden h-full flex-grow flex flex-col relative">
             
             <!-- Header de la App (con Carrito y Toggle de Tema) -->
             <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
@@ -434,8 +433,7 @@
         <!-- 
             MODAL DEL CARRITO (Inicialmente oculto)
         -->
-        <div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-40 modal-fade-in">
-            <!-- Fondo Oscuro -->
+<div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-40 modal-fade-in">            <!-- Fondo Oscuro -->
             <div id="cart-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
             <!-- Contenido del Modal -->
@@ -449,8 +447,7 @@
                 </header>
 
                 <!-- Lista de Items en Carrito (Scrollable) -->
-                <div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar">
-                    <!-- Los items se inyectarán aquí -->
+<div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar overscroll-contain">                    <!-- Los items se inyectarán aquí -->
                     <p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>
                 </div>
 
@@ -470,8 +467,7 @@
         <!-- 
             MODAL DE DETALLE DE PRODUCTO (NUEVO)
         -->
-        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-50 modal-fade-in">
-            <!-- Fondo Oscuro -->
+<div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">           <!-- Fondo Oscuro -->
             <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
             <!-- Contenido del Modal -->
@@ -505,8 +501,7 @@
         <!-- 
             MODAL DE ÉXITO (NUEVO Y CORREGIDO)
         -->
-        <div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-screen z-50 modal-fade-in">
-            <!-- Fondo Oscuro -->
+<div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <!-- Fondo Oscuro -->
             <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
             <!-- Contenido del Modal -->
