@@ -4,7 +4,7 @@ const CACHE_NAME = 'kaizen-sushi-v1';
 // Archivos que se guardarán en caché para que funcione offline
 const CACHE_ASSETS = [
     '/index.html',
-    'https://cdn.tailwindcss.com',
+    // 'https://cdn.tailwindcss.com',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap'
     // Puedes añadir tus imágenes de sushi aquí si quieres:
     // '/img/sushi_dragon.png',
