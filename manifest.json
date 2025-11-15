@@ -1,0 +1,24 @@
+{
+  "name": "KAIZEN Sushi",
+  "short_name": "KAIZEN",
+  "description": "Tu Menú Interactivo KAIZEN Sushi.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1F2937",
+  "theme_color": "#DC2626",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -6,6 +6,12 @@
     <title>KAIZEN Sushi - Demo de Menú Interactivo</title>
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#DC2626">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KAIZEN">
     
     <!-- Configuración de Tailwind y Fuentes -->
     <script>
@@ -166,6 +172,9 @@
                 </div>
                 <!-- Botones de Header -->
                 <div class="flex items-center space-x-2">
+                    <button id="install-pwa-btn" class="hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Instalar Aplicación">
+                        <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </button>
                     <!-- Botón de Tema (Sol/Luna) -->
                     <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none">
                         <svg id="theme-icon-sun" class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -630,6 +639,52 @@
                 }
             };
             loadTheme();
+
+            // =============================================
+            // ==== 1. LÓGICA PWA: REGISTRAR SERVICE WORKER ====
+            // =============================================
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker
+                        .register('/sw.js')
+                        // .then(reg => console.log('Service Worker: Registrado'))
+                        .catch(err => console.error(`Service Worker: Error: ${err}`));
+                });
+            }
+
+            // =============================================
+            // ==== 2. LÓGICA PWA: PROMPT DE INSTALACIÓN ====
+            // =============================================
+            let deferredPrompt; // Variable para guardar el evento
+            const installButton = document.getElementById('install-pwa-btn');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Previene que el navegador muestre su mini-infobar
+                e.preventDefault();
+                // Guarda el evento para que podamos dispararlo luego
+                deferredPrompt = e;
+                // Muestra nuestro botón de instalación personalizado
+                installButton.classList.remove('hidden');
+                // console.log('Evento beforeinstallprompt capturado.');
+            });
+
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    return; // Si no hay evento, no hacer nada
+                }
+                // Oculta nuestro botón
+                installButton.classList.add('hidden');
+                
+                // Muestra el diálogo de instalación nativo
+                deferredPrompt.prompt();
+                
+                // Espera a que el usuario elija (aceptar o rechazar)
+                const { outcome } = await deferredPrompt.userChoice;
+                // console.log(`Resultado del usuario: ${outcome}`);
+                
+                // Limpiamos la variable, solo se puede usar una vez
+                deferredPrompt = null;
+            });
 
             const CART_STORAGE_KEY = 'kaizenSushiCart';
 
