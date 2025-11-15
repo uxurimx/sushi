@@ -471,12 +471,17 @@
             
             <!-- Contenido del Modal -->
             <div class="absolute bottom-0 left-0 right-0 h-[90%] bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in">
-                <!-- Header del Modal -->
                 <header class="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-brand-white dark:bg-gray-800 dark:border-gray-700 rounded-t-xl">
                     <h2 class="text-2xl font-bold dark:text-white">Tu Pedido</h2>
-                    <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button id="clear-cart-btn" class="hidden text-sm font-semibold text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400 transition-colors">
+                            Vaciar Carrito
+                        </button>
+                        <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
                 </header>
 
                 <!-- Lista de Items en Carrito (Scrollable) -->
@@ -544,8 +549,12 @@
                     <svg class="w-20 h-20 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Listo!</h2>
                     <p class="text-gray-600 dark:text-gray-300 mb-6">Se abrira WhatsApp con los detalles de tu pedido, para enviarlo. ¡Gracias por elegir KAIZEN!</p>
-                    <button id="close-success-btn" class="w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg">
+                    <button id="close-success-btn" class="w-full bg-green-600 hover:bg-green-700 text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transition-colors">
                         Entendido, abrir WhatsApp
+                    </button>
+                    
+                    <button id="cancel-success-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg mt-2 transition-colors">
+                        Cancelar
                     </button>
                 </div>
             </div>
@@ -679,6 +688,7 @@
             const cartOverlay = document.getElementById('cart-overlay');
             const closeCartBtn = document.getElementById('close-cart-btn');
             const cartItemsList = document.getElementById('cart-items-list');
+            const clearCartBtn = document.getElementById('clear-cart-btn'); // <-- AÑADE ESTE
             const cartCount = document.getElementById('cart-count');
             const cartTotalPrice = document.getElementById('cart-total-price');
             const placeOrderBtn = document.getElementById('place-order-btn');
@@ -687,6 +697,7 @@
             const successModal = document.getElementById('success-modal');
             const successOverlay = document.getElementById('success-overlay'); // Añadido
             const closeSuccessBtn = document.getElementById('close-success-btn');
+            const cancelSuccessBtn = document.getElementById('cancel-success-btn'); // <-- AÑADE ESTE
 
             // Modal de Detalle
             const detailModal = document.getElementById('detail-modal');
@@ -929,6 +940,13 @@
             cartOverlay.addEventListener('click', () => {
                 cartModal.style.display = 'none';
             });
+            clearCartBtn.addEventListener('click', () => {
+                // Pedir confirmación
+                if (confirm('¿Estás seguro de que quieres vaciar todo el carrito?')) {
+                    appState.cart = [];
+                    updateCart(); // Esto actualiza la UI y el localStorage
+                }
+            });
             
             // Botón "Añadir" dentro del modal de detalle
             detailModalAddBtn.addEventListener('click', () => {
@@ -1007,7 +1025,14 @@
                 cartTotalPrice.textContent = `$${totalPrice.toFixed(2)}`;
 
                 // Habilitar botón de confirmar pedido
-                placeOrderBtn.disabled = appState.cart.length === 0;
+                const isCartEmpty = appState.cart.length === 0;
+                placeOrderBtn.disabled = isCartEmpty;
+                
+                if (isCartEmpty) {
+                    clearCartBtn.classList.add('hidden');
+                } else {
+                    clearCartBtn.classList.remove('hidden');
+                }
 
                 // --- Actualizar badges en menú y bebidas ---
                 const counts = {};
@@ -1074,10 +1099,6 @@
                 // Cerrar modal de carrito y abrir modal de éxito
                 cartModal.style.display = 'none';
                 successModal.style.display = 'block';
-
-                // Limpiar carrito
-                appState.cart = [];
-                updateCart();
             });
 
             // Cerrar modal de éxito
@@ -1125,14 +1146,16 @@
             }
 
             closeSuccessBtn.addEventListener('click', () => {
-                // Abrir WhatsApp con el pedido y luego cerrar el modal
                 openWhatsAppForLastOrder();
+                appState.cart = [];
+                updateCart(); 
                 closeSuccessModal();
             });
 
-            if (successOverlay) {
-                successOverlay.addEventListener('click', closeSuccessModal);
-            }
+            cancelSuccessBtn.addEventListener('click', () => {
+                // Solo cierra el modal. El carrito sigue lleno.
+                closeSuccessModal();
+            });
             
             // --- LÓGICA DEL TOASTER ---
             let toasterTimeout;
