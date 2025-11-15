@@ -46,7 +46,8 @@
 
         /* Efecto Parallax Simple para el Hero */
         .parallax-hero {
-            background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI');
+            /* background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI'); */
+            background-color: black;
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
@@ -516,10 +517,10 @@
                 <!-- Contenido de Éxito -->
                 <div class="p-8 text-center">
                     <svg class="w-20 h-20 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Confirmado!</h2>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6">Tu pedido ha sido recibido y está en preparación. ¡Gracias por elegir KAIZEN!</p>
+                    <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Listo!</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Se abrira WhatsApp con los detalles de tu pedido, para enviarlo. ¡Gracias por elegir KAIZEN!</p>
                     <button id="close-success-btn" class="w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg">
-                        Entendido
+                        Entendido, abrir WhatsApp
                     </button>
                 </div>
             </div>
@@ -610,6 +611,13 @@
                     "Cebollín Crocante": 10.00
                 }
             };
+
+            // Número de WhatsApp del restaurante (modificar aquí, formato internacional sin '+')
+            // Ejemplo México: '521' + lada + número (sin espacios)
+            const RESTAURANT_PHONE = '5212345678900';
+
+            // Último pedido confirmado (se usa para abrir WhatsApp después de confirmar)
+            let lastOrder = null;
 
             // --- SELECTORES DE ELEMENTOS ---
             const heroScreen = document.getElementById('hero-screen');
@@ -1011,10 +1019,18 @@
                 }
             });
 
-            // Confirmar pedido: cerrar carrito, mostrar modal de éxito y limpiar estado
+            // Confirmar pedido: cerrar carrito, mostrar modal de éxito y guardar snapshot del pedido
             placeOrderBtn.addEventListener('click', () => {
                 // En una app real aquí se enviaría al servidor
                 console.log('Pedido Confirmado:', appState.cart);
+
+                // Crear snapshot del pedido para enviarlo por WhatsApp
+                const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                lastOrder = {
+                    id: `ORD-${new Date().getTime()}`,
+                    items: appState.cart.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, isCustom: !!i.isCustom, description: i.description || '' })),
+                    total: totalPrice
+                };
 
                 // Cerrar modal de carrito y abrir modal de éxito
                 cartModal.style.display = 'none';
@@ -1027,7 +1043,54 @@
 
             // Cerrar modal de éxito
             const closeSuccessModal = () => { successModal.style.display = 'none'; };
-            closeSuccessBtn.addEventListener('click', closeSuccessModal);
+
+            // Formatea el pedido para enviar por WhatsApp
+            function formatOrderMessage(order) {
+                if (!order || !order.items || order.items.length === 0) {
+                    return 'KAIZEN Sushi - Pedido vacío';
+                }
+
+                const lines = [];
+                lines.push(`KAIZEN Sushi - Pedido ${order.id}`);
+                lines.push('');
+
+                order.items.forEach(item => {
+                    const qty = item.quantity || 1;
+                    const unit = Number(item.price).toFixed(2);
+                    const total = (item.price * qty).toFixed(2);
+                    let l = `${qty} x ${item.name} — $${total} ( $${unit} c/u )`;
+                    if (item.isCustom && item.description) {
+                        l += `\n    • ${item.description}`;
+                    }
+                    lines.push(l);
+                });
+
+                lines.push('');
+                lines.push(`Total: $${Number(order.total).toFixed(2)}`);
+                lines.push('');
+                lines.push('Por favor confirmar. Gracias!');
+
+                return lines.join('\n');
+            }
+
+            // Abrir WhatsApp con el pedido formateado (usa RESTAURANT_PHONE)
+            function openWhatsAppForLastOrder() {
+                const msg = formatOrderMessage(lastOrder);
+                const phone = (RESTAURANT_PHONE || '').toString().replace(/\D/g, '');
+                if (!phone) {
+                    alert('Número de restaurante no configurado.');
+                    return;
+                }
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+                window.open(url, '_blank');
+            }
+
+            closeSuccessBtn.addEventListener('click', () => {
+                // Abrir WhatsApp con el pedido y luego cerrar el modal
+                openWhatsAppForLastOrder();
+                closeSuccessModal();
+            });
+
             if (successOverlay) {
                 successOverlay.addEventListener('click', closeSuccessModal);
             }
