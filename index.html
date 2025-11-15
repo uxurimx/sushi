@@ -7,11 +7,12 @@
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#DC2626">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KAIZEN">
+    <link rel="icon" href="./favicon.png" type="image/png"> <meta name="theme-color" content="#DC2626">
     
     <!-- Configuración de Tailwind y Fuentes -->
     <script>
@@ -646,7 +647,7 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker
-                        .register('/sw.js')
+                        .register('./sw.js')
                         // .then(reg => console.log('Service Worker: Registrado'))
                         .catch(err => console.error(`Service Worker: Error: ${err}`));
                 });
