@@ -1,15 +1,17 @@
 // Nombre del caché
-const CACHE_NAME = 'kaizen-sushi-v1';
+const CACHE_NAME = 'kaizen-sushi-v2'; // Incrementé la versión
 
-// Archivos que se guardarán en caché para que funcione offline
+// Archivos que se guardarán en caché (solo locales)
 const CACHE_ASSETS = [
-    '/index.html',
-    // 'https://cdn.tailwindcss.com',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap'
+    './index.html',     // <--- CORREGIDO: Ruta relativa
+    './manifest.json',    // <--- AÑADIDO: Importante
+    './favicon.png',      // <--- AÑADIDO: Importante
+    // La fuente de Google (googleapis.com) se eliminó para evitar el error 'addAll'
+    
     // Puedes añadir tus imágenes de sushi aquí si quieres:
-    // '/img/sushi_dragon.png',
-    // '/img/sushi_arcoiris.png',
-    // '/img/sushi_veggie.png'
+    // './img/sushi_dragon.png',
+    // './img/sushi_arcoiris.png',
+    // './img/sushi_veggie.png'
 ];
 
 // Evento de Instalación: Se guardan los assets en caché
@@ -21,6 +23,10 @@ self.addEventListener('install', (e) => {
                 return cache.addAll(CACHE_ASSETS);
             })
             .then(() => self.skipWaiting())
+            .catch(err => {
+                // console.error('Service Worker: Falló cache.addAll(): ', err);
+                // Si 'addAll' falla, la instalación se detiene.
+            })
     );
 });
 
@@ -30,7 +36,7 @@ self.addEventListener('activate', (e) => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cache => {
-                    if (cache !== CACHE_NAME) {
+                    if (cache !== CACHE_NAME && cache !== 'kaizen-sushi-v1') { // Conservamos v1 por si acaso
                         // console.log('Service Worker: Clearing old cache');
                         return caches.delete(cache);
                     }
@@ -42,6 +48,11 @@ self.addEventListener('activate', (e) => {
 
 // Evento Fetch: Sirve la app desde el caché (Offline-First)
 self.addEventListener('fetch', (e) => {
+    // No intentes cachear peticiones de dominios externos como Google Fonts en el 'fetch'
+    if (e.request.url.startsWith('chrome-extension://')) {
+        return;
+    }
+    
     e.respondWith(
         caches.match(e.request)
             .then(response => {
@@ -50,9 +61,7 @@ self.addEventListener('fetch', (e) => {
                 return response || fetch(e.request);
             })
             .catch(() => {
-                // Fallback (opcional): si todo falla, podrías
-                // mostrar una página HTML de "sin conexión".
-                // Por ahora, solo fallará la petición.
+                // Fallback (opcional): si todo falla
             })
     );
 });
