@@ -101,7 +101,32 @@
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
+
+        #app-screen {
+            display: none;
+        }
+
+        /* Si el script del head tiene éxito y añade la clase... */
+        html.app-cargada #hero-screen {
+            display: none; /* Oculta el hero */
+        }
+        html.app-cargada #app-screen {
+            display: flex; /* Muestra la app (porque tu app usa flex) */
+        }
     </style>
+    <script>
+    (function() {
+        const CART_STORAGE_KEY = 'kaizenSushiCart'; 
+        try {
+            const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+            if (storedCart && JSON.parse(storedCart).length > 0) {
+                document.documentElement.classList.add('app-cargada');
+            }
+        } catch (e) {
+            console.warn('Error al revisar el carrito en pre-carga.');
+        }
+    })();
+</script>
 </head>
 
 <body class="bg-brand-light m-0 p-0 transition-colors duration-300">
@@ -131,7 +156,7 @@
         </section>
 
         <!-- PANTALLA PRINCIPAL DE LA APP (Inicialmente oculta) -->
-        <section id="app-screen" class="hidden h-full flex-grow flex flex-col relative">
+        <section id="app-screen" class="h-full flex-grow flex flex-col relative">
             
             <!-- Header de la App (con Carrito y Toggle de Tema) -->
             <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
@@ -575,8 +600,22 @@
                 }
             };
             loadTheme();
-            
-            // --- ESTADO DE LA APLICACIÓN ---
+
+            const CART_STORAGE_KEY = 'kaizenSushiCart';
+
+            function loadCartFromStorage() {
+                try {
+                    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+                    if (storedCart) {
+                        return JSON.parse(storedCart);
+                    }
+                } catch (e) {
+                    console.error('Error al cargar el carrito de localStorage', e);
+                }
+                return []; 
+            }
+
+            // --- ESTADO DE LA APLICACIÓN --- (Línea ~316)
             const appState = {
                 currentTab: 'builder',
                 customRoll: {
@@ -585,7 +624,7 @@
                     filling: [],
                     topping: null
                 },
-                cart: [],
+                cart: loadCartFromStorage(), // <-- AHORA SÍ FUNCIONA
             };
 
             // --- BASE DE DATOS DE PRECIOS (Para el Dueño) ---
@@ -632,6 +671,7 @@
             const addCustomRollBtn = document.getElementById('add-custom-roll-btn');
             const galleryAddButtons = document.querySelectorAll('.add-gallery-btn');
             const galleryItemContainers = document.querySelectorAll('.gallery-item-container');
+            const toasterMessage = document.getElementById('toaster-message');
             
             // Carrito - CÓDIGO CORREGIDO Y COMPLETADO
             const cartButton = document.getElementById('cart-button');
@@ -660,15 +700,13 @@
 
             // Toaster - CÓDIGO CORREGIDO Y COMPLETADO
             const toaster = document.getElementById('toaster');
-            const toasterMessage = document.getElementById('toaster-message');
+            // const toasterMessage = document.getElementById('toaster-message');
 
             // --- LÓGICA DE NAVEGACIÓN Y PANTALLAS ---
 
             // Empezar la app
             startButton.addEventListener('click', () => {
-                heroScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
-                appScreen.classList.add('flex');
+                document.documentElement.classList.add('app-cargada');
             });
 
             // Cambiar pestañas
@@ -987,6 +1025,7 @@
                         badge.classList.add('hidden');
                     }
                 });
+                localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
             }
 
             // Manejo de botones dentro del carrito (aumentar / disminuir / eliminar)
@@ -1109,6 +1148,7 @@
                     toaster.classList.remove('opacity-100', 'translate-y-0');
                 }, 1200);
             }
+            updateCart();
 
         }); // Fin de DOMContentLoaded
     </script>
