@@ -560,6 +560,27 @@
             </div>
         </div>
 
+        <div id="confirm-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="confirm-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <div class="p-8 text-center">
+                    <svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    
+                    <h2 class="text-3xl font-bold my-4 dark:text-white">¿Estás seguro?</h2>
+                    
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Esta acción eliminará todos los productos de tu carrito. No podrás deshacerlo.</p>
+
+                    <button id="confirm-clear-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transition-colors">
+                        Sí, vaciar carrito
+                    </button>
+                    
+                    <button id="cancel-clear-btn" class="w-full text-gray-600 dark:text-gray-400 font-bold py-3 px-6 rounded-lg text-lg mt-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
 
         <!-- NOTIFICACIÓN "TOASTER" -->
         <div id="toaster" class="fixed top-4 left-1/2 -translate-x-1/2 z-[45] bg-brand-secondary dark:bg-brand-light text-white dark:text-brand-secondary font-semibold py-3 px-5 rounded-lg shadow-lg opacity-0 transition-all duration-150 transform -translate-y-3 pointer-events-none">
@@ -692,6 +713,12 @@
             const cartCount = document.getElementById('cart-count');
             const cartTotalPrice = document.getElementById('cart-total-price');
             const placeOrderBtn = document.getElementById('place-order-btn');
+
+            // --- Selectores del Modal de Confirmación (NUEVO) ---
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmOverlay = document.getElementById('confirm-overlay');
+            const confirmClearBtn = document.getElementById('confirm-clear-btn');
+            const cancelClearBtn = document.getElementById('cancel-clear-btn');
             
             // Modal de Éxito - CÓDIGO CORREGIDO Y COMPLETADO
             const successModal = document.getElementById('success-modal');
@@ -941,12 +968,27 @@
                 cartModal.style.display = 'none';
             });
             clearCartBtn.addEventListener('click', () => {
-                // Pedir confirmación
-                if (confirm('¿Estás seguro de que quieres vaciar todo el carrito?')) {
-                    appState.cart = [];
-                    updateCart(); // Esto actualiza la UI y el localStorage
-                }
+                // Solo muestra el modal de confirmación
+                confirmModal.style.display = 'block';
             });
+
+            const closeConfirmModal = () => {
+                confirmModal.style.display = 'none';
+            };
+
+            // Botón "Sí, vaciar carrito"
+            confirmClearBtn.addEventListener('click', () => {
+                // Aquí va la lógica que estaba en el confirm()
+                appState.cart = [];
+                updateCart(); // Esto actualiza la UI y el localStorage
+                closeConfirmModal(); // Cierra este modal
+            });
+
+            // Botón "Cancelar"
+            cancelClearBtn.addEventListener('click', closeConfirmModal);
+
+            // Clic en el fondo (overlay)
+            confirmOverlay.addEventListener('click', closeConfirmModal);
             
             // Botón "Añadir" dentro del modal de detalle
             detailModalAddBtn.addEventListener('click', () => {
