@@ -357,8 +357,8 @@
                          data-name="Rollo Dragón"
                          data-price="150.00"
                          data-description="Descripción completa y detallada del Rollo Dragón, explicando por qué es tan especial. Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa."
-                         data-image-src="https://placehold.co/400x400/F87171/FFFFFF?text=Rollo%20Dragón">
-                        <img src="https://placehold.co/100x100/F87171/FFFFFF?text=Rollo" alt="Rollo Dragón" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                         data-image-src="./img/sushi_dragon.png">
+                        <img src="./img/sushi_dragon.png" alt="Rollo Dragón" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
                         <!-- Badge que mostrará la cantidad en carrito (inicia oculta) -->
                         <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <div class="flex-grow">
@@ -379,8 +379,8 @@
                          data-name="Rollo Arcoíris"
                          data-price="140.50"
                          data-description="Un clásico vibrante. Relleno de cangrejo y pepino fresco, y artísticamente cubierto con finas láminas de salmón, atún y aguacate."
-                         data-image-src="https://placehold.co/400x400/FBBF24/FFFFFF?text=Rollo%20Arcoíris">
-                        <img src="https://placehold.co/100x100/FBBF24/FFFFFF?text=Rollo" alt="Rollo Arcoíris" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                         data-image-src="./img/sushi_arcoiris.png">
+                        <img src="./img/sushi_arcoiris.png" alt="Rollo Arcoíris" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
                         <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <div class="flex-grow">
                             <h3 class="font-bold text-lg dark:text-white">Rollo Arcoíris</h3>
@@ -400,8 +400,8 @@
                          data-name="Rollo Veggie"
                          data-price="110.00"
                          data-description="Una opción fresca y saludable. Relleno de tofu marinado, aguacate cremoso, pepino y zanahoria, todo envuelto en arroz y sésamo tostado."
-                         data-image-src="https://placehold.co/400x400/34D399/FFFFFF?text=Rollo%20Veggie">
-                        <img src="https://placehold.co/100x100/34D399/FFFFFF?text=Rollo" alt="Rollo Veggie" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                         data-image-src="./img/sushi_veggie.png">
+                        <img src="./img/sushi_veggie.png" alt="Rollo Veggie" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
                         <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <div class="flex-grow">
                             <h3 class="font-bold text-lg dark:text-white">Rollo Veggie</h3>
@@ -889,7 +889,8 @@
                     price: total,
                     quantity: 1,
                     isCustom: true,
-                    description: items.join(' + ')
+                    description: items.join(' + '),
+                    notes: ''
                 };
 
                 addItemToCart(cartItem);
@@ -911,7 +912,8 @@
                         id: button.dataset.id,
                         name: button.dataset.name,
                         price: parseFloat(button.dataset.price),
-                        quantity: 1
+                        quantity: 1,
+                        notes: ''
                     };
                     addItemToCart(cartItem);
                 });
@@ -996,7 +998,8 @@
                     id: detailModalAddBtn.dataset.id,
                     name: detailModalAddBtn.dataset.name,
                     price: parseFloat(detailModalAddBtn.dataset.price),
-                    quantity: 1
+                    quantity: 1,
+                    notes: ''
                 };
                 addItemToCart(cartItem);
                 closeDetailModal();
@@ -1044,7 +1047,15 @@
                             <div class="flex-grow">
                                 <p class="font-bold dark:text-white">${item.name}</p>
                                 ${item.isCustom ? `<p class="text-xs text-gray-500 dark:text-gray-400">${item.description}</p>` : ''}
-                                <p class="font-semibold text-brand-primary mt-1">$${item.price.toFixed(2)}</p>
+                                <p class="font-semibold text-brand-primary mt-1 mb-2">$${item.price.toFixed(2)}</p>
+                                
+                                <input 
+                                    type="text" 
+                                    class="cart-item-notes-input w-full text-sm bg-gray-100 dark:bg-gray-700 dark:text-white p-2 rounded-md focus:ring-2 focus:ring-brand-primary focus:outline-none" 
+                                    placeholder="Notas (ej. sin cebolla)" 
+                                    value="${item.notes || ''}" 
+                                    data-id="${item.id}">
+                                
                             </div>
                             <div class="flex items-center space-x-3">
                                 <button class="cart-quantity-btn" data-id="${item.id}" data-action="decrease">
@@ -1125,6 +1136,24 @@
                 }
             });
 
+            cartItemsList.addEventListener('input', (e) => {
+                const notesInput = e.target.closest('.cart-item-notes-input');
+                
+                if (notesInput) {
+                    const id = notesInput.dataset.id;
+                    const item = appState.cart.find(i => i.id === id);
+                    
+                    if (item) {
+                        // 1. Actualiza el estado de la app
+                        item.notes = notesInput.value;
+                        
+                        // 2. Persiste en localStorage INMEDIATAMENTE
+                        // (No llamamos a updateCart() para evitar que el input pierda el foco)
+                        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
+                    }
+                }
+            });
+
             // Confirmar pedido: cerrar carrito, mostrar modal de éxito y guardar snapshot del pedido
             placeOrderBtn.addEventListener('click', () => {
                 // En una app real aquí se enviaría al servidor
@@ -1134,7 +1163,15 @@
                 const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 lastOrder = {
                     id: `ORD-${new Date().getTime()}`,
-                    items: appState.cart.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, isCustom: !!i.isCustom, description: i.description || '' })),
+                    items: appState.cart.map(i => ({ 
+                        id: i.id, 
+                        name: i.name, 
+                        price: i.price, 
+                        quantity: i.quantity, 
+                        isCustom: !!i.isCustom, 
+                        description: i.description || '',
+                        notes: i.notes || '' 
+                    })),
                     total: totalPrice
                 };
 
@@ -1163,6 +1200,9 @@
                     let l = `${qty} x ${item.name} — $${total} ( $${unit} c/u )`;
                     if (item.isCustom && item.description) {
                         l += `\n    • ${item.description}`;
+                    }
+                    if (item.notes) {
+                        l += `\n    • NOTA: ${item.notes}`;
                     }
                     lines.push(l);
                 });
