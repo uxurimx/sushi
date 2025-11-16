@@ -1,0 +1,76 @@
+{
+  "restaurantPhone": "526672026789",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Rollo" },
+    { "id": "gallery", "label": "Menú" },
+    { "id": "drinks", "label": "Bebidas" },
+    { "id": "desserts", "label": "Postres" },
+    { "id": "demo", "label": "Demoooooo" },
+    { "id": "demo2", "label": "Empanizados" },
+    { "id": "tryon", "label": "Naturales" }
+  ],
+  "builder": {
+    "base": [
+      { "id": "base-1", "name": "Arroz de Sushi", "price": 50.00 },
+      { "id": "base-2", "name": "Arroz Integral", "price": 50.50 }
+    ],
+    "protein": [
+      { "id": "prot-1", "name": "Salmón Fresco", "price": 40.50 },
+      { "id": "prot-2", "name": "Atún Picante", "price": 50.00 },
+      { "id": "prot-3", "name": "Camarón Tempura", "price": 40.00 },
+      { "id": "prot-4", "name": "Tofu", "price": 30.00 }
+    ],
+    "filling": [
+      { "id": "fill-1", "name": "Aguacate", "price": 20.00 },
+      { "id": "fill-2", "name": "Queso Crema", "price": 10.50 },
+      { "id": "fill-3", "name": "Pepino", "price": 10.00 }
+    ],
+    "topping": [
+      { "id": "top-1", "name": "Sésamo Tostado", "price": 10.50 },
+      { "id": "top-2", "name": "Cebollín Crocante", "price": 10.00 }
+    ]
+  },
+  "gallery": [
+    {
+      "id": "gallery-1",
+      "name": "Rollo Dragón",
+      "price": 150.00,
+      "description": "Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa.",
+      "imageSrc": "./img/sushi_dragon.png"
+    },
+    {
+      "id": "gallery-2",
+      "name": "Rollo Arcoíris",
+      "price": 140.50,
+      "description": "Cangrejo y pepino, cubierto de salmón, atún y aguacate.",
+      "imageSrc": "./img/sushi_arcoiris.png"
+    },
+    {
+      "id": "gallery-3",
+      "name": "Rollo Veggie",
+      "price": 110.00,
+      "description": "Tofu, aguacate, pepino y zanahoria, envuelto en sésamo.",
+      "imageSrc": "./img/sushi_veggie.png"
+    }
+  ],
+  "drinks": [
+    { "id": "drink-1", "name": "Coca-Cola", "price": 30.00, "description": "Refrescante bebida gaseosa clásica.", "imageSrc": "./img/drink_cocacola.png" },
+    { "id": "drink-2", "name": "Té Verde", "price": 20.50, "description": "Té verde frío preparado al estilo japonés.", "imageSrc": "./img/drink_te_verde.png" }
+  ],
+  "desserts": [
+    { "id": "dessert-1", "name": "Mochi Helado", "price": 45.00, "description": "Dulce tradicional japonés con helado en su interior.", "imageSrc": "./img/mochi.png" },
+    { "id": "dessert-2", "name": "Dorayaki", "price": 40.00, "description": "Pastel japonés relleno de pasta de frijol rojo dulce.", "imageSrc": "./img/dorayaki.png" }
+  ],
+  "demo": [
+    { "id": "dessert-1", "name": "Mochi Helado", "price": 45.00, "description": "Dulce tradicional japonés con helado en su interior.", "imageSrc": "./img/mochi.png" },
+    { "id": "dessert-2", "name": "Dorayaki", "price": 40.00, "description": "Pastel japonés relleno de pasta de frijol rojo dulce.", "imageSrc": "./img/dorayaki.png" }
+  ],
+  "demo2": [
+    { "id": "dessert-1", "name": "Empanizado", "price": 45.00, "description": "Dulce tradicional japonés con helado en su interior.", "imageSrc": "./img/mochi.png" },
+    { "id": "dessert-2", "name": "6516516516", "price": 40.00, "description": "Pastel japonés relleno de pasta de frijol rojo dulce.", "imageSrc": "./img/dorayaki.png" }
+  ],
+  "tryon": [
+    { "id": "dessert-1", "name": "Naturales", "price": 45.00, "description": "Dulce tradicional japonés con helado en su interior.", "imageSrc": "./img/mochi.png" },
+    { "id": "dessert-2", "name": "6516516516", "price": 40.00, "description": "Pastel japonés relleno de pasta de frijol rojo dulce.", "imageSrc": "./img/dorayaki.png" }
+  ]
+}

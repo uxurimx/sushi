@@ -1,4 +1,14 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
+    // Cargar datos desde db.json (preparado para futura API)
+    let DB = null;
+    try {
+        const res = await fetch('./db.json');
+        if (res.ok) DB = await res.json();
+        else console.warn('db.json no disponible, status:', res.status);
+    } catch (e) {
+        console.error('Error cargando db.json:', e);
+    }
 
     // --- LÓGICA DE MODO OSCURO ---
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -27,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Actualiza el color de la barra
             themeColorMeta.setAttribute('content', lightColor);
         }
+    
     };
 
     // Listener para el botón
@@ -46,6 +57,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     loadTheme();
+
+    // Generar menús dinámicamente desde DB (si existe)
+    if (DB && Array.isArray(DB.menus)) {
+        const menusNav = document.getElementById('menus-nav');
+        const mainEl = document.querySelector('main');
+        if (menusNav && mainEl) {
+            DB.menus.forEach((m, idx) => {
+                // Crear botón
+                const btn = document.createElement('button');
+                btn.className = 'tap-press tab-button flex-none py-3 px-4 min-w-[96px] text-center font-semibold border-b-4 transition-all duration-300';
+                btn.dataset.tab = m.id;
+                btn.textContent = m.label || m.id;
+                // Estilos del primer botón (activo)
+                if (idx === 0) {
+                    btn.classList.add('border-brand-primary', 'text-brand-primary');
+                } else {
+                    btn.classList.add('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                }
+                // Insert buttons between the left/right indicators (if present)
+                const rightIndicator = menusNav.querySelector('#menus-scroll-right');
+                if (rightIndicator) menusNav.insertBefore(btn, rightIndicator);
+                else menusNav.appendChild(btn);
+
+                // Asegurar que existe un panel con id `${m.id}-panel`
+                const panelId = `${m.id}-panel`;
+                if (!document.getElementById(panelId)) {
+                    const panel = document.createElement('div');
+                    panel.id = panelId;
+                    panel.className = 'tab-panel p-4 space-y-4 hidden';
+                    mainEl.appendChild(panel);
+                }
+            });
+        }
+    }
 
     // =============================================
     // ==== 1. LÓGICA PWA: REGISTRAR SERVICE WORKER ====
@@ -119,33 +164,144 @@ document.addEventListener('DOMContentLoaded', () => {
         cart: loadCartFromStorage(), // <-- AHORA SÍ FUNCIONA
     };
 
-    // --- BASE DE DATOS DE PRECIOS (Para el Dueño) ---
-    // Fácil de entender y modificar
-    const prices = {
-        base: {
-            "Arroz de Sushi": 50.00,
-            "Arroz Integral": 50.50
-        },
-        protein: {
-            "Salmón Fresco": 40.50,
-            "Atún Picante": 50.00,
-            "Camarón Tempura": 40.00,
-            "Tofu": 30.00
-        },
-        filling: {
-            "Aguacate": 20.00,
-            "Queso Crema": 10.50,
-            "Pepino": 10.00
-        },
-        topping: {
-            "Sésamo Tostado": 10.50,
-            "Cebollín Crocante": 10.00
-        }
-    };
+    // Número de WhatsApp del restaurante (será provisto por db.json si está disponible)
+    let RESTAURANT_PHONE = '';
+    if (DB && DB.restaurantPhone) {
+        RESTAURANT_PHONE = DB.restaurantPhone;
+    }
 
-    // Número de WhatsApp del restaurante (modificar aquí, formato internacional sin '+')
-    // Ejemplo México: '521' + lada + número (sin espacios)
-    const RESTAURANT_PHONE = '526672026789';
+    // Si tenemos datos, poblar las secciones dinámicas (builder, gallery, drinks)
+    if (DB) {
+        const makeBuilderOption = (item, step) => {
+            // Conservamos la estructura esperada por la lógica (atributos data-...)
+            return `
+            <div class="builder-option" data-step="${step}" data-name="${escapeHtml(item.name)}" data-price="${Number(item.price).toFixed(2)}" ${step === 'protein' || step === 'filling' ? 'data-multi="true"' : ''}>
+                <div class="tap-press p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
+                    <p class="font-semibold mt-2 dark:text-white">${escapeHtml(item.name)}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">$${Number(item.price).toFixed(2)}</p>
+                </div>
+            </div>`;
+        };
+
+        const baseContainer = document.getElementById('builder-base-container');
+        const proteinContainer = document.getElementById('builder-protein-container');
+        const fillingContainer = document.getElementById('builder-filling-container');
+        const toppingContainer = document.getElementById('builder-topping-container');
+
+        if (baseContainer && DB.builder && DB.builder.base) {
+            baseContainer.innerHTML = DB.builder.base.map(i => makeBuilderOption(i, 'base')).join('');
+        }
+        if (proteinContainer && DB.builder && DB.builder.protein) {
+            proteinContainer.innerHTML = DB.builder.protein.map(i => makeBuilderOption(i, 'protein')).join('');
+        }
+        if (fillingContainer && DB.builder && DB.builder.filling) {
+            fillingContainer.innerHTML = DB.builder.filling.map(i => makeBuilderOption(i, 'filling')).join('');
+        }
+        if (toppingContainer && DB.builder && DB.builder.topping) {
+            toppingContainer.innerHTML = DB.builder.topping.map(i => makeBuilderOption(i, 'topping')).join('');
+        }
+
+        // Gallery
+        const galleryList = document.getElementById('gallery-list');
+        if (galleryList && DB.gallery) {
+            galleryList.innerHTML = DB.gallery.map(it => `
+                <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
+                     data-id="${escapeHtml(it.id)}"
+                     data-name="${escapeHtml(it.name)}"
+                     data-price="${Number(it.price).toFixed(2)}"
+                     data-description="${escapeHtml(it.description)}"
+                     data-image-src="${escapeHtml(it.imageSrc)}">
+                    <img src="${escapeHtml(it.imageSrc)}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                    <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-lg dark:text-white">${escapeHtml(it.name)}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description)}</p>
+                        <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
+                    </div>
+                    <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Drinks (render as gallery-item-container so they show image + detail modal)
+        const drinksList = document.getElementById('drinks-list');
+        if (drinksList && DB.drinks) {
+            drinksList.innerHTML = DB.drinks.map(d => `
+                <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
+                     data-id="${escapeHtml(d.id)}"
+                     data-name="${escapeHtml(d.name)}"
+                     data-price="${Number(d.price).toFixed(2)}"
+                     data-description="${escapeHtml(d.description || '')}"
+                     data-image-src="${escapeHtml(d.imageSrc || './img/default_drink.png')}">
+                    <img src="${escapeHtml(d.imageSrc || './img/default_drink.png')}" alt="${escapeHtml(d.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                    <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-lg dark:text-white">${escapeHtml(d.name)}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(d.description || '')}</p>
+                        <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(d.price).toFixed(2)}</p>
+                    </div>
+                    <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(d.id)}" data-name="${escapeHtml(d.name)}" data-price="${Number(d.price).toFixed(2)}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Render any additional menus defined in DB.menus (e.g., desserts)
+    function renderExtraMenus() {
+        if (DB && Array.isArray(DB.menus)) {
+            DB.menus.forEach(m => {
+                if (['builder','gallery','drinks'].includes(m.id)) return; // already handled elsewhere
+                const panel = document.getElementById(`${m.id}-panel`);
+                const items = DB[m.id];
+                if (panel && Array.isArray(items)) {
+                    let list = panel.querySelector(`#${m.id}-list`);
+                    if (!list) {
+                        list = document.createElement('div');
+                        list.id = `${m.id}-list`;
+                        list.className = 'space-y-3';
+                        panel.appendChild(list);
+                    }
+
+                    list.innerHTML = items.map(it => `
+                        <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
+                             data-id="${escapeHtml(it.id)}"
+                             data-name="${escapeHtml(it.name)}"
+                             data-price="${Number(it.price).toFixed(2)}"
+                             data-description="${escapeHtml(it.description || '')}"
+                             data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}">
+                            <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                            <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                            <div class="flex-grow">
+                                <h3 class="font-bold text-lg dark:text-white">${escapeHtml(it.name)}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description || '')}</p>
+                                <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
+                            </div>
+                            <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+    }
+
+    // Populate extra menus now that panels exist and base sections were rendered
+    renderExtraMenus();
+
+    // Small helper to avoid XSS when injecting strings into templates
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
 
     // Último pedido confirmado (se usa para abrir WhatsApp después de confirmar)
     let lastOrder = null;
@@ -157,12 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabPanels = document.querySelectorAll('.tab-panel');
     const builderFooter = document.getElementById('builder-footer');
-    const builderOptions = document.querySelectorAll('.builder-option');
     const summaryPrice = document.getElementById('builder-summary-price');
     const summaryItems = document.getElementById('builder-summary-items');
     const addCustomRollBtn = document.getElementById('add-custom-roll-btn');
-    const galleryAddButtons = document.querySelectorAll('.add-gallery-btn');
-    const galleryItemContainers = document.querySelectorAll('.gallery-item-container');
     const toasterMessage = document.getElementById('toaster-message');
     
     // Carrito - CÓDIGO CORREGIDO Y COMPLETADO
@@ -243,6 +396,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Re-consultar elementos dinámicos que pueden haberse generado desde db.json
+    const builderOptions = document.querySelectorAll('.builder-option');
+    const galleryAddButtons = document.querySelectorAll('.add-gallery-btn');
+    const galleryItemContainers = document.querySelectorAll('.gallery-item-container');
 
     // --- LÓGICA DEL "TALLER" (ARMA TU ROLLO) ---
     builderOptions.forEach(option => {
@@ -339,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appState.customRoll.filling.forEach(item => { total += item.price; items.push(item.name); });
         if (appState.customRoll.topping) {
             total += appState.customRoll.topping.price;
-            items.push(item.name);
+            items.push(appState.customRoll.topping.name);
         }
 
         // const rollName = `Rollo Taller (${items.join(', ')})`; // <-- LÍNEA ANTIGUA
@@ -613,6 +771,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 // (No llamamos a updateCart() para evitar que el input pierda el foco)
                 localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
             }
+        }
+        // Setup scroll indicators for menus nav (if present)
+        const menusNavEl = document.getElementById('menus-nav');
+        const scrollLeftBtn = document.getElementById('menus-scroll-left');
+        const scrollRightBtn = document.getElementById('menus-scroll-right');
+        if (menusNavEl && scrollLeftBtn && scrollRightBtn) {
+            // Toggle indicators based on overflow
+            const checkOverflow = () => {
+                const need = menusNavEl.scrollWidth > menusNavEl.clientWidth + 4;
+                if (!need) {
+                    scrollLeftBtn.classList.add('hidden');
+                    scrollRightBtn.classList.add('hidden');
+                    return;
+                }
+                // Show/hide left based on scrollLeft
+                if (menusNavEl.scrollLeft > 8) scrollLeftBtn.classList.remove('hidden'); else scrollLeftBtn.classList.add('hidden');
+                // Show/hide right based on remaining scroll
+                if (menusNavEl.scrollLeft + menusNavEl.clientWidth < menusNavEl.scrollWidth - 8) scrollRightBtn.classList.remove('hidden'); else scrollRightBtn.classList.add('hidden');
+            };
+
+            // Scroll by a chunk when clicking indicators
+            scrollLeftBtn.addEventListener('click', () => { menusNavEl.scrollBy({ left: -120, behavior: 'smooth' }); });
+            scrollRightBtn.addEventListener('click', () => { menusNavEl.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+            menusNavEl.addEventListener('scroll', checkOverflow);
+            window.addEventListener('resize', checkOverflow);
+            // Initial check (small timeout to allow DOM paint)
+            setTimeout(checkOverflow, 50);
         }
     });
 

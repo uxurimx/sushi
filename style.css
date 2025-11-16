@@ -103,3 +103,34 @@ html.app-cargada #app-screen {
     /* La acción: encogerse un 5% al presionar */
     transform: scale(0.95);
 }
+
+/* Menus nav horizontal scrolling and indicators */
+#menus-nav {
+    -webkit-overflow-scrolling: touch;
+}
+.menu-scroll-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: auto;
+    font-size: 22px;
+    color: rgba(17,24,39,0.9); /* gray-900 */
+    background: linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0));
+    transition: opacity 0.15s ease;
+}
+.menu-scroll-indicator.right {
+    right: 0;
+    transform: rotate(0deg);
+    background: linear-gradient(to left, rgba(255,255,255,0.95), rgba(255,255,255,0));
+}
+.menu-scroll-indicator.left { left: 0; }
+.menu-scroll-indicator.hidden { display: none; }
+
+/* Dark mode adjustments for indicators */
+.dark .menu-scroll-indicator { color: rgba(255,255,255,0.92); background: linear-gradient(to right, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
+.dark .menu-scroll-indicator.right { background: linear-gradient(to left, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
