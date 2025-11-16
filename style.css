@@ -76,3 +76,30 @@ html.app-cargada #hero-screen {
 html.app-cargada #app-screen {
     display: flex; /* Muestra la app (porque tu app usa flex) */
 }
+
+
+/* ================================== */
+/* ====   NUEVAS CLASES DE UI/UX   ==== */
+/* ================================== */
+
+/* 1. Clase para deshabilitar selección de texto y tap-highlight */
+.no-select {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE */
+    user-select: none; /* Standard */
+    -webkit-tap-highlight-color: transparent; /* Deshabilita el "flash" al tocar en móviles */
+}
+
+/* 2. Clase para efecto de "presionar" (feedback táctil) */
+.tap-press {
+    /* Define la transición que se animará */
+    transition-property: transform;
+    transition-duration: 75ms; /* Muy rápido, solo para el feedback */
+    transition-timing-function: ease-out;
+}
+
+.tap-press:active {
+    /* La acción: encogerse un 5% al presionar */
+    transform: scale(0.95);
+}
