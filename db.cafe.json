@@ -1,0 +1,51 @@
+{
+  "restaurantPhone": "525512345678",
+  "restaurantName": "Cafetería La Brisa",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Café" },
+    { "id": "coffee", "label": "Cafés" },
+    { "id": "pastries", "label": "Repostería" },
+    { "id": "sandwiches", "label": "Sándwiches" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "base", "label": "Elige tu Café", "type": "single" },
+      { "id": "size", "label": "Tamaño", "type": "single" },
+      { "id": "milk", "label": "Tipo de Leche", "type": "single" },
+      { "id": "extras", "label": "Extras", "type": "multi" }
+    ],
+    "base": [
+      { "id": "b-espresso", "name": "Espresso", "price": 25.00 },
+      { "id": "b-americano", "name": "Americano", "price": 28.00 },
+      { "id": "b-latte", "name": "Latte", "price": 35.00 }
+    ],
+    "size": [
+      { "id": "s-small", "name": "Chico", "price": 0.00 },
+      { "id": "s-medium", "name": "Mediano", "price": 7.00 },
+      { "id": "s-large", "name": "Grande", "price": 12.00 }
+    ],
+    "milk": [
+      { "id": "m-regular", "name": "Entera", "price": 0.00 },
+      { "id": "m-skim", "name": "Deslactosada", "price": 3.00 },
+      { "id": "m-oat", "name": "Leche de Avena", "price": 8.00 }
+    ],
+    "extras": [
+      { "id": "e-vanilla", "name": "Sirope de Vainilla", "price": 5.00 },
+      { "id": "e-caramel", "name": "Sirope de Caramelo", "price": 5.00 },
+      { "id": "e-shot", "name": "Shot Extra de Espresso", "price": 10.00 }
+    ]
+  },
+  "coffee": [
+    { "id": "c-latte", "name": "Latte Clásico", "price": 38.00, "description": "Espresso con leche vaporizada y una fina capa de espuma.", "imageSrc": "./img/latte.png" },
+    { "id": "c-capu", "name": "Cappuccino", "price": 36.00, "description": "Espresso, leche y espuma cremosa.", "imageSrc": "./img/cappuccino.png" },
+    { "id": "c-flat", "name": "Flat White", "price": 40.00, "description": "Espresso con microespuma para textura sedosa.", "imageSrc": "./img/flatwhite.png" }
+  ],
+  "pastries": [
+    { "id": "p-croissant", "name": "Croissant", "price": 22.00, "description": "Mantequilla fresca, horneado diariamente.", "imageSrc": "./img/croissant.png" },
+    { "id": "p-muffin", "name": "Muffin de Arándanos", "price": 25.00, "description": "Muffin suave con arándanos naturales.", "imageSrc": "./img/muffin.png" }
+  ],
+  "sandwiches": [
+    { "id": "s-tuna", "name": "Sándwich de Atún", "price": 45.00, "description": "Pan artesanal, atún, hojas verdes.", "imageSrc": "./img/sandwich_tuna.png" },
+    { "id": "s-chicken", "name": "Sándwich de Pollo", "price": 48.00, "description": "Pollo rostizado, mayonesa de hierbas.", "imageSrc": "./img/sandwich_chicken.png" }
+  ]
+}

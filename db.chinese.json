@@ -1,0 +1,50 @@
+{
+  "restaurantPhone": "525512009988",
+  "restaurantName": "Golden Wok",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Bowl" },
+    { "id": "mains", "label": "Platos Principales" },
+    { "id": "sides", "label": "Acompañamientos" },
+    { "id": "soups", "label": "Sopas" },
+    { "id": "drinks", "label": "Bebidas" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "base", "label": "Base (Arroz/Noodles)", "type": "single" },
+      { "id": "protein", "label": "Proteína(s)", "type": "multi" },
+      { "id": "veggies", "label": "Verduras", "type": "multi" },
+      { "id": "sauce", "label": "Salsa", "type": "single" }
+    ],
+    "base": [
+      { "id": "rice-white", "name": "Arroz Blanco", "price": 0.00 },
+      { "id": "noodles", "name": "Noodles", "price": 8.00 }
+    ],
+    "protein": [
+      { "id": "p-chicken", "name": "Pollo Agridulce", "price": 45.00 },
+      { "id": "p-beef", "name": "Res con Brócoli", "price": 55.00 },
+      { "id": "p-tofu", "name": "Tofu Salteado", "price": 40.00 }
+    ],
+    "veggies": [
+      { "id": "v-pepper", "name": "Pimiento", "price": 0.00 },
+      { "id": "v-onion", "name": "Cebolla", "price": 0.00 },
+      { "id": "v-bokchoy", "name": "Bok Choy", "price": 6.00 }
+    ],
+    "sauce": [
+      { "id": "s-soy", "name": "Soya", "price": 0.00 },
+      { "id": "s-spicy", "name": "Picante Especial", "price": 5.00 }
+    ]
+  },
+  "mains": [
+    { "id": "m-kungpao", "name": "Pollo Kung Pao", "price": 95.00, "description": "Pollo salteado con cacahuate y vegetales.", "imageSrc": "./img/kungpao.png" },
+    { "id": "m-mapotofu", "name": "Mapo Tofu", "price": 88.00, "description": "Tofu picante en salsa de frijol fermentado.", "imageSrc": "./img/mapotofu.png" }
+  ],
+  "sides": [
+    { "id": "s-springroll", "name": "Rollitos Primavera", "price": 45.00, "description": "Crujientes rollitos rellenos de verdura.", "imageSrc": "./img/springroll.png" }
+  ],
+  "soups": [
+    { "id": "sp-wonton", "name": "Sopa Wonton", "price": 55.00, "description": "Caldo ligero con wontons rellenos.", "imageSrc": "./img/wonton.png" }
+  ],
+  "drinks": [
+    { "id": "d-tea", "name": "Té Jasmine", "price": 25.00, "description": "Té chino aromático.", "imageSrc": "./img/tea_jasmine.png" }
+  ]
+}

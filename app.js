@@ -3,11 +3,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar datos desde db.json (preparado para futura API)
     let DB = null;
     try {
-        const res = await fetch('./db.json');
+        const res = await fetch('./db.fastfood.json');
         if (res.ok) DB = await res.json();
         else console.warn('db.json no disponible, status:', res.status);
     } catch (e) {
         console.error('Error cargando db.json:', e);
+    }
+
+    // Remove/hide static panels that are not included in DB.menus
+    if (DB && Array.isArray(DB.menus)) {
+        const menuIds = DB.menus.map(m => m.id);
+        ['gallery-panel', 'drinks-panel'].forEach(pid => {
+            const el = document.getElementById(pid);
+            if (el) {
+                const id = pid.replace('-panel','');
+                if (!menuIds.includes(id)) el.remove();
+            }
+        });
     }
 
     // --- LÓGICA DE MODO OSCURO ---
@@ -170,6 +182,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         RESTAURANT_PHONE = DB.restaurantPhone;
     }
 
+    // Nombre del restaurante (dinámico desde db.json)
+    let RESTAURANT_NAME = 'KAIZEN';
+    if (DB && DB.restaurantName) RESTAURANT_NAME = DB.restaurantName;
+    // Actualizar cabeceras si existen en el DOM
+    const headerNameEl = document.getElementById('restaurant-name');
+    const heroNameEl = document.getElementById('hero-restaurant-name');
+    if (headerNameEl) headerNameEl.textContent = RESTAURANT_NAME;
+    if (heroNameEl) heroNameEl.textContent = RESTAURANT_NAME;
+
     // Si tenemos datos, poblar las secciones dinámicas (builder, gallery, drinks)
     if (DB) {
         const makeBuilderOption = (item, step) => {
@@ -183,22 +204,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>`;
         };
 
-        const baseContainer = document.getElementById('builder-base-container');
-        const proteinContainer = document.getElementById('builder-protein-container');
-        const fillingContainer = document.getElementById('builder-filling-container');
-        const toppingContainer = document.getElementById('builder-topping-container');
+        const builderPanel = document.getElementById('builder-panel');
 
-        if (baseContainer && DB.builder && DB.builder.base) {
-            baseContainer.innerHTML = DB.builder.base.map(i => makeBuilderOption(i, 'base')).join('');
-        }
-        if (proteinContainer && DB.builder && DB.builder.protein) {
-            proteinContainer.innerHTML = DB.builder.protein.map(i => makeBuilderOption(i, 'protein')).join('');
-        }
-        if (fillingContainer && DB.builder && DB.builder.filling) {
-            fillingContainer.innerHTML = DB.builder.filling.map(i => makeBuilderOption(i, 'filling')).join('');
-        }
-        if (toppingContainer && DB.builder && DB.builder.topping) {
-            toppingContainer.innerHTML = DB.builder.topping.map(i => makeBuilderOption(i, 'topping')).join('');
+        // If DB.builder.steps exists, render builder dynamically from steps
+        if (DB.builder && Array.isArray(DB.builder.steps) && builderPanel) {
+            builderPanel.innerHTML = DB.builder.steps.map(step => `
+                <section>
+                    <h2 class="text-xl font-bold mb-3 dark:text-white">${escapeHtml(step.label || step.id)}</h2>
+                    <div id="builder-${escapeHtml(step.id)}-container" class="grid grid-cols-2 gap-3"></div>
+                </section>
+            `).join('');
+
+            // Populate each step's container
+            DB.builder.steps.forEach(step => {
+                const cont = document.getElementById(`builder-${step.id}-container`);
+                const items = DB.builder[step.id];
+                if (cont && Array.isArray(items)) {
+                    cont.innerHTML = items.map(i => makeBuilderOption(i, step.id)).join('');
+                }
+            });
+        } else {
+            // Fallback to legacy static containers for backwards compatibility
+            const baseContainer = document.getElementById('builder-base-container');
+            const proteinContainer = document.getElementById('builder-protein-container');
+            const fillingContainer = document.getElementById('builder-filling-container');
+            const toppingContainer = document.getElementById('builder-topping-container');
+
+            if (baseContainer && DB.builder && DB.builder.base) {
+                baseContainer.innerHTML = DB.builder.base.map(i => makeBuilderOption(i, 'base')).join('');
+            }
+            if (proteinContainer && DB.builder && DB.builder.protein) {
+                proteinContainer.innerHTML = DB.builder.protein.map(i => makeBuilderOption(i, 'protein')).join('');
+            }
+            if (fillingContainer && DB.builder && DB.builder.filling) {
+                fillingContainer.innerHTML = DB.builder.filling.map(i => makeBuilderOption(i, 'filling')).join('');
+            }
+            if (toppingContainer && DB.builder && DB.builder.topping) {
+                toppingContainer.innerHTML = DB.builder.topping.map(i => makeBuilderOption(i, 'topping')).join('');
+            }
         }
 
         // Gallery

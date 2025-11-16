@@ -1,5 +1,6 @@
 {
   "restaurantPhone": "526672026789",
+  "restaurantName": "KAIZEN",
   "menus": [
     { "id": "builder", "label": "Arma tu Rollo" },
     { "id": "gallery", "label": "Menú" },
@@ -28,6 +29,13 @@
     "topping": [
       { "id": "top-1", "name": "Sésamo Tostado", "price": 10.50 },
       { "id": "top-2", "name": "Cebollín Crocante", "price": 10.00 }
+    ]
+    ,
+    "steps": [
+      { "id": "base", "label": "Elige tu Base", "type": "single" },
+      { "id": "protein", "label": "Elige Proteína(s)", "type": "multi" },
+      { "id": "filling", "label": "Añade Relleno(s)", "type": "multi" },
+      { "id": "topping", "label": "Elige tu Topping", "type": "single" }
     ]
   },
   "gallery": [

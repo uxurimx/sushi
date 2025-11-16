@@ -1,0 +1,57 @@
+{
+  "restaurantPhone": "525598765432",
+  "restaurantName": "Street Bites",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Hamburguesa" },
+    { "id": "burgers", "label": "Hamburguesas" },
+    { "id": "hotdogs", "label": "Hot Dogs" },
+    { "id": "sides", "label": "Acompañamientos" },
+    { "id": "drinks", "label": "Bebidas" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "bun", "label": "Pan", "type": "single" },
+      { "id": "patty", "label": "Carne / Patty", "type": "single" },
+      { "id": "cheese", "label": "Queso", "type": "single" },
+      { "id": "toppings", "label": "Toppings", "type": "multi" },
+      { "id": "sauces", "label": "Salsas", "type": "multi" }
+    ],
+    "bun": [
+      { "id": "bun-std", "name": "Clásico", "price": 0.00 },
+      { "id": "bun-brio", "name": "Brioche", "price": 6.00 }
+    ],
+    "patty": [
+      { "id": "patty-beef", "name": "Res Premium", "price": 55.00 },
+      { "id": "patty-chk", "name": "Pollo", "price": 48.00 },
+      { "id": "patty-veg", "name": "Veggie", "price": 45.00 }
+    ],
+    "cheese": [
+      { "id": "cheddar", "name": "Cheddar", "price": 8.00 },
+      { "id": "swiss", "name": "Suizo", "price": 9.00 }
+    ],
+    "toppings": [
+      { "id": "t-lettuce", "name": "Lechuga", "price": 0.00 },
+      { "id": "t-tomato", "name": "Jitomate", "price": 0.00 },
+      { "id": "t-bacon", "name": "Tocino", "price": 12.00 }
+    ],
+    "sauces": [
+      { "id": "s-ketchup", "name": "Ketchup", "price": 0.00 },
+      { "id": "s-mayo", "name": "Mayonesa", "price": 0.00 },
+      { "id": "s-special", "name": "Salsa Especial", "price": 6.00 }
+    ]
+  },
+  "burgers": [
+    { "id": "b-classic", "name": "Classic Burger", "price": 95.00, "description": "Carne, queso, lechuga y tomate.", "imageSrc": "./img/burger_classic.png" },
+    { "id": "b-bacon", "name": "Bacon Burger", "price": 115.00, "description": "Incluye tocino crujiente.", "imageSrc": "./img/burger_bacon.png" }
+  ],
+  "hotdogs": [
+    { "id": "hd-classic", "name": "Hot Dog Clásico", "price": 48.00, "description": "Salchicha, pan y condimentos.", "imageSrc": "./img/hotdog_classic.png" },
+    { "id": "hd-chili", "name": "Hot Dog Chili", "price": 58.00, "description": "Con chili y queso.", "imageSrc": "./img/hotdog_chili.png" }
+  ],
+  "sides": [
+    { "id": "fries", "name": "Papas Fritas", "price": 30.00, "description": "Crocantes y saladas.", "imageSrc": "./img/fries.png" }
+  ],
+  "drinks": [
+    { "id": "soda", "name": "Refresco 355ml", "price": 25.00, "description": "Gaseosa fría.", "imageSrc": "./img/soda.png" }
+  ]
+}
