@@ -10,11 +10,11 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#DC2626">
+    <meta name="theme-color" id="theme-color-meta" content="#FFFFFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="KAIZEN">
-    <link rel="icon" href="./favicon.png" type="image/png"> <meta name="theme-color" content="#DC2626">
+    <link rel="icon" href="./favicon.png" type="image/png">
     
     <!-- Configuración de Tailwind y Fuentes -->
     <script>
@@ -609,19 +609,28 @@
             const themeToggleBtn = document.getElementById('theme-toggle');
             const sunIcon = document.getElementById('theme-icon-sun');
             const moonIcon = document.getElementById('theme-icon-moon');
+            const themeColorMeta = document.getElementById('theme-color-meta');
 
             // Función para actualizar el tema
             const updateTheme = (isDark) => {
+                // Define tus colores de barra
+                const darkColor = "#1F2937";  // Tu color de fondo oscuro
+                const lightColor = "#FFFFFF"; // Tu color de fondo claro
+
                 if (isDark) {
                     document.documentElement.classList.add('dark');
                     sunIcon.classList.add('hidden');
                     moonIcon.classList.remove('hidden');
                     localStorage.setItem('theme', 'dark');
+                    // Actualiza el color de la barra
+                    themeColorMeta.setAttribute('content', darkColor); 
                 } else {
                     document.documentElement.classList.remove('dark');
                     sunIcon.classList.remove('hidden');
                     moonIcon.classList.add('hidden');
                     localStorage.setItem('theme', 'light');
+                    // Actualiza el color de la barra
+                    themeColorMeta.setAttribute('content', lightColor);
                 }
             };
 
