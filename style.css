@@ -1,0 +1,78 @@
+/* Fuente Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Efecto Parallax Simple para el Hero */
+.parallax-hero {
+    /* background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI'); */
+    background-color: black;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+/* Degradado superpuesto para legibilidad */
+.parallax-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2) 60%);
+}
+
+/* Ocultar scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Animación de entrada para modales */
+.modal-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+.modal-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Animación para el modal de detalle */
+.modal-slide-in-bottom {
+    animation: slideInBottom 0.3s ease-out;
+}
+@keyframes slideInBottom {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+#app-screen {
+    display: none;
+}
+
+/* Si el script del head tiene éxito y añade la clase... */
+html.app-cargada #hero-screen {
+    display: none; /* Oculta el hero */
+}
+html.app-cargada #app-screen {
+    display: flex; /* Muestra la app (porque tu app usa flex) */
+}

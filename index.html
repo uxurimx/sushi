@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIZEN Sushi - Demo de Menú Interactivo</title>
-    <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,7 +15,6 @@
     <meta name="apple-mobile-web-app-title" content="KAIZEN">
     <link rel="icon" href="./favicon.png" type="image/png">
     
-    <!-- Configuración de Tailwind y Fuentes -->
     <script>
         tailwind.config = {
             darkMode: 'class', // Habilitar modo oscuro
@@ -26,6 +24,9 @@
                         'sans': ['Inter', 'sans-serif'],
                     },
                     colors: {
+                        'dark-bg': '#171717',     // Negro-Gris Principal (Neutral 900)
+                        'dark-card': '#262626',   // Gris para Tarjetas (Neutral 800)
+                        'dark-border': '#404040', // Borde sutil (Neutral 700)
                         'brand': {
                             'primary': '#DC2626', // Rojo
                             'secondary': '#1F2937', // Gris Oscuro
@@ -42,87 +43,8 @@
         }
     </script>
 
-    <!-- Estilos CSS Personalizados para Efectos y Parallax -->
-    <style>
-        /* Fuente Inter */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    <link rel="stylesheet" href="style.css">
 
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Efecto Parallax Simple para el Hero */
-        .parallax-hero {
-            /* background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI'); */
-            background-color: black;
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            position: relative;
-        }
-
-        /* Degradado superpuesto para legibilidad */
-        .parallax-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2) 60%);
-        }
-
-        /* Ocultar scrollbars */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-        }
-
-        /* Animación de entrada para modales */
-        .modal-fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal-slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        
-        /* Animación para el modal de detalle */
-        .modal-slide-in-bottom {
-            animation: slideInBottom 0.3s ease-out;
-        }
-        @keyframes slideInBottom {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        #app-screen {
-            display: none;
-        }
-
-        /* Si el script del head tiene éxito y añade la clase... */
-        html.app-cargada #hero-screen {
-            display: none; /* Oculta el hero */
-        }
-        html.app-cargada #app-screen {
-            display: flex; /* Muestra la app (porque tu app usa flex) */
-        }
-    </style>
     <script>
     (function() {
         const CART_STORAGE_KEY = 'kaizenSushiCart'; 
@@ -140,17 +62,10 @@
 
 <body class="bg-brand-light m-0 p-0 transition-colors duration-300">
 
-    <!-- 
-      CONTENEDOR PRINCIPAL DE LA APP
-      Simula el viewport de un smartphone 
-    -->
-<div class="max-w-md mx-auto h-dvh bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-gray-900">
-        <!-- PANTALLA DE INICIO (HERO PARALLAX) -->
+    <div class="max-w-md mx-auto h-dvh bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-dark-bg">
         <section id="hero-screen" class="h-full flex-shrink-0 parallax-hero flex flex-col justify-between text-brand-white">
-            <!-- Contenido del Hero (relativo para estar sobre el degradado) -->
             <div class="relative z-10 flex flex-col h-full p-8 text-center">
                 <div class="flex-grow flex flex-col items-center justify-center space-y-4">
-                    <!-- Icono de Logo (Cambiado de Estrella a Chispas) -->
                     <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v.01M6.314 15.186l.01.01M17.686 15.186l.01.01M21 12v.01M3 12v.01M17.686 8.814l.01.01M6.314 8.814l.01.01M12 6v.01M12 3v.01"></path></svg>
                     <h1 class="text-5xl font-extrabold tracking-tight">KAIZEN</h1>
                     <p class="text-xl font-light">SUSHI INTERACTIVO</p>
@@ -164,36 +79,29 @@
             </div>
         </section>
 
-        <!-- PANTALLA PRINCIPAL DE LA APP (Inicialmente oculta) -->
         <section id="app-screen" class="h-full flex-grow flex flex-col relative">
             
-            <!-- Header de la App (con Carrito y Toggle de Tema) -->
-            <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+            <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-dark-bg dark:border-dark-border">
                 <div>
                     <h1 class="text-2xl font-bold text-brand-secondary dark:text-white">KAIZEN</h1>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Tu Menú Interactivo</p>
                 </div>
-                <!-- Botones de Header -->
                 <div class="flex items-center space-x-2">
-                    <button id="install-pwa-btn" class="hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Instalar Aplicación">
+                    <button id="install-pwa-btn" class="hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors focus:outline-none" title="Instalar Aplicación">
                         <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     </button>
-                    <!-- Botón de Tema (Sol/Luna) -->
-                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors focus:outline-none">
                         <svg id="theme-icon-sun" class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <svg id="theme-icon-moon" class="w-6 h-6 text-brand-secondary dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     </button>
-                    <!-- Botón de Carrito (Icono de Bolsa) -->
-                    <button id="cart-button" class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <button id="cart-button" class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
                         <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path></svg>
-                        <!-- Inicialmente oculto; se mostrará solo cuando totalItems > 0 -->
                         <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
                     </button>
                 </div>
             </header>
 
-            <!-- Navegación de Pestañas -->
-            <nav class="flex-shrink-0 flex justify-around p-2 bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <nav class="flex-shrink-0 flex justify-around p-2 bg-gray-50 border-b border-gray-200 dark:bg-dark-card dark:border-dark-border">
                 <button data-tab="builder" class="tab-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-brand-primary text-brand-primary transition-all duration-300">
                     Arma tu Rollo
                 </button>
@@ -205,18 +113,14 @@
                 </button>
             </nav>
 
-            <!-- Contenido Principal (Scrollable) -->
             <main class="flex-grow overflow-y-auto no-scrollbar pb-32">
                 
-                <!-- Pestaña 1: "Arma tu Rollo" (El Taller) -->
                 <div id="builder-panel" class="tab-panel p-4 space-y-6">
-                    <!-- Paso 1: Base -->
                     <section>
                         <h2 class="text-xl font-bold mb-3 dark:text-white">1. Elige tu Base</h2>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="builder-option" data-step="base" data-name="Arroz de Sushi" data-price="50.00">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Bol de Arroz (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M75 45H5C2.23858 45 0 47.2386 0 50V60C0 68.2843 6.71573 75 15 75H65C73.2843 75 80 68.2843 80 60V50C80 47.2386 77.7614 45 75 45Z" fill="#374151"/>
                                         <path d="M68.5 45C68.5 30 60 20 50 15C40 20 31.5 30 31.5 45H68.5Z" fill="#FFFFFF"/>
@@ -227,8 +131,7 @@
                                 </div>
                             </div>
                             <div class="builder-option" data-step="base" data-name="Arroz Integral" data-price="50.50">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Saco de Arroz (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M60 70H20C14.4772 70 10 65.5228 10 60V30C10 24.4772 14.4772 20 20 20H60C65.5228 20 70 24.4772 70 30V60C70 65.5228 65.5228 70 60 70Z" fill="#D2B48C"/>
                                         <path d="M20 10L30 25H50L60 10H20Z" fill="#D2B48C"/>
@@ -241,13 +144,11 @@
                         </div>
                     </section>
 
-                    <!-- Paso 2: Proteína (Multi-selección) -->
                     <section>
                         <h2 class="text-xl font-bold mb-3 dark:text-white">2. Elige Proteína(s)</h2>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="builder-option" data-step="protein" data-name="Salmón Fresco" data-price="40.50" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Corte de Salmón (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M70 20C70 10 60 10 50 10C40 10 30 10 20 20C10 30 10 40 10 50C10 60 20 70 30 70C40 70 50 70 60 60C70 50 70 40 70 30V20Z" fill="#F08080"/>
                                         <path d="M20 20C25 25 30 30 35 35" stroke="white" stroke-width="5" stroke-linecap="round"/>
@@ -259,16 +160,14 @@
                                 </div>
                             </div>
                             <div class="builder-option" data-step="protein" data-name="Atún Picante" data-price="50.00" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Fuego (Flat) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto text-brand-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 11a1 1 0 01-1.878-.671l4-11a1 1 0 011.245-.594zM10 10a1 1 0 01-1 1H7a1 1 0 110-2h2a1 1 0 011 1zM6.31 6.31a1 1 0 010 1.414L3.414 10.6a1 1 0 11-1.414-1.414L4.896 6.31a1 1 0 011.414 0zM13.69 6.31a1 1 0 011.414 0l2.896 2.896a1 1 0 11-1.414 1.414L13.69 7.724a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                     <p class="font-semibold mt-2 dark:text-white">Atún Picante</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">$50.00</p>
                                 </div>
                             </div>
                             <div class="builder-option" data-step="protein" data-name="Camarón Tempura" data-price="40.00" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Camarón Tempura (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M60 20C70 30 70 50 60 60C50 70 30 70 20 60C10 50 10 30 20 20" fill="#FDE68A"/>
                                         <path d="M50 30C55 35 55 45 50 50C45 55 35 55 30 50C25 45 25 35 30 30" fill="#FCD34D"/>
@@ -280,8 +179,7 @@
                                 </div>
                             </div>
                             <div class="builder-option" data-step="protein" data-name="Tofu" data-price="30.00" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Bloques de Tofu (Flat) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto text-brand-primary" fill="#FEF3C7" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                                     <p class="font-semibold mt-2 dark:text-white">Tofu</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">$30.00</p>
@@ -290,13 +188,11 @@
                         </div>
                     </section>
                     
-                    <!-- Paso 3: Relleno (Multi-selección) -->
                     <section>
                         <h2 class="text-xl font-bold mb-3 dark:text-white">3. Añade Relleno(s)</h2>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="builder-option" data-step="filling" data-name="Aguacate" data-price="20.00" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Aguacate (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M40 70C20 70 10 55 10 40C10 25 20 10 40 10C60 10 70 25 70 40C70 55 60 70 40 70Z" fill="#3A5311"/>
                                         <path d="M40 60C25 60 15 50 15 40C15 30 25 20 40 20C55 20 65 30 65 40C65 50 55 60 40 60Z" fill="#84CC16"/>
@@ -307,8 +203,7 @@
                                 </div>
                             </div>
                             <div class="builder-option" data-step="filling" data-name="Queso Crema" data-price="10.50" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Bloque de Queso (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M10 30L30 20L70 20L70 50L30 50L10 60V30Z" fill="#FFFBEB"/>
                                         <path d="M30 20L30 50L10 60V30L30 20Z" fill="#FEF3C7"/>
@@ -318,8 +213,7 @@
                                 </div>
                             </div>
                             <div class="builder-option" data-step="filling" data-name="Pepino" data-price="10.00" data-multi="true">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Palitos de Pepino (Flat Ilustrativo) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                                         <rect x="20" y="20" width="10" height="50" rx="5" fill="#166534"/>
                                         <rect x="25" y="25" width="5" height="40" rx="2.5" fill="#22C55E"/>
@@ -335,21 +229,18 @@
                         </div>
                     </section>
 
-                    <!-- Paso 4: Topping -->
                     <section>
                         <h2 class="text-xl font-bold mb-3 dark:text-white">4. Elige tu Topping</h2>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="builder-option" data-step="topping" data-name="Sésamo Tostado" data-price="10.50">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Semillas (Flat) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto" fill="#D2B48C" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10a1 1 0 11-2 0 1 1 0 012 0zM11 10a1 1 0 11-2 0 1 1 0 012 0zM15 10a1 1 0 11-2 0 1 1 0 012 0zM7 6a1 1 0 11-2 0 1 1 0 012 0zM11 6a1 1 0 11-2 0 1 1 0 012 0zM15 6a1 1 0 11-2 0 1 1 0 012 0zM7 14a1 1 0 11-2 0 1 1 0 012 0zM11 14a1 1 0 11-2 0 1 1 0 012 0zM15 14a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
                                     <p class="font-semibold mt-2 dark:text-white">Sésamo Tostado</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">$10.50</p>
                                 </div>
                             </div>
                             <div class="builder-option" data-step="topping" data-name="Cebollín Crocante" data-price="10.00">
-                                <div class="p-4 border dark:border-gray-700 rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700 transition-all">
-                                    <!-- Icono: Sparkles (Crocante) (Flat) -->
+                                <div class="p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                                     <svg class="w-8 h-8 mx-auto text-brand-primary" fill="#FDE68A" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6h-1a1 1 0 110-2h1V3a1 1 0 011-1zM11 13a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM12 16a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                                     <p class="font-semibold mt-2 dark:text-white">Cebollín Crocante</p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">$10.00</p>
@@ -359,34 +250,25 @@
                     </section>
                 </div>
 
-                <!-- Pestaña 2: "Menú de la Casa" (La Galería) -->
                 <div id="gallery-panel" class="tab-panel p-4 space-y-4 hidden">
-                    <!-- 
-                        Item de Menú 1 - BOTÓN CORREGIDO
-                    -->
-                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
                          data-id="gallery-1"
                          data-name="Rollo Dragón"
                          data-price="150.00"
                          data-description="Descripción completa y detallada del Rollo Dragón, explicando por qué es tan especial. Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa."
                          data-image-src="./img/sushi_dragon.png">
                         <img src="./img/sushi_dragon.png" alt="Rollo Dragón" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
-                        <!-- Badge que mostrará la cantidad en carrito (inicia oculta) -->
                         <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <div class="flex-grow">
                             <h3 class="font-bold text-lg dark:text-white">Rollo Dragón</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Camarón tempura y aguacate, cubierto de anguila y salsa dulce.</p>
-                            <p class="font-bold text-brand-primary mt-1">$150.00</p>
+                            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$150.00</p>
                         </div>
-                        <!-- BOTÓN CORREGIDO - Estaba faltando -->
                         <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-1" data-name="Rollo Dragón" data-price="150.00">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </button>
                     </div>
-                    <!-- 
-                        Item de Menú 2 - BOTÓN CORREGIDO
-                    -->
-                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
                          data-id="gallery-2"
                          data-name="Rollo Arcoíris"
                          data-price="140.50"
@@ -397,17 +279,13 @@
                         <div class="flex-grow">
                             <h3 class="font-bold text-lg dark:text-white">Rollo Arcoíris</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Cangrejo y pepino, cubierto de salmón, atún y aguacate.</p>
-                            <p class="font-bold text-brand-primary mt-1">$140.50</p>
+                            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$140.50</p>
                         </div>
-                        <!-- BOTÓN CORREGIDO - Estaba faltando -->
                         <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-2" data-name="Rollo Arcoíris" data-price="140.50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </button>
                     </div>
-                    <!-- 
-                        Item de Menú 3 
-                    -->
-                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700"
+                    <div class="gallery-item-container relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
                          data-id="gallery-3"
                          data-name="Rollo Veggie"
                          data-price="110.00"
@@ -418,7 +296,7 @@
                         <div class="flex-grow">
                             <h3 class="font-bold text-lg dark:text-white">Rollo Veggie</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">Tofu, aguacate, pepino y zanahoria, envuelto en sésamo.</p>
-                            <p class="font-bold text-brand-primary mt-1">$110.00</p>
+                            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$110.00</p>
                         </div>
                         <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="gallery-3" data-name="Rollo Veggie" data-price="110.00">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -426,24 +304,21 @@
                     </div>
                 </div>
 
-                <!-- Pestaña 3: "Bebidas" -->
                 <div id="drinks-panel" class="tab-panel p-4 space-y-4 hidden">
-                    <!-- Item de Bebida 1 -->
-                    <div class="drink-item relative flex items-center justify-between bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700" data-id="drink-1">
+                    <div class="drink-item relative flex items-center justify-between bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border" data-id="drink-1">
                         <div>
                             <h3 class="font-bold text-lg dark:text-white">Coca-Cola</h3>
-                            <p class="font-bold text-brand-primary mt-1">$30.00</p>
+                            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$30.00</p>
                         </div>
                         <span class="item-badge absolute top-2 right-12 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="drink-1" data-name="Coca-Cola" data-price="30.00">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </button>
                     </div>
-                    <!-- Item de Bebida 2 -->
-                    <div class="drink-item relative flex items-center justify-between bg-brand-white dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-gray-700" data-id="drink-2">
+                    <div class="drink-item relative flex items-center justify-between bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border" data-id="drink-2">
                         <div>
                             <h3 class="font-bold text-lg dark:text-white">Té Verde</h3>
-                            <p class="font-bold text-brand-primary mt-1">$20.50</p>
+                            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$20.50</p>
                         </div>
                         <span class="item-badge absolute top-2 right-12 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                         <button class="add-gallery-btn p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="drink-2" data-name="Té Verde" data-price="20.50">
@@ -454,11 +329,7 @@
 
             </main>
 
-            <!-- 
-                BARRA INFERIOR FIJA (Resumen y Añadir al Carrito) 
-                Visible solo en la pestaña "Arma tu Rollo"
-            -->
-            <footer id="builder-footer" class="absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-brand-white dark:bg-gray-800 p-4 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700 rounded-t-xl">
+            <footer id="builder-footer" class="absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-brand-white dark:bg-dark-card p-4 shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border rounded-t-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Tu Creación:</p>
@@ -468,41 +339,32 @@
                         Añadir Rollo
                     </button>
                 </div>
-                <!-- Resumen de ingredientes -->
                 <div id="builder-summary-items" class="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">
                     Base + Proteína + Relleno...
                 </div>
             </footer>
         </section>
 
-        <!-- 
-            MODAL DEL CARRITO (Inicialmente oculto)
-        -->
-<div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-40 modal-fade-in">            <!-- Fondo Oscuro -->
-            <div id="cart-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+        <div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-40 modal-fade-in">            <div id="cart-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
-            <!-- Contenido del Modal -->
-            <div class="absolute bottom-0 left-0 right-0 h-[90%] bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in">
-                <header class="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-brand-white dark:bg-gray-800 dark:border-gray-700 rounded-t-xl">
+            <div class="absolute bottom-0 left-0 right-0 h-[90%] bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in">
+                <header class="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-brand-white dark:bg-dark-card dark:border-dark-border rounded-t-xl">
                     <h2 class="text-2xl font-bold dark:text-white">Tu Pedido</h2>
                     
                     <div class="flex items-center space-x-2">
                         <button id="clear-cart-btn" class="hidden text-sm font-semibold text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400 transition-colors">
                             Vaciar Carrito
                         </button>
-                        <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border">
                             <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
                 </header>
 
-                <!-- Lista de Items en Carrito (Scrollable) -->
-<div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar overscroll-contain">                    <!-- Los items se inyectarán aquí -->
-                    <p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>
+                <div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar overscroll-contain">                    <p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>
                 </div>
 
-                <!-- Footer del Modal (Total y Botón) -->
-                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-gray-800 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700 rounded-t-xl">
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border rounded-t-xl">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-lg font-medium text-gray-600 dark:text-gray-300">Total:</span>
                         <span id="cart-total-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
@@ -514,15 +376,9 @@
             </div>
         </div>
 
-        <!-- 
-            MODAL DE DETALLE DE PRODUCTO (NUEVO)
-        -->
-<div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">           <!-- Fondo Oscuro -->
-            <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">           <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
-            <!-- Contenido del Modal -->
-            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
-                <!-- Imagen del Producto -->
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
                 <div class="relative">
                     <img id="detail-modal-image" src="https://placehold.co/400x400/CCCCCC/FFFFFF?text=Sushi" alt="Detalle del rollo" class="w-full h-64 object-cover rounded-t-xl">
                     <button id="close-detail-btn" class="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/75">
@@ -530,14 +386,12 @@
                     </button>
                 </div>
 
-                <!-- Información del Producto -->
                 <div class="p-6 overflow-y-auto no-scrollbar">
                     <h2 id="detail-modal-name" class="text-3xl font-bold mb-2 dark:text-white">Nombre del Rollo</h2>
                     <p id="detail-modal-description" class="text-gray-600 dark:text-gray-300 mb-6">Descripción detallada del producto irá aquí para que el cliente pueda leer todo sobre él.</p>
                 </div>
 
-                <!-- Footer del Modal (Precio y Botón) -->
-                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-gray-800 shadow-top dark:shadow-dark-top dark:border-t dark:border-gray-700">
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border">
                     <div class="flex items-center justify-between">
                         <span id="detail-modal-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
                         <button id="detail-modal-add-btn" class="bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105">
@@ -548,15 +402,9 @@
             </div>
         </div>
 
-        <!-- 
-            MODAL DE ÉXITO (NUEVO Y CORREGIDO)
-        -->
-<div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <!-- Fondo Oscuro -->
-            <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+        <div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
-            <!-- Contenido del Modal -->
-            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
-                <!-- Contenido de Éxito -->
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
                 <div class="p-8 text-center">
                     <svg class="w-20 h-20 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Listo!</h2>
@@ -574,7 +422,7 @@
 
         <div id="confirm-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="confirm-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             
-            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-gray-900 rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
                 <div class="p-8 text-center">
                     <svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     
@@ -586,7 +434,7 @@
                         Sí, vaciar carrito
                     </button>
                     
-                    <button id="cancel-clear-btn" class="w-full text-gray-600 dark:text-gray-400 font-bold py-3 px-6 rounded-lg text-lg mt-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <button id="cancel-clear-btn" class="w-full text-gray-600 dark:text-gray-400 font-bold py-3 px-6 rounded-lg text-lg mt-2 hover:bg-gray-200 dark:hover:bg-dark-border transition-colors">
                         Cancelar
                     </button>
                 </div>
@@ -594,735 +442,10 @@
         </div>
 
 
-        <!-- NOTIFICACIÓN "TOASTER" -->
         <div id="toaster" class="fixed top-4 left-1/2 -translate-x-1/2 z-[45] bg-brand-secondary dark:bg-brand-light text-white dark:text-brand-secondary font-semibold py-3 px-5 rounded-lg shadow-lg opacity-0 transition-all duration-150 transform -translate-y-3 pointer-events-none">
             <span id="toaster-message">¡Añadido!</span>
         </div>
 
-    </div> <!-- Fin de .max-w-md -->
-
-    <!-- Lógica de la Aplicación (JavaScript) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- LÓGICA DE MODO OSCURO ---
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const sunIcon = document.getElementById('theme-icon-sun');
-            const moonIcon = document.getElementById('theme-icon-moon');
-            const themeColorMeta = document.getElementById('theme-color-meta');
-
-            // Función para actualizar el tema
-            const updateTheme = (isDark) => {
-                // Define tus colores de barra
-                const darkColor = "#1F2937";  // Tu color de fondo oscuro
-                const lightColor = "#FFFFFF"; // Tu color de fondo claro
-
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                    sunIcon.classList.add('hidden');
-                    moonIcon.classList.remove('hidden');
-                    localStorage.setItem('theme', 'dark');
-                    // Actualiza el color de la barra
-                    themeColorMeta.setAttribute('content', darkColor); 
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    sunIcon.classList.remove('hidden');
-                    moonIcon.classList.add('hidden');
-                    localStorage.setItem('theme', 'light');
-                    // Actualiza el color de la barra
-                    themeColorMeta.setAttribute('content', lightColor);
-                }
-            };
-
-            // Listener para el botón
-            themeToggleBtn.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.contains('dark');
-                updateTheme(!isDark);
-            });
-
-            // Cargar tema al iniciar
-            const loadTheme = () => {
-                const savedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                    updateTheme(true);
-                } else {
-                    updateTheme(false);
-                }
-            };
-            loadTheme();
-
-            // =============================================
-            // ==== 1. LÓGICA PWA: REGISTRAR SERVICE WORKER ====
-            // =============================================
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker
-                        .register('./sw.js')
-                        // .then(reg => console.log('Service Worker: Registrado'))
-                        .catch(err => console.error(`Service Worker: Error: ${err}`));
-                });
-            }
-
-            // =============================================
-            // ==== 2. LÓGICA PWA: PROMPT DE INSTALACIÓN ====
-            // =============================================
-            let deferredPrompt; // Variable para guardar el evento
-            const installButton = document.getElementById('install-pwa-btn');
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-                // Previene que el navegador muestre su mini-infobar
-                e.preventDefault();
-                // Guarda el evento para que podamos dispararlo luego
-                deferredPrompt = e;
-                // Muestra nuestro botón de instalación personalizado
-                installButton.classList.remove('hidden');
-                // console.log('Evento beforeinstallprompt capturado.');
-            });
-
-            installButton.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    return; // Si no hay evento, no hacer nada
-                }
-                // Oculta nuestro botón
-                installButton.classList.add('hidden');
-                
-                // Muestra el diálogo de instalación nativo
-                deferredPrompt.prompt();
-                
-                // Espera a que el usuario elija (aceptar o rechazar)
-                const { outcome } = await deferredPrompt.userChoice;
-                // console.log(`Resultado del usuario: ${outcome}`);
-                
-                // Limpiamos la variable, solo se puede usar una vez
-                deferredPrompt = null;
-            });
-
-            const CART_STORAGE_KEY = 'kaizenSushiCart';
-
-            function loadCartFromStorage() {
-                try {
-                    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
-                    if (storedCart) {
-                        return JSON.parse(storedCart);
-                    }
-                } catch (e) {
-                    console.error('Error al cargar el carrito de localStorage', e);
-                }
-                return []; 
-            }
-
-            // --- ESTADO DE LA APLICACIÓN --- (Línea ~316)
-            const appState = {
-                currentTab: 'builder',
-                customRoll: {
-                    base: null,
-                    protein: [],
-                    filling: [],
-                    topping: null
-                },
-                cart: loadCartFromStorage(), // <-- AHORA SÍ FUNCIONA
-            };
-
-            // --- BASE DE DATOS DE PRECIOS (Para el Dueño) ---
-            // Fácil de entender y modificar
-            const prices = {
-                base: {
-                    "Arroz de Sushi": 50.00,
-                    "Arroz Integral": 50.50
-                },
-                protein: {
-                    "Salmón Fresco": 40.50,
-                    "Atún Picante": 50.00,
-                    "Camarón Tempura": 40.00,
-                    "Tofu": 30.00
-                },
-                filling: {
-                    "Aguacate": 20.00,
-                    "Queso Crema": 10.50,
-                    "Pepino": 10.00
-                },
-                topping: {
-                    "Sésamo Tostado": 10.50,
-                    "Cebollín Crocante": 10.00
-                }
-            };
-
-            // Número de WhatsApp del restaurante (modificar aquí, formato internacional sin '+')
-            // Ejemplo México: '521' + lada + número (sin espacios)
-            const RESTAURANT_PHONE = '526672026789';
-
-            // Último pedido confirmado (se usa para abrir WhatsApp después de confirmar)
-            let lastOrder = null;
-
-            // --- SELECTORES DE ELEMENTOS ---
-            const heroScreen = document.getElementById('hero-screen');
-            const appScreen = document.getElementById('app-screen');
-            const startButton = document.getElementById('start-button');
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanels = document.querySelectorAll('.tab-panel');
-            const builderFooter = document.getElementById('builder-footer');
-            const builderOptions = document.querySelectorAll('.builder-option');
-            const summaryPrice = document.getElementById('builder-summary-price');
-            const summaryItems = document.getElementById('builder-summary-items');
-            const addCustomRollBtn = document.getElementById('add-custom-roll-btn');
-            const galleryAddButtons = document.querySelectorAll('.add-gallery-btn');
-            const galleryItemContainers = document.querySelectorAll('.gallery-item-container');
-            const toasterMessage = document.getElementById('toaster-message');
-            
-            // Carrito - CÓDIGO CORREGIDO Y COMPLETADO
-            const cartButton = document.getElementById('cart-button');
-            const cartModal = document.getElementById('cart-modal');
-            const cartOverlay = document.getElementById('cart-overlay');
-            const closeCartBtn = document.getElementById('close-cart-btn');
-            const cartItemsList = document.getElementById('cart-items-list');
-            const clearCartBtn = document.getElementById('clear-cart-btn'); // <-- AÑADE ESTE
-            const cartCount = document.getElementById('cart-count');
-            const cartTotalPrice = document.getElementById('cart-total-price');
-            const placeOrderBtn = document.getElementById('place-order-btn');
-
-            // --- Selectores del Modal de Confirmación (NUEVO) ---
-            const confirmModal = document.getElementById('confirm-modal');
-            const confirmOverlay = document.getElementById('confirm-overlay');
-            const confirmClearBtn = document.getElementById('confirm-clear-btn');
-            const cancelClearBtn = document.getElementById('cancel-clear-btn');
-            
-            // Modal de Éxito - CÓDIGO CORREGIDO Y COMPLETADO
-            const successModal = document.getElementById('success-modal');
-            const successOverlay = document.getElementById('success-overlay'); // Añadido
-            const closeSuccessBtn = document.getElementById('close-success-btn');
-            const cancelSuccessBtn = document.getElementById('cancel-success-btn'); // <-- AÑADE ESTE
-
-            // Modal de Detalle
-            const detailModal = document.getElementById('detail-modal');
-            const detailOverlay = document.getElementById('detail-overlay');
-            const closeDetailBtn = document.getElementById('close-detail-btn');
-            const detailModalImage = document.getElementById('detail-modal-image');
-            const detailModalName = document.getElementById('detail-modal-name');
-            const detailModalDescription = document.getElementById('detail-modal-description');
-            const detailModalPrice = document.getElementById('detail-modal-price');
-            const detailModalAddBtn = document.getElementById('detail-modal-add-btn');
-
-            // Toaster - CÓDIGO CORREGIDO Y COMPLETADO
-            const toaster = document.getElementById('toaster');
-            // const toasterMessage = document.getElementById('toaster-message');
-
-            // --- LÓGICA DE NAVEGACIÓN Y PANTALLAS ---
-
-            // Empezar la app
-            startButton.addEventListener('click', () => {
-                document.documentElement.classList.add('app-cargada');
-            });
-
-            // Cambiar pestañas
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const tab = button.dataset.tab;
-                    appState.currentTab = tab;
-                    
-                    // Actualizar UI de pestañas
-                    tabButtons.forEach(btn => {
-                        if (btn.dataset.tab === tab) {
-                            btn.classList.add('border-brand-primary', 'text-brand-primary');
-                            btn.classList.remove('border-transparent', 'text-gray-400', 'dark:text-gray-500');
-                        } else {
-                            btn.classList.remove('border-brand-primary', 'text-brand-primary');
-                            btn.classList.add('border-transparent', 'text-gray-400', 'dark:text-gray-500');
-                        }
-                    });
-
-                    // Mostrar/Ocultar Paneles
-                    tabPanels.forEach(panel => {
-                        if (panel.id === `${tab}-panel`) {
-                            panel.classList.remove('hidden');
-                        } else {
-                            panel.classList.add('hidden');
-                        }
-                    });
-
-                    // Mostrar/Ocultar Footer del Taller
-                    if (tab === 'builder') {
-                        builderFooter.classList.remove('hidden');
-                    } else {
-                        builderFooter.classList.add('hidden');
-                    }
-                });
-            });
-
-            // --- LÓGICA DEL "TALLER" (ARMA TU ROLLO) ---
-            builderOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const step = option.dataset.step;
-                    const name = option.dataset.name;
-                    const price = parseFloat(option.dataset.price);
-                    const isMulti = option.dataset.multi === 'true';
-
-                    const item = { name, price };
-
-                    if (isMulti) {
-                        // Lógica multi-selección (Proteína, Relleno)
-                        const list = appState.customRoll[step];
-                        const index = list.findIndex(i => i.name === name);
-                        
-                        if (index > -1) {
-                            list.splice(index, 1); // Quitar
-                            option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                        } else {
-                            list.push(item); // Añadir
-                            option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                        }
-                    } else {
-                        // Lógica de selección única (Base, Topping)
-                        if (appState.customRoll[step] && appState.customRoll[step].name === name) {
-                            // Des-seleccionar
-                            appState.customRoll[step] = null;
-                            option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                        } else {
-                            // Quitar selección previa
-                            document.querySelectorAll(`[data-step="${step}"]`).forEach(el => {
-                                el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                            });
-                            // Seleccionar nuevo
-                            appState.customRoll[step] = item;
-                            option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                        }
-                    }
-                    
-                    updateBuilderSummary();
-                });
-            });
-
-            function updateBuilderSummary() {
-                let total = 0;
-                let items = [];
-                
-                if (appState.customRoll.base) {
-                    total += appState.customRoll.base.price;
-                    items.push(appState.customRoll.base.name);
-                }
-                appState.customRoll.protein.forEach(item => {
-                    total += item.price;
-                    items.push(item.name);
-                });
-                appState.customRoll.filling.forEach(item => {
-                    total += item.price;
-                    items.push(item.name);
-                });
-                if (appState.customRoll.topping) {
-                    total += appState.customRoll.topping.price;
-                    items.push(appState.customRoll.topping.name);
-                }
-
-                summaryPrice.textContent = `$${total.toFixed(2)}`;
-                
-                if (items.length > 0) {
-                    summaryItems.textContent = items.join(' + ');
-                } else {
-                    summaryItems.textContent = 'Base + Proteína + Relleno...';
-                }
-
-                // Habilitar botón si hay al menos una base
-                if (appState.customRoll.base) {
-                    addCustomRollBtn.disabled = false;
-                } else {
-                    addCustomRollBtn.disabled = true;
-                }
-            }
-
-            // Añadir Rollo Personalizado al Carrito
-            addCustomRollBtn.addEventListener('click', () => {
-                if (!appState.customRoll.base) return; // No se puede añadir sin base
-
-                let total = 0;
-                let items = [];
-                
-                if (appState.customRoll.base) {
-                    total += appState.customRoll.base.price;
-                    items.push(appState.customRoll.base.name);
-                }
-                appState.customRoll.protein.forEach(item => { total += item.price; items.push(item.name); });
-                appState.customRoll.filling.forEach(item => { total += item.price; items.push(item.name); });
-                if (appState.customRoll.topping) {
-                    total += appState.customRoll.topping.price;
-                    items.push(appState.customRoll.topping.name);
-                }
-
-                // const rollName = `Rollo Taller (${items.join(', ')})`; // <-- LÍNEA ANTIGUA
-                const rollName = "Tu rollo personalizado"; // <-- LÍNEA NUEVA
-                
-                const cartItem = {
-                    id: `custom-${new Date().getTime()}`,
-                    name: rollName,
-                    price: total,
-                    quantity: 1,
-                    isCustom: true,
-                    description: items.join(' + '),
-                    notes: ''
-                };
-
-                addItemToCart(cartItem);
-                
-                // Resetear Taller
-                appState.customRoll = { base: null, protein: [], filling: [], topping: null };
-                document.querySelectorAll('.builder-option').forEach(el => {
-                    el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
-                });
-                updateBuilderSummary();
-            });
-
-            // Añadir Item de Galería al Carrito (Botón +)
-            galleryAddButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation(); // IMPORTANTE: Evita que se abra el modal de detalle
-                    
-                    const cartItem = {
-                        id: button.dataset.id,
-                        name: button.dataset.name,
-                        price: parseFloat(button.dataset.price),
-                        quantity: 1,
-                        notes: ''
-                    };
-                    addItemToCart(cartItem);
-                });
-            });
-
-            // --- LÓGICA DEL MODAL DE DETALLES ---
-
-            function openDetailModal(data) {
-                // Poblar el modal
-                detailModalImage.src = data.imageSrc;
-                detailModalImage.alt = data.name;
-                detailModalName.textContent = data.name;
-                detailModalDescription.textContent = data.description;
-                detailModalPrice.textContent = `$${parseFloat(data.price).toFixed(2)}`;
-                
-                // Guardar los datos en el botón de añadir del modal
-                detailModalAddBtn.dataset.id = data.id;
-                detailModalAddBtn.dataset.name = data.name;
-                detailModalAddBtn.dataset.price = data.price;
-                
-                // Mostrar el modal
-                detailModal.style.display = 'block';
-            }
-
-            function closeDetailModal() {
-                detailModal.style.display = 'none';
-            }
-
-            // Abrir modal al hacer clic en un item de la galería
-            galleryItemContainers.forEach(item => {
-                item.addEventListener('click', () => {
-                    openDetailModal({
-                        id: item.dataset.id,
-                        name: item.dataset.name,
-                        price: item.dataset.price,
-                        description: item.dataset.description,
-                        imageSrc: item.dataset.imageSrc
-                    });
-                });
-            });
-
-            // Cerrar modal
-            closeDetailBtn.addEventListener('click', closeDetailModal);
-            detailOverlay.addEventListener('click', closeDetailModal);
-
-            // Abrir/Cerrar modal del carrito (añadido: arregla que el botón no abra el modal)
-            cartButton.addEventListener('click', () => {
-                cartModal.style.display = 'block';
-            });
-            closeCartBtn.addEventListener('click', () => {
-                cartModal.style.display = 'none';
-            });
-            cartOverlay.addEventListener('click', () => {
-                cartModal.style.display = 'none';
-            });
-            clearCartBtn.addEventListener('click', () => {
-                // Solo muestra el modal de confirmación
-                confirmModal.style.display = 'block';
-            });
-
-            const closeConfirmModal = () => {
-                confirmModal.style.display = 'none';
-            };
-
-            // Botón "Sí, vaciar carrito"
-            confirmClearBtn.addEventListener('click', () => {
-                // Aquí va la lógica que estaba en el confirm()
-                appState.cart = [];
-                updateCart(); // Esto actualiza la UI y el localStorage
-                closeConfirmModal(); // Cierra este modal
-            });
-
-            // Botón "Cancelar"
-            cancelClearBtn.addEventListener('click', closeConfirmModal);
-
-            // Clic en el fondo (overlay)
-            confirmOverlay.addEventListener('click', closeConfirmModal);
-            
-            // Botón "Añadir" dentro del modal de detalle
-            detailModalAddBtn.addEventListener('click', () => {
-                const cartItem = {
-                    id: detailModalAddBtn.dataset.id,
-                    name: detailModalAddBtn.dataset.name,
-                    price: parseFloat(detailModalAddBtn.dataset.price),
-                    quantity: 1,
-                    notes: ''
-                };
-                addItemToCart(cartItem);
-                closeDetailModal();
-            });
-
-            // --- LÓGICA DEL CARRITO ---
-
-            function addItemToCart(item) {
-                // Verificar si ya existe
-                const existingItem = appState.cart.find(cartItem => cartItem.id === item.id);
-
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    appState.cart.push(item);
-                }
-                
-                // Vibración corta si está disponible (mejora UX en móviles)
-                if (navigator.vibrate) {
-                    try { navigator.vibrate(50); } catch (e) { /* safe */ }
-                }
-
-                showToaster(item.isCustom ? "¡Rollo creado y añadido!" : "¡Añadido al pedido!");
-                updateCart();
-            }
-
-            function updateCart() {
-                // Actualizar contador
-                const totalItems = appState.cart.reduce((sum, item) => sum + item.quantity, 0);
-
-                // Mostrar/ocultar badge del header según total
-                if (totalItems > 0) {
-                    cartCount.textContent = totalItems;
-                    cartCount.classList.remove('hidden');
-                } else {
-                    cartCount.classList.add('hidden');
-                }
-
-                // Actualizar lista de items
-                if (appState.cart.length === 0) {
-                    cartItemsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>';
-                } else {
-                    cartItemsList.innerHTML = appState.cart.map(item => `
-                        <div class="flex items-start space-x-4 bg-brand-white dark:bg-gray-800 p-3 rounded-lg">
-                            <div class="flex-grow">
-                                <p class="font-bold dark:text-white">${item.name}</p>
-                                ${item.isCustom ? `<p class="text-xs text-gray-500 dark:text-gray-400">${item.description}</p>` : ''}
-                                <p class="font-semibold text-brand-primary mt-1 mb-2">$${item.price.toFixed(2)}</p>
-                                
-                                <input 
-                                    type="text" 
-                                    class="cart-item-notes-input w-full text-sm bg-gray-100 dark:bg-gray-700 dark:text-white p-2 rounded-md focus:ring-2 focus:ring-brand-primary focus:outline-none" 
-                                    placeholder="Notas (ej. sin cebolla)" 
-                                    value="${item.notes || ''}" 
-                                    data-id="${item.id}">
-                                
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <button class="cart-quantity-btn" data-id="${item.id}" data-action="decrease">
-                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
-                                </button>
-                                <span class="font-bold w-5 text-center dark:text-white">${item.quantity}</span>
-                                <button class="cart-quantity-btn" data-id="${item.id}" data-action="increase">
-                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                </button>
-                            </div>
-                            <button class="cart-remove-btn p-1" data-id="${item.id}">
-                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                    `).join('');
-                }
-
-                // Actualizar total
-                const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                cartTotalPrice.textContent = `$${totalPrice.toFixed(2)}`;
-
-                // Habilitar botón de confirmar pedido
-                const isCartEmpty = appState.cart.length === 0;
-                placeOrderBtn.disabled = isCartEmpty;
-                
-                if (isCartEmpty) {
-                    clearCartBtn.classList.add('hidden');
-                } else {
-                    clearCartBtn.classList.remove('hidden');
-                }
-
-                // --- Actualizar badges en menú y bebidas ---
-                const counts = {};
-                appState.cart.forEach(it => { counts[it.id] = (counts[it.id] || 0) + it.quantity; });
-
-                document.querySelectorAll('.gallery-item-container, .drink-item').forEach(container => {
-                    const id = container.dataset.id;
-                    const badge = container.querySelector('.item-badge');
-                    if (!badge) return;
-                    const c = counts[id] || 0;
-                    if (c > 0) {
-                        badge.textContent = c;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                });
-                localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
-            }
-
-            // Manejo de botones dentro del carrito (aumentar / disminuir / eliminar)
-            cartItemsList.addEventListener('click', (e) => {
-                const quantityBtn = e.target.closest('.cart-quantity-btn');
-                const removeBtn = e.target.closest('.cart-remove-btn');
-
-                if (quantityBtn) {
-                    const id = quantityBtn.dataset.id;
-                    const action = quantityBtn.dataset.action;
-                    const item = appState.cart.find(i => i.id === id);
-                    if (!item) return;
-
-                    if (action === 'increase') {
-                        item.quantity += 1;
-                    } else if (action === 'decrease') {
-                        item.quantity -= 1;
-                        if (item.quantity <= 0) {
-                            appState.cart = appState.cart.filter(i => i.id !== id);
-                        }
-                    }
-                    updateCart();
-                    return;
-                }
-
-                if (removeBtn) {
-                    const id = removeBtn.dataset.id;
-                    appState.cart = appState.cart.filter(i => i.id !== id);
-                    updateCart();
-                }
-            });
-
-            cartItemsList.addEventListener('input', (e) => {
-                const notesInput = e.target.closest('.cart-item-notes-input');
-                
-                if (notesInput) {
-                    const id = notesInput.dataset.id;
-                    const item = appState.cart.find(i => i.id === id);
-                    
-                    if (item) {
-                        // 1. Actualiza el estado de la app
-                        item.notes = notesInput.value;
-                        
-                        // 2. Persiste en localStorage INMEDIATAMENTE
-                        // (No llamamos a updateCart() para evitar que el input pierda el foco)
-                        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
-                    }
-                }
-            });
-
-            // Confirmar pedido: cerrar carrito, mostrar modal de éxito y guardar snapshot del pedido
-            placeOrderBtn.addEventListener('click', () => {
-                // En una app real aquí se enviaría al servidor
-                console.log('Pedido Confirmado:', appState.cart);
-
-                // Crear snapshot del pedido para enviarlo por WhatsApp
-                const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                lastOrder = {
-                    id: `ORD-${new Date().getTime()}`,
-                    items: appState.cart.map(i => ({ 
-                        id: i.id, 
-                        name: i.name, 
-                        price: i.price, 
-                        quantity: i.quantity, 
-                        isCustom: !!i.isCustom, 
-                        description: i.description || '',
-                        notes: i.notes || '' 
-                    })),
-                    total: totalPrice
-                };
-
-                // Cerrar modal de carrito y abrir modal de éxito
-                cartModal.style.display = 'none';
-                successModal.style.display = 'block';
-            });
-
-            // Cerrar modal de éxito
-            const closeSuccessModal = () => { successModal.style.display = 'none'; };
-
-            // Formatea el pedido para enviar por WhatsApp
-            function formatOrderMessage(order) {
-                if (!order || !order.items || order.items.length === 0) {
-                    return 'KAIZEN Sushi - Pedido vacío';
-                }
-
-                const lines = [];
-                lines.push(`KAIZEN Sushi - Pedido ${order.id}`);
-                lines.push('');
-
-                order.items.forEach(item => {
-                    const qty = item.quantity || 1;
-                    const unit = Number(item.price).toFixed(2);
-                    const total = (item.price * qty).toFixed(2);
-                    let l = `${qty} x ${item.name} — $${total} ( $${unit} c/u )`;
-                    if (item.isCustom && item.description) {
-                        l += `\n    • ${item.description}`;
-                    }
-                    if (item.notes) {
-                        l += `\n    • NOTA: ${item.notes}`;
-                    }
-                    lines.push(l);
-                });
-
-                lines.push('');
-                lines.push(`Total: $${Number(order.total).toFixed(2)}`);
-                lines.push('');
-                lines.push('Por favor confirmar. Gracias!');
-
-                return lines.join('\n');
-            }
-
-            // Abrir WhatsApp con el pedido formateado (usa RESTAURANT_PHONE)
-            function openWhatsAppForLastOrder() {
-                const msg = formatOrderMessage(lastOrder);
-                const phone = (RESTAURANT_PHONE || '').toString().replace(/\D/g, '');
-                if (!phone) {
-                    alert('Número de restaurante no configurado.');
-                    return;
-                }
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-                window.open(url, '_blank');
-            }
-
-            closeSuccessBtn.addEventListener('click', () => {
-                openWhatsAppForLastOrder();
-                appState.cart = [];
-                updateCart(); 
-                closeSuccessModal();
-            });
-
-            cancelSuccessBtn.addEventListener('click', () => {
-                // Solo cierra el modal. El carrito sigue lleno.
-                closeSuccessModal();
-            });
-            
-            // --- LÓGICA DEL TOASTER ---
-            let toasterTimeout;
-            function showToaster(message) {
-                toasterMessage.textContent = message;
-                toaster.classList.remove('opacity-0', '-translate-y-3');
-                toaster.classList.add('opacity-100', 'translate-y-0');
-
-                clearTimeout(toasterTimeout);
-                // Mostrar más rápido y ocultar antes
-                toasterTimeout = setTimeout(() => {
-                    toaster.classList.add('opacity-0', '-translate-y-3');
-                    toaster.classList.remove('opacity-100', 'translate-y-0');
-                }, 1200);
-            }
-            updateCart();
-
-        }); // Fin de DOMContentLoaded
-    </script>
+    </div> <script src="app.js"></script>
 </body>
 </html>
