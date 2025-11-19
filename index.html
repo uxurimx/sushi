@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAIZEN Sushi - Demo de Menú Interactivo</title>
+    <title>Cargando menú...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -67,8 +67,8 @@
             <div class="relative z-10 flex flex-col h-full p-8 text-center">
                 <div class="flex-grow flex flex-col items-center justify-center space-y-4">
                     <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v.01M6.314 15.186l.01.01M17.686 15.186l.01.01M21 12v.01M3 12v.01M17.686 8.814l.01.01M6.314 8.814l.01.01M12 6v.01M12 3v.01"></path></svg>
-                    <h1 id="hero-restaurant-name" class="text-5xl font-extrabold tracking-tight">KAIZEN</h1>
-                    <p class="text-xl font-light">SUSHI INTERACTIVO</p>
+                    <h1 id="hero-restaurant-name" class="text-5xl font-extrabold tracking-tight"></h1>
+                    <p id="hero-slogan" class="text-xl font-light"></p>
                 </div>
                 <div class="flex-shrink-0">
                     <button id="start-button" class="tap-press w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
@@ -83,7 +83,7 @@
             
             <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-dark-bg dark:border-dark-border">
                 <div>
-                    <h1 id="restaurant-name" class="text-2xl font-bold text-brand-secondary dark:text-white">KAIZEN</h1>
+                    <h1 id="restaurant-name" class="text-2xl font-bold text-brand-secondary dark:text-white"></h1>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Tu Menú Interactivo</p>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -111,22 +111,22 @@
                 
                 <div id="builder-panel" class="tab-panel p-4 space-y-6">
                     <section>
-                        <h2 class="text-xl font-bold mb-3 dark:text-white">1. Elige tu Base</h2>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
                         <div id="builder-base-container" class="grid grid-cols-2 gap-3"></div>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold mb-3 dark:text-white">2. Elige Proteína(s)</h2>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
                         <div id="builder-protein-container" class="grid grid-cols-2 gap-3"></div>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold mb-3 dark:text-white">3. Añade Relleno(s)</h2>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
                         <div id="builder-filling-container" class="grid grid-cols-2 gap-3"></div>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold mb-3 dark:text-white">4. Elige tu Topping</h2>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
                         <div id="builder-topping-container" class="grid grid-cols-2 gap-3"></div>
                     </section>
                 </div>
@@ -148,11 +148,11 @@
                         <p id="builder-summary-price" class="text-2xl font-extrabold text-brand-secondary dark:text-white">$0.00</p>
                     </div>
                     <button id="add-custom-roll-btn" class="tap-press bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        Añadir Rollo
+                        Añadir
                     </button>
                 </div>
                 <div id="builder-summary-items" class="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">
-                    Base + Proteína + Relleno...
+                    ...
                 </div>
             </footer>
         </section>

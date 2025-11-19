@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar datos desde db.json (preparado para futura API)
     let DB = null;
     try {
-        const res = await fetch('./db.fastfood.json');
+        const res = await fetch('./db.chinese.json');
         if (res.ok) DB = await res.json();
         else console.warn('db.json no disponible, status:', res.status);
     } catch (e) {
@@ -78,7 +78,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             DB.menus.forEach((m, idx) => {
                 // Crear botón
                 const btn = document.createElement('button');
-                btn.className = 'tap-press tab-button flex-none py-3 px-4 min-w-[96px] text-center font-semibold border-b-4 transition-all duration-300';
+                // btn.className = 'tap-press tab-button flex-none py-3 px-4 min-w-[96px] text-center font-semibold border-b-4 transition-all duration-300';
+                btn.className = 'tap-press tab-button flex-none py-3 px-4 min-w-[96px] text-center font-semibold border-b-4 transition-all duration-300 whitespace-nowrap leading-none';
                 btn.dataset.tab = m.id;
                 btn.textContent = m.label || m.id;
                 // Estilos del primer botón (activo)
@@ -167,14 +168,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- ESTADO DE LA APLICACIÓN --- (Línea ~316)
     const appState = {
         currentTab: 'builder',
-        customRoll: {
-            base: null,
-            protein: [],
-            filling: [],
-            topping: null
-        },
-        cart: loadCartFromStorage(), // <-- AHORA SÍ FUNCIONA
+        customRoll: {}, // <--- Lo dejamos vacío inicialmente
+        cart: loadCartFromStorage(),
     };
+
+    // CORRECCIÓN: Inicializar estructura dinámica basada en DB
+    if (DB && DB.builder && Array.isArray(DB.builder.steps)) {
+        DB.builder.steps.forEach(step => {
+            // Si el tipo es 'multi', iniciamos como array [], si no como null
+            appState.customRoll[step.id] = (step.type === 'multi') ? [] : null;
+        });
+    } else {
+        // Fallback por si no hay DB (estructura antigua sushi)
+        appState.customRoll = { base: null, protein: [], filling: [], topping: null };
+    }
 
     // Número de WhatsApp del restaurante (será provisto por db.json si está disponible)
     let RESTAURANT_PHONE = '';
@@ -183,30 +190,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Nombre del restaurante (dinámico desde db.json)
-    let RESTAURANT_NAME = 'KAIZEN';
-    if (DB && DB.restaurantName) RESTAURANT_NAME = DB.restaurantName;
+    let RESTAURANT_NAME = 'Cargando...';
+    let RESTAURANT_SLOGAN = '';
+    if (DB) {
+        if (DB.restaurantName) RESTAURANT_NAME = DB.restaurantName;
+        if (DB.restaurantSlogan) RESTAURANT_SLOGAN = DB.restaurantSlogan;
+    }
     // Actualizar cabeceras si existen en el DOM
     const headerNameEl = document.getElementById('restaurant-name');
     const heroNameEl = document.getElementById('hero-restaurant-name');
     if (headerNameEl) headerNameEl.textContent = RESTAURANT_NAME;
     if (heroNameEl) heroNameEl.textContent = RESTAURANT_NAME;
+    document.title = RESTAURANT_NAME;
+
+    // Actualizar Eslogans (NUEVO CÓDIGO)
+    const heroSloganEl = document.getElementById('hero-slogan');
+    const headerSloganEl = document.getElementById('header-slogan');
+    if (heroSloganEl) heroSloganEl.textContent = RESTAURANT_SLOGAN;
+    if (headerSloganEl) headerSloganEl.textContent = RESTAURANT_SLOGAN;
 
     // Si tenemos datos, poblar las secciones dinámicas (builder, gallery, drinks)
     if (DB) {
-        const makeBuilderOption = (item, step) => {
-            // Conservamos la estructura esperada por la lógica (atributos data-...)
+        const makeBuilderOption = (item, step, isMulti) => {
+            // Usamos isMulti para decidir si agregar data-multi="true"
+            // Ya no dependemos de nombres fijos como 'protein' o 'filling'
             return `
-            <div class="builder-option" data-step="${step}" data-name="${escapeHtml(item.name)}" data-price="${Number(item.price).toFixed(2)}" ${step === 'protein' || step === 'filling' ? 'data-multi="true"' : ''}>
+            <div class="builder-option" 
+                 data-step="${step}" 
+                 data-name="${escapeHtml(item.name)}" 
+                 data-price="${Number(item.price).toFixed(2)}" 
+                 ${isMulti ? 'data-multi="true"' : ''}>
                 <div class="tap-press p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
                     <p class="font-semibold mt-2 dark:text-white">${escapeHtml(item.name)}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">$${Number(item.price).toFixed(2)}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">+$${Number(item.price).toFixed(2)}</p>
                 </div>
             </div>`;
         };
 
         const builderPanel = document.getElementById('builder-panel');
 
-        // If DB.builder.steps exists, render builder dynamically from steps
         if (DB.builder && Array.isArray(DB.builder.steps) && builderPanel) {
             builderPanel.innerHTML = DB.builder.steps.map(step => `
                 <section>
@@ -219,30 +241,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             DB.builder.steps.forEach(step => {
                 const cont = document.getElementById(`builder-${step.id}-container`);
                 const items = DB.builder[step.id];
+                // Verificamos si el paso es tipo 'multi'
+                const isMulti = step.type === 'multi'; 
+                
                 if (cont && Array.isArray(items)) {
-                    cont.innerHTML = items.map(i => makeBuilderOption(i, step.id)).join('');
+                    // PASAMOS isMulti a la función
+                    cont.innerHTML = items.map(i => makeBuilderOption(i, step.id, isMulti)).join('');
                 }
             });
-        } else {
-            // Fallback to legacy static containers for backwards compatibility
-            const baseContainer = document.getElementById('builder-base-container');
-            const proteinContainer = document.getElementById('builder-protein-container');
-            const fillingContainer = document.getElementById('builder-filling-container');
-            const toppingContainer = document.getElementById('builder-topping-container');
-
-            if (baseContainer && DB.builder && DB.builder.base) {
-                baseContainer.innerHTML = DB.builder.base.map(i => makeBuilderOption(i, 'base')).join('');
-            }
-            if (proteinContainer && DB.builder && DB.builder.protein) {
-                proteinContainer.innerHTML = DB.builder.protein.map(i => makeBuilderOption(i, 'protein')).join('');
-            }
-            if (fillingContainer && DB.builder && DB.builder.filling) {
-                fillingContainer.innerHTML = DB.builder.filling.map(i => makeBuilderOption(i, 'filling')).join('');
-            }
-            if (toppingContainer && DB.builder && DB.builder.topping) {
-                toppingContainer.innerHTML = DB.builder.topping.map(i => makeBuilderOption(i, 'topping')).join('');
-            }
         }
+
+        // If DB.builder.steps exists, render builder dynamically from steps
+        // if (DB.builder && Array.isArray(DB.builder.steps) && builderPanel) {
+        //     builderPanel.innerHTML = DB.builder.steps.map(step => `
+        //         <section>
+        //             <h2 class="text-xl font-bold mb-3 dark:text-white">${escapeHtml(step.label || step.id)}</h2>
+        //             <div id="builder-${escapeHtml(step.id)}-container" class="grid grid-cols-2 gap-3"></div>
+        //         </section>
+        //     `).join('');
+
+        //     // Populate each step's container
+        //     DB.builder.steps.forEach(step => {
+        //         const cont = document.getElementById(`builder-${step.id}-container`);
+        //         const items = DB.builder[step.id];
+        //         if (cont && Array.isArray(items)) {
+        //             cont.innerHTML = items.map(i => makeBuilderOption(i, step.id)).join('');
+        //         }
+        //     });
+        // } else {
+        //     // Fallback to legacy static containers for backwards compatibility
+        //     const baseContainer = document.getElementById('builder-base-container');
+        //     const proteinContainer = document.getElementById('builder-protein-container');
+        //     const fillingContainer = document.getElementById('builder-filling-container');
+        //     const toppingContainer = document.getElementById('builder-topping-container');
+
+        //     if (baseContainer && DB.builder && DB.builder.base) {
+        //         baseContainer.innerHTML = DB.builder.base.map(i => makeBuilderOption(i, 'base')).join('');
+        //     }
+        //     if (proteinContainer && DB.builder && DB.builder.protein) {
+        //         proteinContainer.innerHTML = DB.builder.protein.map(i => makeBuilderOption(i, 'protein')).join('');
+        //     }
+        //     if (fillingContainer && DB.builder && DB.builder.filling) {
+        //         fillingContainer.innerHTML = DB.builder.filling.map(i => makeBuilderOption(i, 'filling')).join('');
+        //     }
+        //     if (toppingContainer && DB.builder && DB.builder.topping) {
+        //         toppingContainer.innerHTML = DB.builder.topping.map(i => makeBuilderOption(i, 'topping')).join('');
+        //     }
+        // }
 
         // Gallery
         const galleryList = document.getElementById('gallery-list');
@@ -490,76 +535,81 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateBuilderSummary() {
         let total = 0;
-        let items = [];
-        
-        if (appState.customRoll.base) {
-            total += appState.customRoll.base.price;
-            items.push(appState.customRoll.base.name);
-        }
-        appState.customRoll.protein.forEach(item => {
-            total += item.price;
-            items.push(item.name);
-        });
-        appState.customRoll.filling.forEach(item => {
-            total += item.price;
-            items.push(item.name);
-        });
-        if (appState.customRoll.topping) {
-            total += appState.customRoll.topping.price;
-            items.push(appState.customRoll.topping.name);
+        let itemsNames = [];
+        let hasRequired = false;
+
+        if (DB && DB.builder && DB.builder.steps) {
+            DB.builder.steps.forEach((step, idx) => {
+                const selection = appState.customRoll[step.id];
+                
+                // Verificar selección
+                if (Array.isArray(selection)) {
+                    // Es Multi
+                    selection.forEach(item => {
+                        total += item.price;
+                        itemsNames.push(item.name);
+                    });
+                } else if (selection) {
+                    // Es Single
+                    total += selection.price;
+                    itemsNames.push(selection.name);
+                    // Asumimos que el primer paso es obligatorio (ej. Base de café)
+                    if (idx === 0) hasRequired = true;
+                }
+            });
         }
 
         summaryPrice.textContent = `$${total.toFixed(2)}`;
         
-        if (items.length > 0) {
-            summaryItems.textContent = items.join(' + ');
+        if (itemsNames.length > 0) {
+            summaryItems.textContent = itemsNames.join(' + ');
         } else {
-            summaryItems.textContent = 'Base + Proteína + Relleno...';
+            summaryItems.textContent = 'Selecciona tus ingredientes...';
         }
 
-        // Habilitar botón si hay al menos una base
-        if (appState.customRoll.base) {
-            addCustomRollBtn.disabled = false;
-        } else {
-            addCustomRollBtn.disabled = true;
-        }
+        // Habilitar botón si el primer paso (obligatorio) está seleccionado
+        addCustomRollBtn.disabled = !hasRequired;
     }
 
-    // Añadir Rollo Personalizado al Carrito
+    // Añadir Personalizado al Carrito (VERSIÓN GENÉRICA)
     addCustomRollBtn.addEventListener('click', () => {
-        if (!appState.customRoll.base) return; // No se puede añadir sin base
-
         let total = 0;
-        let items = [];
+        let itemsNames = [];
         
-        if (appState.customRoll.base) {
-            total += appState.customRoll.base.price;
-            items.push(appState.customRoll.base.name);
-        }
-        appState.customRoll.protein.forEach(item => { total += item.price; items.push(item.name); });
-        appState.customRoll.filling.forEach(item => { total += item.price; items.push(item.name); });
-        if (appState.customRoll.topping) {
-            total += appState.customRoll.topping.price;
-            items.push(appState.customRoll.topping.name);
+        // Recalcular para asegurar datos limpios
+        if (DB && DB.builder && DB.builder.steps) {
+            DB.builder.steps.forEach(step => {
+                const selection = appState.customRoll[step.id];
+                if (Array.isArray(selection)) {
+                    selection.forEach(item => { total += item.price; itemsNames.push(item.name); });
+                } else if (selection) {
+                    total += selection.price; itemsNames.push(selection.name);
+                }
+            });
         }
 
-        // const rollName = `Rollo Taller (${items.join(', ')})`; // <-- LÍNEA ANTIGUA
-        const rollName = "Tu rollo personalizado"; // <-- LÍNEA NUEVA
+        const customName = "A tu gusto"; 
         
         const cartItem = {
             id: `custom-${new Date().getTime()}`,
-            name: rollName,
+            name: customName,
             price: total,
             quantity: 1,
             isCustom: true,
-            description: items.join(' + '),
+            description: itemsNames.join(' + '),
             notes: ''
         };
 
         addItemToCart(cartItem);
         
-        // Resetear Taller
-        appState.customRoll = { base: null, protein: [], filling: [], topping: null };
+        // Resetear Taller Genérico
+        if (DB && DB.builder && DB.builder.steps) {
+            DB.builder.steps.forEach(step => {
+                appState.customRoll[step.id] = (step.type === 'multi') ? [] : null;
+            });
+        }
+        
+        // Quitar estilos visuales de selección
         document.querySelectorAll('.builder-option').forEach(el => {
             el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
         });
@@ -685,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             try { navigator.vibrate(50); } catch (e) { /* safe */ }
         }
 
-        showToaster(item.isCustom ? "¡Rollo creado y añadido!" : "¡Añadido al pedido!");
+        showToaster(item.isCustom ? "¡Item añadido!" : "¡Añadido al pedido!");
         updateCart();
     }
 
@@ -876,12 +926,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Formatea el pedido para enviar por WhatsApp
     function formatOrderMessage(order) {
+        const nombreNegocio = RESTAURANT_NAME || 'Pedido';
+
         if (!order || !order.items || order.items.length === 0) {
-            return 'KAIZEN Sushi - Pedido vacío';
+            return `${nombreNegocio} - Pedido vacío`;
         }
 
         const lines = [];
-        lines.push(`KAIZEN Sushi - Pedido ${order.id}`);
+        lines.push(`${nombreNegocio} - Pedido ${order.id}`);
         lines.push('');
 
         order.items.forEach(item => {

@@ -1,6 +1,7 @@
 {
   "restaurantPhone": "525512345678",
-  "restaurantName": "Cafetería La Brisa",
+  "restaurantName": "Le coffee",
+  "restaurantSlogan": "El mejor aroma de la ciudad",
   "menus": [
     { "id": "builder", "label": "Arma tu Café" },
     { "id": "coffee", "label": "Cafés" },
@@ -36,16 +37,16 @@
     ]
   },
   "coffee": [
-    { "id": "c-latte", "name": "Latte Clásico", "price": 38.00, "description": "Espresso con leche vaporizada y una fina capa de espuma.", "imageSrc": "./img/latte.png" },
-    { "id": "c-capu", "name": "Cappuccino", "price": 36.00, "description": "Espresso, leche y espuma cremosa.", "imageSrc": "./img/cappuccino.png" },
-    { "id": "c-flat", "name": "Flat White", "price": 40.00, "description": "Espresso con microespuma para textura sedosa.", "imageSrc": "./img/flatwhite.png" }
+    { "id": "c-latte", "name": "Latte Clásico", "price": 38.00, "description": "Espresso con leche vaporizada y una fina capa de espuma.", "imageSrc": "./img/coffee/latte.png" },
+    { "id": "c-capu", "name": "Cappuccino", "price": 36.00, "description": "Espresso, leche y espuma cremosa.", "imageSrc": "./img/coffee/cappuccino.png" },
+    { "id": "c-flat", "name": "Flat White", "price": 40.00, "description": "Espresso con microespuma para textura sedosa.", "imageSrc": "./img/coffee/flatwhite.png" }
   ],
   "pastries": [
-    { "id": "p-croissant", "name": "Croissant", "price": 22.00, "description": "Mantequilla fresca, horneado diariamente.", "imageSrc": "./img/croissant.png" },
-    { "id": "p-muffin", "name": "Muffin de Arándanos", "price": 25.00, "description": "Muffin suave con arándanos naturales.", "imageSrc": "./img/muffin.png" }
+    { "id": "p-croissant", "name": "Croissant", "price": 22.00, "description": "Mantequilla fresca, horneado diariamente.", "imageSrc": "./img/coffee/croisant.png" },
+    { "id": "p-muffin", "name": "Muffin de Arándanos", "price": 25.00, "description": "Muffin suave con arándanos naturales.", "imageSrc": "./img/coffee/muffin.png" }
   ],
   "sandwiches": [
-    { "id": "s-tuna", "name": "Sándwich de Atún", "price": 45.00, "description": "Pan artesanal, atún, hojas verdes.", "imageSrc": "./img/sandwich_tuna.png" },
-    { "id": "s-chicken", "name": "Sándwich de Pollo", "price": 48.00, "description": "Pollo rostizado, mayonesa de hierbas.", "imageSrc": "./img/sandwich_chicken.png" }
+    { "id": "s-tuna", "name": "Sándwich de Atún", "price": 45.00, "description": "Pan artesanal, atún, hojas verdes.", "imageSrc": "./img/coffee/sandwich_tuna.png" },
+    { "id": "s-chicken", "name": "Sándwich de Pollo", "price": 48.00, "description": "Pollo rostizado, mayonesa de hierbas.", "imageSrc": "./img/coffee/sandwich_chicken.png" }
   ]
 }

@@ -77,6 +77,17 @@ html.app-cargada #app-screen {
     display: flex; /* Muestra la app (porque tu app usa flex) */
 }
 
+#hero-restaurant-name:empty, 
+#hero-slogan:empty,
+#restaurant-name:empty {
+    opacity: 0;
+}
+/* Transición suave cuando aparezca el texto */
+#hero-restaurant-name, #hero-slogan, #restaurant-name {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
 
 /* ================================== */
 /* ====   NUEVAS CLASES DE UI/UX   ==== */

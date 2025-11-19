@@ -13,7 +13,7 @@
       { "id": "base", "label": "Base (Arroz/Noodles)", "type": "single" },
       { "id": "protein", "label": "Proteína(s)", "type": "multi" },
       { "id": "veggies", "label": "Verduras", "type": "multi" },
-      { "id": "sauce", "label": "Salsa", "type": "single" }
+      { "id": "sauce", "label": "Salsa", "type": "multi" }
     ],
     "base": [
       { "id": "rice-white", "name": "Arroz Blanco", "price": 0.00 },
