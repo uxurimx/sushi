@@ -82,6 +82,11 @@
         <section id="app-screen" class="h-full flex-grow flex flex-col relative">
             
             <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-dark-bg dark:border-dark-border">
+                <button id="menu-toggle-btn" class="tap-press p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors focus:outline-none">
+        <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
                 <div>
                     <h1 id="restaurant-name" class="text-2xl font-bold text-brand-secondary dark:text-white"></h1>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Tu Menú Interactivo</p>
@@ -258,6 +263,51 @@
             <span id="toaster-message">¡Añadido!</span>
         </div>
 
+    <div id="side-menu" class="hidden fixed inset-0 z-50">
+    <div id="side-menu-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity opacity-0"></div>
+    
+    <div id="side-menu-drawer" class="absolute top-0 left-0 w-72 h-full bg-brand-light dark:bg-dark-bg shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+        
+        <div class="p-6 bg-brand-white dark:bg-dark-card border-b border-gray-200 dark:border-dark-border flex justify-between items-center">
+            <h2 class="text-xl font-bold dark:text-white">Configuración</h2>
+            <button id="close-side-menu" class="tap-press p-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="p-4 space-y-2 overflow-y-auto flex-grow">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-2">Cambiar Negocio</p>
+            
+            <button class="db-switcher tap-press w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors text-left" data-db="./db.json">
+                <span class="text-2xl">🍣</span>
+                <div>
+                    <p class="font-bold text-brand-secondary dark:text-white">Sushi Demo</p>
+                    <p class="text-xs text-gray-500">Base de datos original</p>
+                </div>
+            </button>
+
+            <button class="db-switcher tap-press w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors text-left" data-db="./db.cafe.json">
+                <span class="text-2xl">☕</span>
+                <div>
+                    <p class="font-bold text-brand-secondary dark:text-white">Cafetería</p>
+                    <p class="text-xs text-gray-500">Demo de café y postres</p>
+                </div>
+            </button>
+            
+             <button class="db-switcher tap-press w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors text-left" data-db="./db.chinese.json">
+                <span class="text-2xl">🥡</span>
+                <div>
+                    <p class="font-bold text-brand-secondary dark:text-white">Comida China</p>
+                    <p class="text-xs text-gray-500">Ejemplo extra</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="p-4 border-t border-gray-200 dark:border-dark-border text-center">
+            <p class="text-xs text-gray-400">v1.0.2 - Powered by Kaizen</p>
+        </div>
+    </div>
+</div>
     </div> <script src="app.js"></script>
 </body>
 </html>

@@ -1,26 +1,120 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // Cargar datos desde db.json (preparado para futura API)
+    // --- VARIABLES GLOBALES ---
     let DB = null;
-    try {
-        const res = await fetch('./db.chinese.json');
-        if (res.ok) DB = await res.json();
-        else console.warn('db.json no disponible, status:', res.status);
-    } catch (e) {
-        console.error('Error cargando db.json:', e);
+    
+    // --- FUNCIONES DE GESTIÓN DE DATOS ---
+    
+    // Función principal para cargar/recargar la app
+    async function loadDatabase(url) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                DB = await res.json();
+                // Guardamos la preferencia en localStorage
+                localStorage.setItem('lastDbUrl', url);
+                renderApp(); // <- Función mágica que actualiza todo
+                
+                // Cerrar menú lateral si está abierto
+                toggleSideMenu(false);
+                
+                // Feedback visual
+                showToaster('¡Menú actualizado!');
+            } else {
+                console.warn('DB no encontrada:', url);
+                showToaster('Error cargando menú');
+            }
+        } catch (e) {
+            console.error('Error fatal:', e);
+        }
     }
 
-    // Remove/hide static panels that are not included in DB.menus
-    if (DB && Array.isArray(DB.menus)) {
-        const menuIds = DB.menus.map(m => m.id);
-        ['gallery-panel', 'drinks-panel'].forEach(pid => {
-            const el = document.getElementById(pid);
-            if (el) {
-                const id = pid.replace('-panel','');
-                if (!menuIds.includes(id)) el.remove();
-            }
+    // Función que dibuja/redibuja la interfaz según el DB actual
+    function renderApp() {
+        if (!DB) return;
+
+        // 1. Limpiar navegación y paneles dinámicos previos
+        const menusNav = document.getElementById('menus-nav');
+        const mainEl = document.querySelector('main');
+        
+        // Limpiar botones de navegación (dejando las flechas si existen)
+        const scrollLeft = document.getElementById('menus-scroll-left');
+        const scrollRight = document.getElementById('menus-scroll-right');
+        menusNav.innerHTML = ''; 
+        if(scrollLeft) menusNav.appendChild(scrollLeft);
+        if(scrollRight) menusNav.appendChild(scrollRight);
+
+        // Ocultar/Limpiar paneles
+        document.querySelectorAll('.tab-panel').forEach(p => {
+            // No borramos el builder-panel, gallery-panel, etc, solo los ocultamos y limpiamos listas
+            p.classList.add('hidden');
+            // Si son paneles generados dinámicamente (no los base), podrías eliminarlos, 
+            // pero por simplicidad, limpiaremos el contenido de los contenedores específicos abajo.
         });
+
+        // 2. Configurar Textos del Negocio
+        let RESTAURANT_NAME = DB.restaurantName || 'Cargando...';
+        let RESTAURANT_SLOGAN = DB.restaurantSlogan || '';
+        
+        const headerNameEl = document.getElementById('restaurant-name');
+        const heroNameEl = document.getElementById('hero-restaurant-name');
+        const heroSloganEl = document.getElementById('hero-slogan');
+        const headerSloganEl = document.getElementById('header-slogan');
+
+        if (headerNameEl) headerNameEl.textContent = RESTAURANT_NAME;
+        if (heroNameEl) heroNameEl.textContent = RESTAURANT_NAME;
+        if (heroSloganEl) heroSloganEl.textContent = RESTAURANT_SLOGAN;
+        if (headerSloganEl) headerSloganEl.textContent = RESTAURANT_SLOGAN;
+        document.title = RESTAURANT_NAME;
+
+        // 3. Generar Navegación
+        if (Array.isArray(DB.menus)) {
+            DB.menus.forEach((m, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'tap-press tab-button flex-none py-3 px-4 min-w-[96px] text-center font-semibold border-b-4 transition-all duration-300 whitespace-nowrap leading-none';
+                btn.dataset.tab = m.id;
+                btn.textContent = m.label || m.id;
+                
+                if (idx === 0) {
+                    btn.classList.add('border-brand-primary', 'text-brand-primary');
+                    appState.currentTab = m.id; // Reset tab actual
+                    // Mostrar el panel correspondiente
+                    const p = document.getElementById(`${m.id}-panel`);
+                    if(p) p.classList.remove('hidden');
+                } else {
+                    btn.classList.add('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                }
+
+                // Insertar botón antes de la flecha derecha
+                const rightIndicator = menusNav.querySelector('#menus-scroll-right');
+                if (rightIndicator) menusNav.insertBefore(btn, rightIndicator);
+                else menusNav.appendChild(btn);
+
+                // Crear panel si no existe
+                const panelId = `${m.id}-panel`;
+                if (!document.getElementById(panelId)) {
+                    const panel = document.createElement('div');
+                    panel.id = panelId;
+                    panel.className = 'tab-panel p-4 space-y-4 hidden';
+                    mainEl.appendChild(panel);
+                }
+            });
+            
+            // Re-asignar eventos a los nuevos botones
+            attachTabEvents(); 
+        }
+
+        // 4. Renderizar Constructor (Builder)
+        renderBuilder();
+
+        // 5. Renderizar Galerías (Menú, Bebidas, Extras)
+        renderGalleries();
+        
+        // 6. Resetear estado del custom roll para evitar mezclas
+        resetBuilderState();
     }
+    
+    // --- FIN FUNCIONES DE GESTIÓN ---
 
     // --- LÓGICA DE MODO OSCURO ---
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -996,6 +1090,260 @@ document.addEventListener('DOMContentLoaded', async () => {
             toaster.classList.remove('opacity-100', 'translate-y-0');
         }, 1200);
     }
+
+    const sideMenu = document.getElementById('side-menu');
+    const sideMenuOverlay = document.getElementById('side-menu-overlay');
+    const sideMenuDrawer = document.getElementById('side-menu-drawer');
+    const menuToggleBtn = document.getElementById('menu-toggle-btn');
+    const closeSideMenuBtn = document.getElementById('close-side-menu');
+    const dbSwitchers = document.querySelectorAll('.db-switcher');
+
+    function toggleSideMenu(show) {
+        if (show) {
+            sideMenu.classList.remove('hidden');
+            // Pequeño timeout para permitir que el navegador renderice antes de animar
+            setTimeout(() => {
+                sideMenuOverlay.classList.remove('opacity-0');
+                sideMenuDrawer.classList.remove('-translate-x-full');
+            }, 10);
+        } else {
+            sideMenuOverlay.classList.add('opacity-0');
+            sideMenuDrawer.classList.add('-translate-x-full');
+            setTimeout(() => {
+                sideMenu.classList.add('hidden');
+            }, 300); // Esperar a que termine la transición CSS
+        }
+    }
+
+    if (menuToggleBtn) menuToggleBtn.addEventListener('click', () => toggleSideMenu(true));
+    if (closeSideMenuBtn) closeSideMenuBtn.addEventListener('click', () => toggleSideMenu(false));
+    if (sideMenuOverlay) sideMenuOverlay.addEventListener('click', () => toggleSideMenu(false));
+
+    // Botones para cambiar de DB
+    dbSwitchers.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const url = btn.dataset.db;
+            // Resetear carrito al cambiar de tienda? (Opcional, recomendado)
+            if(appState.cart.length > 0) {
+                if(confirm('Cambiar de menú vaciará tu carrito actual. ¿Continuar?')) {
+                    appState.cart = [];
+                    updateCart();
+                    loadDatabase(url);
+                }
+            } else {
+                loadDatabase(url);
+            }
+        });
+    });
+
+    // --- INICIO: Cargar DB inicial ---
+    // Verifica si el usuario ya seleccionó una antes, si no, carga la default
+    const lastDb = localStorage.getItem('lastDbUrl') || './db.json';
+    loadDatabase(lastDb);
+
+    // ------------------------------------------
+    // HELPER: Extraer lógica existente a funciones 
+    // (Copia estas funciones nuevas en tu app.js)
+    // ------------------------------------------
+
+    function attachTabEvents() {
+        const newTabButtons = document.querySelectorAll('.tab-button');
+        const newTabPanels = document.querySelectorAll('.tab-panel');
+        const builderFooter = document.getElementById('builder-footer');
+
+        newTabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                appState.currentTab = tab;
+                
+                newTabButtons.forEach(btn => {
+                    if (btn.dataset.tab === tab) {
+                        btn.classList.add('border-brand-primary', 'text-brand-primary');
+                        btn.classList.remove('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                    } else {
+                        btn.classList.remove('border-brand-primary', 'text-brand-primary');
+                        btn.classList.add('border-transparent', 'text-gray-400', 'dark:text-gray-500');
+                    }
+                });
+
+                newTabPanels.forEach(panel => {
+                    if (panel.id === `${tab}-panel`) panel.classList.remove('hidden');
+                    else panel.classList.add('hidden');
+                });
+
+                if (tab === 'builder') builderFooter.classList.remove('hidden');
+                else builderFooter.classList.add('hidden');
+            });
+        });
+    }
+
+    function renderBuilder() {
+        const builderPanel = document.getElementById('builder-panel');
+        if (!DB.builder || !builderPanel) return;
+        
+        // Función interna para crear opciones (copiada de tu código original y mejorada)
+        const makeBuilderOption = (item, step, isMulti) => {
+            return `
+            <div class="builder-option" 
+                 data-step="${step}" 
+                 data-name="${escapeHtml(item.name)}" 
+                 data-price="${Number(item.price).toFixed(2)}" 
+                 ${isMulti ? 'data-multi="true"' : ''}>
+                <div class="tap-press p-4 border dark:border-dark-border rounded-lg text-center shadow-sm cursor-pointer hover:shadow-md dark:bg-dark-card dark:hover:bg-dark-border transition-all">
+                    <p class="font-semibold mt-2 dark:text-white">${escapeHtml(item.name)}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">+$${Number(item.price).toFixed(2)}</p>
+                </div>
+            </div>`;
+        };
+
+        if (Array.isArray(DB.builder.steps)) {
+            builderPanel.innerHTML = DB.builder.steps.map(step => `
+                <section>
+                    <h2 class="text-xl font-bold mb-3 dark:text-white">${escapeHtml(step.label || step.id)}</h2>
+                    <div id="builder-${escapeHtml(step.id)}-container" class="grid grid-cols-2 gap-3"></div>
+                </section>
+            `).join('');
+
+            DB.builder.steps.forEach(step => {
+                const cont = document.getElementById(`builder-${step.id}-container`);
+                const items = DB.builder[step.id];
+                const isMulti = step.type === 'multi'; 
+                if (cont && Array.isArray(items)) {
+                    cont.innerHTML = items.map(i => makeBuilderOption(i, step.id, isMulti)).join('');
+                }
+            });
+        }
+        
+        // RE-ASIGNAR EVENTOS CLICK (IMPORTANTE)
+        document.querySelectorAll('.builder-option').forEach(option => {
+            option.addEventListener('click', () => handleBuilderOptionClick(option));
+        });
+    }
+
+    function handleBuilderOptionClick(option) {
+        // (Copia aquí la lógica que tenías dentro de builderOptions.forEach)
+        const step = option.dataset.step;
+        const name = option.dataset.name;
+        const price = parseFloat(option.dataset.price);
+        const isMulti = option.dataset.multi === 'true';
+        const item = { name, price };
+
+        if (isMulti) {
+            const list = appState.customRoll[step];
+            // Safety check si la estructura cambió
+            if(!list) appState.customRoll[step] = [];
+            
+            const index = appState.customRoll[step].findIndex(i => i.name === name);
+            if (index > -1) {
+                appState.customRoll[step].splice(index, 1);
+                option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+            } else {
+                appState.customRoll[step].push(item);
+                option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+            }
+        } else {
+            if (appState.customRoll[step] && appState.customRoll[step].name === name) {
+                appState.customRoll[step] = null;
+                option.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+            } else {
+                document.querySelectorAll(`[data-step="${step}"]`).forEach(el => {
+                    el.querySelector('div').classList.remove('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+                });
+                appState.customRoll[step] = item;
+                option.querySelector('div').classList.add('border-brand-primary', 'ring-2', 'ring-brand-primary', 'dark:border-brand-primary');
+            }
+        }
+        updateBuilderSummary();
+    }
+
+    function renderGalleries() {
+        // Lógica genérica para renderizar cualquier menu que no sea builder
+        if (!Array.isArray(DB.menus)) return;
+
+        const makeGalleryItem = (it) => `
+            <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
+                 data-id="${escapeHtml(it.id)}"
+                 data-name="${escapeHtml(it.name)}"
+                 data-price="${Number(it.price).toFixed(2)}"
+                 data-description="${escapeHtml(it.description || '')}"
+                 data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}">
+                <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                <div class="flex-grow">
+                    <h3 class="font-bold text-lg dark:text-white">${escapeHtml(it.name)}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description || '')}</p>
+                    <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
+                </div>
+                <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                </button>
+            </div>`;
+
+        DB.menus.forEach(m => {
+            if (m.id === 'builder') return;
+            
+            const panel = document.getElementById(`${m.id}-panel`);
+            const items = DB[m.id]; // ej: DB.coffee, DB.pastries
+            
+            if (panel && Array.isArray(items)) {
+                // Buscar o crear lista
+                let list = document.getElementById(`${m.id}-list`);
+                if (!list) {
+                    list = document.createElement('div');
+                    list.id = `${m.id}-list`;
+                    list.className = 'space-y-3';
+                    panel.innerHTML = ''; // Limpiar panel antes de agregar lista
+                    panel.appendChild(list);
+                }
+                list.innerHTML = items.map(makeGalleryItem).join('');
+            }
+        });
+
+        // Re-asignar eventos para abrir modal y añadir al carrito
+        reattachGalleryEvents();
+    }
+
+    function reattachGalleryEvents() {
+        // Eventos de click en items (abrir detalle)
+        document.querySelectorAll('.gallery-item-container').forEach(item => {
+            item.addEventListener('click', () => {
+                openDetailModal({
+                    id: item.dataset.id,
+                    name: item.dataset.name,
+                    price: item.dataset.price,
+                    description: item.dataset.description,
+                    imageSrc: item.dataset.imageSrc
+                });
+            });
+        });
+
+        // Eventos de botón + (añadir directo)
+        document.querySelectorAll('.add-gallery-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const cartItem = {
+                    id: button.dataset.id,
+                    name: button.dataset.name,
+                    price: parseFloat(button.dataset.price),
+                    quantity: 1,
+                    notes: ''
+                };
+                addItemToCart(cartItem);
+            });
+        });
+    }
+
+    function resetBuilderState() {
+        // Reiniciar estado basado en la nueva DB
+        appState.customRoll = {};
+        if (DB && DB.builder && Array.isArray(DB.builder.steps)) {
+            DB.builder.steps.forEach(step => {
+                appState.customRoll[step.id] = (step.type === 'multi') ? [] : null;
+            });
+        }
+        updateBuilderSummary();
+    }
+    
     updateCart();
 
 }); // Fin de DOMContentLoaded
