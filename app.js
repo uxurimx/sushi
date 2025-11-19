@@ -338,8 +338,9 @@ document.addEventListener('DOMContentLoaded', () => {
         appState.customRoll.protein.forEach(item => { total += item.price; items.push(item.name); });
         appState.customRoll.filling.forEach(item => { total += item.price; items.push(item.name); });
         if (appState.customRoll.topping) {
-            total += appState.customRoll.topping.price;
-            items.push(item.name);
+            const toppingItem = appState.customRoll.topping; 
+            total += toppingItem.price;
+            items.push(toppingItem.name); // Accede a .name del objeto topping
         }
 
         // const rollName = `Rollo Taller (${items.join(', ')})`; // <-- LÍNEA ANTIGUA
