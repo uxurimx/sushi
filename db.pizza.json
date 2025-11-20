@@ -1,5 +1,5 @@
 {
-  "restaurantPhone": "525512345678",
+  "restaurantPhone": "526672026789",
   "restaurantName": "La Bella Pizza",
   "restaurantSlogan": "Auténtico sabor italiano",
   "menus": [
@@ -40,16 +40,16 @@
     ]
   },
   "pizzas": [
-    { "id": "pz-pep", "name": "Pepperoni Lover", "price": 180.00, "description": "Doble pepperoni y extra queso mozzarella.", "imageSrc": "./img/pizza/pepperoni.png" },
-    { "id": "pz-haw", "name": "Hawaiana", "price": 170.00, "description": "La clásica combinación de jamón, piña y queso.", "imageSrc": "./img/pizza/hawaiian.png" },
+    { "id": "pz-pep", "name": "Pepperoni Lover", "price": 180.00, "description": "Doble pepperoni y extra queso mozzarella.", "imageSrc": "./img/pizza/peperoni.png" },
+    { "id": "pz-haw", "name": "Hawaiana", "price": 170.00, "description": "La clásica combinación de jamón, piña y queso.", "imageSrc": "./img/pizza/hawaian.png" },
     { "id": "pz-mex", "name": "Mexicana", "price": 195.00, "description": "Chorizo, jalapeño, cebolla y frijoles.", "imageSrc": "./img/pizza/mexican.png" }
   ],
   "sides": [
-    { "id": "sd-wings", "name": "Alitas BBQ (6 pzas)", "price": 95.00, "description": "Alitas de pollo bañadas en salsa BBQ.", "imageSrc": "./img/pizza/wings.png" },
+    { "id": "sd-wings", "name": "Alitas BBQ (6 pzas)", "price": 95.00, "description": "Alitas de pollo bañadas en salsa BBQ.", "imageSrc": "./img/pizza/alitas.png" },
     { "id": "sd-sticks", "name": "Palitos de Queso", "price": 65.00, "description": "Pan horneado con mantequilla de ajo y queso.", "imageSrc": "./img/pizza/sticks.png" }
   ],
   "drinks": [
-    { "id": "dr-soda", "name": "Refresco 600ml", "price": 35.00, "description": "Coca-Cola, Sprite o Fanta.", "imageSrc": "./img/drink_soda.png" },
-    { "id": "dr-beer", "name": "Cerveza Nacional", "price": 45.00, "description": "Lata 355ml bien fría.", "imageSrc": "./img/drink_beer.png" }
+    { "id": "dr-soda", "name": "Refresco 600ml", "price": 35.00, "description": "Coca-Cola, Sprite o Fanta.", "imageSrc": "./img/pizza/coca.png" },
+    { "id": "dr-beer", "name": "Cerveza Nacional", "price": 45.00, "description": "Lata 355ml bien fría.", "imageSrc": "./img/pizza/modelo.png" }
   ]
 }

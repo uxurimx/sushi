@@ -1,5 +1,5 @@
 {
-  "restaurantPhone": "525587654321",
+  "restaurantPhone": "526672026789",
   "restaurantName": "Frosty Dreams",
   "restaurantSlogan": "Felicidad congelada",
   "menus": [
@@ -39,11 +39,11 @@
     ]
   },
   "shakes": [
-    { "id": "sh-oreo", "name": "Malteada Oreo", "price": 85.00, "description": "Helado de vainilla batido con galletas Oreo y crema batida.", "imageSrc": "./img/ice/shake_oreo.png" },
-    { "id": "sh-straw", "name": "Malteada Fresa", "price": 80.00, "description": "Clásica malteada rosa con fruta natural.", "imageSrc": "./img/ice/shake_straw.png" }
+    { "id": "sh-oreo", "name": "Malteada Oreo", "price": 85.00, "description": "Helado de vainilla batido con galletas Oreo y crema batida.", "imageSrc": "./img/ice_cream/oreo.png" },
+    { "id": "sh-straw", "name": "Malteada Fresa", "price": 80.00, "description": "Clásica malteada rosa con fruta natural.", "imageSrc": "./img/ice_cream/malteada.png" }
   ],
   "specials": [
-    { "id": "sp-banana", "name": "Banana Split", "price": 110.00, "description": "3 bolas de helado, plátano, crema batida y cerezas.", "imageSrc": "./img/ice/banana_split.png" },
-    { "id": "sp-sunday", "name": "Sunday", "price": 65.00, "description": "2 bolas de helado con mucho jarabe de chocolate.", "imageSrc": "./img/ice/sunday.png" }
+    { "id": "sp-banana", "name": "Banana Split", "price": 110.00, "description": "3 bolas de helado, plátano, crema batida y cerezas.", "imageSrc": "./img/ice_cream/banana.png" },
+    { "id": "sp-sunday", "name": "Sunday", "price": 65.00, "description": "2 bolas de helado con mucho jarabe de chocolate.", "imageSrc": "./img/ice_cream/sundae.png" }
   ]
 }

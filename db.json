@@ -58,7 +58,7 @@
     }
   ],
   "drinks": [
-    { "id": "drink-1", "name": "Coca-Cola", "price": 30.00, "description": "Refrescante bebida gaseosa clásica.", "imageSrc": "./img/drink_cocacola.png" },
-    { "id": "drink-2", "name": "Té Verde", "price": 20.50, "description": "Té verde frío preparado al estilo japonés.", "imageSrc": "./img/drink_te_verde.png" }
+    { "id": "drink-1", "name": "Coca-Cola", "price": 30.00, "description": "Refrescante bebida gaseosa clásica.", "imageSrc": "./img/coca.png" },
+    { "id": "drink-2", "name": "Té Verde", "price": 20.50, "description": "Té verde frío preparado al estilo japonés.", "imageSrc": "./img/teverde.png" }
   ]
 }

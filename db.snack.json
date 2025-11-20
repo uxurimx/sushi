@@ -1,5 +1,5 @@
 {
-  "restaurantPhone": "526671234567",
+  "restaurantPhone": "526672026789",
   "restaurantName": "Munchies Box",
   "restaurantSlogan": "El antojo perfecto",
   "menus": [
@@ -39,12 +39,12 @@
     ]
   },
   "classic": [
-    { "id": "cl-tostilocos", "name": "Tostilocos Full", "price": 85.00, "description": "Tostitos con todo: cueritos, rielitos, verdura, cacahuates y clamato.", "imageSrc": "./img/snack/tostilocos.png" },
-    { "id": "cl-fresas", "name": "Fresas con Crema", "price": 70.00, "description": "Vaso grande con crema dulce de la casa y granola.", "imageSrc": "./img/snack/fresas.png" },
-    { "id": "cl-manzana", "name": "Manzana Loca", "price": 55.00, "description": "Manzana cubierta de pasta de tamarindo y chilito.", "imageSrc": "./img/snack/manzana.png" }
+    { "id": "cl-tostilocos", "name": "Tostilocos Full", "price": 85.00, "description": "Tostitos con todo: cueritos, rielitos, verdura, cacahuates y clamato.", "imageSrc": "./img/snacks/tostilocos.png" },
+    { "id": "cl-fresas", "name": "Fresas con Crema", "price": 70.00, "description": "Vaso grande con crema dulce de la casa y granola.", "imageSrc": "./img/snacks/fresasconcrema.png" },
+    { "id": "cl-manzana", "name": "Manzana Loca", "price": 55.00, "description": "Manzana cubierta de pasta de tamarindo y chilito.", "imageSrc": "./img/snacks/manzana.png" }
   ],
   "drinks": [
-    { "id": "d-water", "name": "Agua de Horchata (1L)", "price": 35.00, "description": "Fresca y casera.", "imageSrc": "./img/drink_horchata.png" },
-    { "id": "d-soda", "name": "Coca-Cola", "price": 25.00, "description": "Lata 355ml.", "imageSrc": "./img/drink_coca.png" }
+    { "id": "d-water", "name": "Agua de Horchata (1L)", "price": 35.00, "description": "Fresca y casera.", "imageSrc": "./img/snacks/horchata.png" },
+    { "id": "d-soda", "name": "Coca-Cola", "price": 25.00, "description": "Lata 355ml.", "imageSrc": "./img/snacks/coca.png" }
   ]
 }
