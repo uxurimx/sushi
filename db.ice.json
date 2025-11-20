@@ -1,0 +1,49 @@
+{
+  "restaurantPhone": "525587654321",
+  "restaurantName": "Frosty Dreams",
+  "restaurantSlogan": "Felicidad congelada",
+  "menus": [
+    { "id": "builder", "label": "Crea tu Helado" },
+    { "id": "shakes", "label": "Malteadas" },
+    { "id": "specials", "label": "Especiales" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "base", "label": "Elige Recipiente", "type": "single" },
+      { "id": "flavors", "label": "Sabores de Nieve", "type": "multi" },
+      { "id": "syrup", "label": "Salsas", "type": "multi" },
+      { "id": "toppings", "label": "Topings", "type": "multi" }
+    ],
+    "base": [
+      { "id": "b-cup", "name": "Vaso Clásico", "price": 45.00 },
+      { "id": "b-cone", "name": "Cono Waffle", "price": 55.00 },
+      { "id": "b-basket", "name": "Canasta de Galleta", "price": 65.00 }
+    ],
+    "flavors": [
+      { "id": "f-van", "name": "Vainilla de Papantla", "price": 0.00 },
+      { "id": "f-choc", "name": "Chocolate Belga", "price": 0.00 },
+      { "id": "f-straw", "name": "Fresas con Crema", "price": 0.00 },
+      { "id": "f-oreo", "name": "Galleta Oreo", "price": 5.00 },
+      { "id": "f-mint", "name": "Menta con Chispas", "price": 5.00 }
+    ],
+    "syrup": [
+      { "id": "s-choc", "name": "Jarabe de Chocolate", "price": 5.00 },
+      { "id": "s-car", "name": "Caramelo", "price": 5.00 },
+      { "id": "s-chamoy", "name": "Chamoy", "price": 5.00 }
+    ],
+    "toppings": [
+      { "id": "t-sprinkles", "name": "Granillo de Colores", "price": 5.00 },
+      { "id": "t-gummy", "name": "Gomitas", "price": 10.00 },
+      { "id": "t-nut", "name": "Nuez Picada", "price": 12.00 },
+      { "id": "t-cherry", "name": "Cereza", "price": 8.00 }
+    ]
+  },
+  "shakes": [
+    { "id": "sh-oreo", "name": "Malteada Oreo", "price": 85.00, "description": "Helado de vainilla batido con galletas Oreo y crema batida.", "imageSrc": "./img/ice/shake_oreo.png" },
+    { "id": "sh-straw", "name": "Malteada Fresa", "price": 80.00, "description": "Clásica malteada rosa con fruta natural.", "imageSrc": "./img/ice/shake_straw.png" }
+  ],
+  "specials": [
+    { "id": "sp-banana", "name": "Banana Split", "price": 110.00, "description": "3 bolas de helado, plátano, crema batida y cerezas.", "imageSrc": "./img/ice/banana_split.png" },
+    { "id": "sp-sunday", "name": "Sunday", "price": 65.00, "description": "2 bolas de helado con mucho jarabe de chocolate.", "imageSrc": "./img/ice/sunday.png" }
+  ]
+}

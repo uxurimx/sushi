@@ -1,0 +1,50 @@
+{
+  "restaurantPhone": "526671234567",
+  "restaurantName": "Munchies Box",
+  "restaurantSlogan": "El antojo perfecto",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Snack" },
+    { "id": "classic", "label": "Favoritos" },
+    { "id": "drinks", "label": "Bebidas" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "base", "label": "Elige tu Base", "type": "single" },
+      { "id": "veggies", "label": "Verduras", "type": "multi" },
+      { "id": "protein", "label": "Proteínas y Extras", "type": "multi" },
+      { "id": "salsa", "label": "Salsas", "type": "multi" }
+    ],
+    "base": [
+      { "id": "b-tosti", "name": "Tostitos Salsa Verde", "price": 65.00 },
+      { "id": "b-flamin", "name": "Doritos Flamin' Hot", "price": 65.00 },
+      { "id": "b-nacho", "name": "Nachos con Queso", "price": 55.00 },
+      { "id": "b-corn", "name": "Vaso de Elote (Esquites)", "price": 45.00 }
+    ],
+    "veggies": [
+      { "id": "v-jicama", "name": "Jícama", "price": 5.00 },
+      { "id": "v-pepino", "name": "Pepino", "price": 5.00 },
+      { "id": "v-zanahoria", "name": "Zanahoria Rallada", "price": 5.00 }
+    ],
+    "protein": [
+      { "id": "p-cueritos", "name": "Cueritos", "price": 10.00 },
+      { "id": "p-cacahuate", "name": "Cacahuate Japonés", "price": 8.00 },
+      { "id": "p-salchicha", "name": "Salchicha", "price": 10.00 },
+      { "id": "p-rieleros", "name": "Rielitos (Tamarindo)", "price": 8.00 }
+    ],
+    "salsa": [
+      { "id": "s-val", "name": "Salsa Valentina", "price": 0.00 },
+      { "id": "s-chamoy", "name": "Chamoy Clásico", "price": 0.00 },
+      { "id": "s-tajin", "name": "Chile en Polvo (Tajín)", "price": 0.00 },
+      { "id": "s-clamato", "name": "Clamato", "price": 5.00 }
+    ]
+  },
+  "classic": [
+    { "id": "cl-tostilocos", "name": "Tostilocos Full", "price": 85.00, "description": "Tostitos con todo: cueritos, rielitos, verdura, cacahuates y clamato.", "imageSrc": "./img/snack/tostilocos.png" },
+    { "id": "cl-fresas", "name": "Fresas con Crema", "price": 70.00, "description": "Vaso grande con crema dulce de la casa y granola.", "imageSrc": "./img/snack/fresas.png" },
+    { "id": "cl-manzana", "name": "Manzana Loca", "price": 55.00, "description": "Manzana cubierta de pasta de tamarindo y chilito.", "imageSrc": "./img/snack/manzana.png" }
+  ],
+  "drinks": [
+    { "id": "d-water", "name": "Agua de Horchata (1L)", "price": 35.00, "description": "Fresca y casera.", "imageSrc": "./img/drink_horchata.png" },
+    { "id": "d-soda", "name": "Coca-Cola", "price": 25.00, "description": "Lata 355ml.", "imageSrc": "./img/drink_coca.png" }
+  ]
+}
