@@ -1,0 +1,72 @@
+{
+  "restaurantPhone": "526181052587",
+  "restaurantName": "Desayunos",
+  "restaurantSlogan": "Servicio a domicilio gratis",
+  "menus": [
+    { "id": "desayunos", "label": "Desayunos" }
+  ],
+  "desayunos": [
+    {
+      "id": "d-chilaquiles-sencillos",
+      "name": "Chilaquiles sencillos",
+      "price": 40.00,
+      "description": "Acompañados de frijoles refritos, crema y queso."
+    },
+    {
+      "id": "d-chilaquiles-guiso",
+      "name": "Chilaquiles c/guiso a elegir o huevo al gusto",
+      "price": 50.00,
+      "description": "Elige tu guiso o huevo."
+    },
+    {
+      "id": "d-molletes-sencillos",
+      "name": "Molletes sencillos",
+      "price": 25.00,
+      "description": "2 mitades de pan con frijol y queso."
+    },
+    {
+      "id": "d-molletes-guiso",
+      "name": "Molletes c/guiso a elegir",
+      "price": 35.00,
+      "description": "Molletes con guiso a tu elección."
+    },
+    {
+      "id": "d-quesadilla-guiso",
+      "name": "Quesadilla c/guiso a elegir",
+      "price": 35.00,
+      "description": "Tortilla de harina con guiso a tu elección."
+    },
+    {
+      "id": "d-torta-chilaquiles",
+      "name": "Torta de chilaquiles",
+      "price": 35.00,
+      "description": "Agrega los ingredientes que quieras con costo extra."
+    },
+    {
+      "id": "d-huevos-gusto",
+      "name": "Huevos al gusto",
+      "price": 35.00,
+      "description": "Acompañados de tortillas y salsa."
+    },
+    {
+      "id": "d-omeletes",
+      "name": "Omeletes",
+      "price": 40.00,
+      "description": "Acompañados de tortillas y salsa."
+    }
+  ],
+  "adicionales": {
+    "label": "Información Adicional",
+    "horario": "De 9:00 a.m. a 12:30 p.m.",
+    "servicioDomicilio": "¡Servicio a domicilio gratis!",
+    "pedidos": "Pedidos al what'sapp 618-105-2587",
+    "pago": "Aceptamos transferencias.",
+    "descanso": "Descansamos los martes",
+    "salsasChilaquiles": [
+      "Verde picosa",
+      "Verde cremosa",
+      "Roja dulce",
+      "Chipotle cremoso"
+    ]
+  }
+}
