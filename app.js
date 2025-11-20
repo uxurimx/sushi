@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentTab: 'builder',
         customRoll: {}, // <--- Lo dejamos vacío inicialmente
         cart: loadCartFromStorage(),
+        proMode: localStorage.getItem('proMode') === 'true' // <--- NUEVO: Leer memoria
     };
 
     // CORRECCIÓN: Inicializar estructura dinámica basada en DB
@@ -275,6 +276,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         // Fallback por si no hay DB (estructura antigua sushi)
         appState.customRoll = { base: null, protein: [], filling: [], topping: null };
+    }
+
+
+        // --- LÓGICA MODO PRO (SWITCH) ---
+    const proModeToggle = document.getElementById('pro-mode-toggle');
+    
+    // 1. Setear estado inicial visual del switch
+    if (proModeToggle) {
+        proModeToggle.checked = appState.proMode;
+
+        // 2. Escuchar cambios
+        proModeToggle.addEventListener('change', (e) => {
+            appState.proMode = e.target.checked;
+            localStorage.setItem('proMode', appState.proMode);
+            
+            // Recargar galerías para mostrar/ocultar badges "Specialty Grade" al instante
+            renderGalleries(); 
+            
+            showToaster(appState.proMode ? 'Modo Barista Activado 🔬' : 'Modo Simple Activado ☕');
+        });
     }
 
     // Número de WhatsApp del restaurante (será provisto por db.json si está disponible)
@@ -729,19 +750,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- LÓGICA DEL MODAL DE DETALLES ---
 
     function openDetailModal(data) {
-        // Poblar el modal
+        // 1. Llenar datos básicos (Igual que antes)
         detailModalImage.src = data.imageSrc;
         detailModalImage.alt = data.name;
         detailModalName.textContent = data.name;
         detailModalDescription.textContent = data.description;
         detailModalPrice.textContent = `$${parseFloat(data.price).toFixed(2)}`;
         
-        // Guardar los datos en el botón de añadir del modal
+        // Guardar datos en el botón
         detailModalAddBtn.dataset.id = data.id;
         detailModalAddBtn.dataset.name = data.name;
         detailModalAddBtn.dataset.price = data.price;
+
+        // 2. --- LÓGICA PRO: Renderizar Ficha Técnica y Notas ---
         
-        // Mostrar el modal
+        // Buscamos si ya existe el contenedor "pro-details", si existe lo borramos para empezar limpio
+        const existingPro = document.getElementById('pro-details-container');
+        if(existingPro) existingPro.remove();
+
+        // Si hay datos Pro, creamos el HTML
+        if (appState.proMode && (data.techSheet || (data.tastingNotes && data.tastingNotes.length > 0))) {
+            const proContainer = document.createElement('div');
+            proContainer.id = 'pro-details-container';
+            proContainer.className = 'mt-6 pt-6 border-t border-gray-200 dark:border-dark-border';
+
+            let htmlContent = '';
+
+            // A. Notas de Cata (Tags/Pills)
+            if (data.tastingNotes && data.tastingNotes.length > 0) {
+                htmlContent += `
+                    <div class="mb-5">
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Notas de Cata</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${data.tastingNotes.map(note => `
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800">
+                                    ${escapeHtml(note)}
+                                </span> 
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // B. Ficha Técnica (Grid)
+            if (data.techSheet) {
+                htmlContent += `
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Ficha Técnica</h4>
+                        <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                            ${Object.entries(data.techSheet).map(([key, value]) => `
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs">${escapeHtml(key)}</p>
+                                    <p class="font-semibold dark:text-white">${escapeHtml(value)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            proContainer.innerHTML = htmlContent;
+            
+            // Insertar después de la descripción
+            detailModalDescription.parentNode.insertBefore(proContainer, detailModalDescription.nextSibling);
+        }
+
+        // Mostrar modal
         detailModal.style.display = 'block';
     }
 
@@ -1260,24 +1334,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Lógica genérica para renderizar cualquier menu que no sea builder
         if (!Array.isArray(DB.menus)) return;
 
-        const makeGalleryItem = (it) => `
+        const makeGalleryItem = (it) => {
+            // Preparamos los datos extra (si existen) para guardarlos en el HTML
+            const metaData = it.techSheet ? JSON.stringify(it.techSheet) : '';
+            const notesData = it.tastingNotes ? JSON.stringify(it.tastingNotes) : '';
+
+            return `
             <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
                  data-id="${escapeHtml(it.id)}"
                  data-name="${escapeHtml(it.name)}"
                  data-price="${Number(it.price).toFixed(2)}"
                  data-description="${escapeHtml(it.description || '')}"
-                 data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}">
+                 data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}"
+                 data-meta='${metaData}' 
+                 data-notes='${notesData}'>
+                
                 <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
-                <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                
                 <div class="flex-grow">
-                    <h3 class="font-bold text-lg dark:text-white">${escapeHtml(it.name)}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description || '')}</p>
+                    ${(appState.proMode && it.techSheet) ? '<span class="text-[10px] font-bold uppercase tracking-wider text-brand-primary mb-1 block">Specialty Grade</span>' : ''}
+                    
+                    <h3 class="font-bold text-lg dark:text-white leading-tight">${escapeHtml(it.name)}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">${escapeHtml(it.description || '')}</p>
                     <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
                 </div>
+                
                 <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
             </div>`;
+        };
 
         DB.menus.forEach(m => {
             if (m.id === 'builder') return;
@@ -1304,15 +1390,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function reattachGalleryEvents() {
-        // Eventos de click en items (abrir detalle)
         document.querySelectorAll('.gallery-item-container').forEach(item => {
             item.addEventListener('click', () => {
+                // Recuperamos los JSONs guardados en los atributos data
+                let techSheet = null;
+                let tastingNotes = null;
+                
+                try {
+                    if(item.dataset.meta) techSheet = JSON.parse(item.dataset.meta);
+                    if(item.dataset.notes) tastingNotes = JSON.parse(item.dataset.notes);
+                } catch(e) { console.error("Error parsing JSON data", e); }
+
                 openDetailModal({
                     id: item.dataset.id,
                     name: item.dataset.name,
                     price: item.dataset.price,
                     description: item.dataset.description,
-                    imageSrc: item.dataset.imageSrc
+                    imageSrc: item.dataset.imageSrc,
+                    techSheet: techSheet,    // <--- NUEVO
+                    tastingNotes: tastingNotes // <--- NUEVO
                 });
             });
         });

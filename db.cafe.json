@@ -37,8 +37,23 @@
     ]
   },
   "coffee": [
-    { "id": "c-latte", "name": "Latte Clásico", "price": 38.00, "description": "Espresso con leche vaporizada y una fina capa de espuma.", "imageSrc": "./img/coffee/latte.png" },
-    { "id": "c-capu", "name": "Cappuccino", "price": 36.00, "description": "Espresso, leche y espuma cremosa.", "imageSrc": "./img/coffee/cappuccino.png" },
+    { "id": "c-latte", "name": "Latte Clásico", "price": 38.00, "description": "Espresso con leche vaporizada y una fina capa de espuma.", "imageSrc": "./img/coffee/latte.png","tastingNotes": ["Grosella Negra", "Tomate Dulce", "Vino"],
+      "techSheet": {
+        "Origen": "Nyeri, Kenya",
+        "Altura": "1,800 msnm",
+        "Proceso": "Doble Lavado",
+        "Variedad": "SL28, SL34",
+        "Cosecha": "Noviembre 2024"
+      } },
+    { "id": "c-capu", "name": "Cappuccino", "price": 36.00, "description": "Espresso, leche y espuma cremosa.", "imageSrc": "./img/coffee/cappuccino.png", "tastingNotes": ["Jazmín", "Bergamota", "Miel", "Durazno"],
+      "techSheet": {
+        "Origen": "Boquete, Panamá",
+        "Altura": "1,700 msnm",
+        "Proceso": "Lavado",
+        "Variedad": "Geisha T27",
+        "Productor": "Hacienda Esmeralda",
+        "Puntaje SCA": "94 puntos"
+      } },
     { "id": "c-flat", "name": "Flat White", "price": 40.00, "description": "Espresso con microespuma para textura sedosa.", "imageSrc": "./img/coffee/flatwhite.png" }
   ],
   "pastries": [

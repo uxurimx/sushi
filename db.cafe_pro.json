@@ -1,0 +1,76 @@
+{
+  "restaurantPhone": "525512345678",
+  "restaurantName": "Le Coffee Lab",
+  "restaurantSlogan": "Experience Origin & Roast",
+  "menus": [
+    { "id": "builder", "label": "Barista Mode" },
+    { "id": "single_origin", "label": "Origen Único" },
+    { "id": "methods", "label": "Métodos" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "bean", "label": "Selección de Grano", "type": "single" },
+      { "id": "roast", "label": "Perfil de Tueste", "type": "single" },
+      { "id": "milk", "label": "Texturización", "type": "single" }
+    ],
+    "bean": [
+      { "id": "b-ethiopia", "name": "Etiopía Yirgacheffe", "price": 45.00 },
+      { "id": "b-colombia", "name": "Colombia Huila", "price": 40.00 }
+    ],
+    "roast": [
+      { "id": "r-city", "name": "City (Medio)", "price": 0.00 },
+      { "id": "r-full", "name": "Full City (Medio-Oscuro)", "price": 0.00 }
+    ],
+    "milk": [
+      { "id": "m-velvet", "name": "Velvet (Microespuma)", "price": 0.00 },
+      { "id": "m-dry", "name": "Dry (Espuma densa)", "price": 0.00 }
+    ]
+  },
+  "single_origin": [
+    { 
+      "id": "so-geisha", 
+      "name": "Panamá Geisha", 
+      "price": 120.00, 
+      "description": "Uno de los cafés más exclusivos del mundo. Notas florales intensas.", 
+      "imageSrc": "./img/coffee/pour_over.png",
+      "tastingNotes": ["Jazmín", "Bergamota", "Miel", "Durazno"],
+      "techSheet": {
+        "Origen": "Boquete, Panamá",
+        "Altura": "1,700 msnm",
+        "Proceso": "Lavado",
+        "Variedad": "Geisha T27",
+        "Productor": "Hacienda Esmeralda",
+        "Puntaje SCA": "94 puntos"
+      }
+    },
+    { 
+      "id": "so-kenya", 
+      "name": "Kenya AA", 
+      "price": 85.00, 
+      "description": "Acidez vibrante y cuerpo jugoso. Complejo y frutal.", 
+      "imageSrc": "./img/coffee/chemex.png",
+      "tastingNotes": ["Grosella Negra", "Tomate Dulce", "Vino"],
+      "techSheet": {
+        "Origen": "Nyeri, Kenya",
+        "Altura": "1,800 msnm",
+        "Proceso": "Doble Lavado",
+        "Variedad": "SL28, SL34",
+        "Cosecha": "Noviembre 2024"
+      }
+    }
+  ],
+  "methods": [
+    { 
+        "id": "m-v60", "name": "V60 Pour Over", "price": 60.00, 
+        "description": "Extracción por goteo que resalta la claridad y acidez.", 
+        "imageSrc": "./img/coffee/v60.png",
+        "techSheet": { "Tiempo": "3:00 min", "Ratio": "1:16", "Molienda": "Media-Fina" }
+    },
+    { 
+        "id": "m-aeropress", "name": "Aeropress", "price": 60.00, 
+        "description": "Inmersión total y presión de aire. Cuerpo medio y dulce.", 
+        "imageSrc": "./img/coffee/aeropress.png",
+        "techSheet": { "Tiempo": "2:00 min", "Ratio": "1:14", "Molienda": "Media" }
+    }
+  ]
+}

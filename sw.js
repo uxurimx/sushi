@@ -1,5 +1,5 @@
 // Nombre del caché
-const CACHE_NAME = 'kaizen-sushi-v8'; // Incrementé la versión
+const CACHE_NAME = 'kaizen-sushi-v9'; // Incrementé la versión
 
 // Archivos que se guardarán en caché (solo locales)
 const CACHE_ASSETS = [
