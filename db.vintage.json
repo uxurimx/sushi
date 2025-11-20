@@ -1,0 +1,92 @@
+{
+  "restaurantPhone": "525598765432",
+  "restaurantName": "El Rincón del Tiempo",
+  "restaurantSlogan": "Encuentra historias, no solo objetos",
+  "menus": [
+    { "id": "antiques", "label": "Antigüedades y Muebles" },
+    { "id": "art", "label": "Arte y Decoración" },
+    { "id": "media", "label": "Música y Películas" },
+    { "id": "misc", "label": "Curiosidades y Otros" }
+  ],
+  "antiques": [
+    {
+      "id": "a-trunk",
+      "name": "Baúl de Viaje (ca. 1920)",
+      "price": 3500.00,
+      "description": "Baúl de madera y cuero con herrajes de bronce. Ideal para decoración o almacenamiento.",
+      "imageSrc": "./img/vintage/baul.png",
+      "condition": "Usado - Bueno",
+      "details": {
+        "Época": "Art Deco",
+        "Material": "Madera, Cuero, Bronce",
+        "Dimensiones": "90x50x45 cm"
+      }
+    },
+    {
+      "id": "a-chair",
+      "name": "Silla Thonet No. 14 Original",
+      "price": 1800.00,
+      "description": "Clásica silla de madera curvada, asiento de rejilla en buen estado.",
+      "imageSrc": "./img/vintage/silla.png",
+      "condition": "Usado - Excelente"
+    }
+  ],
+  "art": [
+    {
+      "id": "ar-oil",
+      "name": "Retrato al Óleo Firmado",
+      "price": 4800.00,
+      "description": "Pintura al óleo sobre tela con marco dorado original. Retrato de dama anónima.",
+      "imageSrc": "./img/vintage/pintura.png"
+    },
+    {
+      "id": "ar-print",
+      "name": "Set de 3 Láminas Botánicas",
+      "price": 550.00,
+      "description": "Reproducciones vintage de ilustraciones botánicas enmarcadas.",
+      "imageSrc": "./img/vintage/3set.png"
+    }
+  ],
+  "media": [
+    {
+      "id": "m-cd-rock",
+      "name": "CD: The Dark Side of the Moon",
+      "price": 150.00,
+      "description": "Edición original de 1993, en perfecto estado.",
+      "imageSrc": "./img/vintage/cd.png",
+      "details": {
+        "Formato": "CD",
+        "Artista": "Pink Floyd",
+        "Año": "1973"
+      }
+    },
+    {
+      "id": "m-vinyl-jazz",
+      "name": "LP Vinilo: Kind of Blue",
+      "price": 850.00,
+      "description": "Reimpresión de 180g, sonido de alta fidelidad.",
+      "imageSrc": "./img/vintage/vinil.png",
+      "details": {
+        "Formato": "LP Vinilo",
+        "Artista": "Miles Davis",
+        "Condición": "Nuevo (Sellado)"
+      }
+    }
+  ],
+  "misc": [
+    {
+      "id": "mi-camera",
+      "name": "Cámara Polaroid OneStep 600",
+      "price": 950.00,
+      "description": "Cámara instantánea clásica, probada y funcional.",
+      "imageSrc": "./img/vintage/camera.png"
+    },
+    {
+      "id": "mi-book",
+      "name": "Primera Edición: Cien Años de Soledad",
+      "price": 12000.00,
+      "description": "Edición de 1967, con desgaste normal por uso. Una verdadera pieza de colección.",
+      "imageSrc": "./img/vintage/100anos.png"
+    }
+  ]
+}
