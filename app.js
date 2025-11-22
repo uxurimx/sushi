@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // 6. Resetear estado del custom roll para evitar mezclas
         resetBuilderState();
+        updateCart();
     }
     
     // --- FIN FUNCIONES DE GESTIÓN ---
@@ -1094,46 +1095,60 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Formatea el pedido para enviar por WhatsApp
     function formatOrderMessage(order) {
-        const nombreNegocio = RESTAURANT_NAME || 'Pedido';
+        let nombreNegocio = 'Mi Pedido'; // Valor por defecto
+        if (DB && DB.restaurantName) {
+            nombreNegocio = DB.restaurantName;
+        }
 
         if (!order || !order.items || order.items.length === 0) {
             return `${nombreNegocio} - Pedido vacío`;
         }
 
         const lines = [];
-        lines.push(`${nombreNegocio} - Pedido ${order.id}`);
+        lines.push(`*${nombreNegocio}* - Pedido ${order.id}`); // Añadí negritas de WhatsApp (*)
         lines.push('');
 
         order.items.forEach(item => {
             const qty = item.quantity || 1;
             const unit = Number(item.price).toFixed(2);
             const total = (item.price * qty).toFixed(2);
-            let l = `${qty} x ${item.name} — $${total} ( $${unit} c/u )`;
+            
+            // Formato mejorado
+            let l = `${qty} x ${item.name} — $${total}`;
+            
             if (item.isCustom && item.description) {
-                l += `\n    • ${item.description}`;
+                l += `\n    _• ${item.description}_`; // Cursiva para detalles
             }
             if (item.notes) {
-                l += `\n    • NOTA: ${item.notes}`;
+                l += `\n    📝 Nota: ${item.notes}`;
             }
             lines.push(l);
         });
 
         lines.push('');
-        lines.push(`Total: $${Number(order.total).toFixed(2)}`);
+        lines.push(`*Total: $${Number(order.total).toFixed(2)}*`);
         lines.push('');
         lines.push('Por favor confirmar. Gracias!');
 
         return lines.join('\n');
     }
 
-    // Abrir WhatsApp con el pedido formateado (usa RESTAURANT_PHONE)
+    // Abrir WhatsApp con el pedido formateado
     function openWhatsAppForLastOrder() {
         const msg = formatOrderMessage(lastOrder);
-        const phone = (RESTAURANT_PHONE || '').toString().replace(/\D/g, '');
+        let currentPhone = '';
+        if (DB && DB.restaurantPhone) {
+            currentPhone = DB.restaurantPhone;
+        }
+
+        const phone = (currentPhone || '').toString().replace(/\D/g, '');
+        
         if (!phone) {
-            alert('Número de restaurante no configurado.');
+            console.error("DB actual:", DB);
+            alert('Número de restaurante no encontrado en db.json');
             return;
         }
+        
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
     }
@@ -1350,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                  data-notes='${notesData}'>
                 
                 <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
-                
+                <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                 <div class="flex-grow">
                     ${(appState.proMode && it.techSheet) ? '<span class="text-[10px] font-bold uppercase tracking-wider text-brand-primary mb-1 block">Specialty Grade</span>' : ''}
                     

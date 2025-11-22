@@ -1,0 +1,91 @@
+{
+  "restaurantPhone": "526181234567",
+  "restaurantName": "Kiromi Sushi",
+  "restaurantSlogan": "¡Síguenos el rollo!",
+  "menus": [
+    { "id": "builder", "label": "Arma tu Bowl" },
+    { "id": "starters", "label": "Entradas" },
+    { "id": "rolls", "label": "Rollos" },
+    { "id": "rice_noodles", "label": "Arroz y Fideos" },
+    { "id": "drinks", "label": "Bebidas" }
+  ],
+  "builder": {
+    "steps": [
+      { "id": "base", "label": "Elige tu Base", "type": "single" },
+      { "id": "protein", "label": "Elige Proteína", "type": "single" },
+      { "id": "filling", "label": "Vegetales", "type": "multi" },
+      { "id": "extras", "label": "Salsas y Extras", "type": "multi" }
+    ],
+    "base": [
+      { "id": "b-gohan", "name": "Gohan (Vapor)", "price": 50.00 },
+      { "id": "b-yaki", "name": "Yakimeshi (Frito)", "price": 65.00 },
+      { "id": "b-mixed", "name": "Arroz Mixto", "price": 75.00 }
+    ],
+    "protein": [
+      { "id": "p-chicken", "name": "Pollo", "price": 30.00 },
+      { "id": "p-beef", "name": "Res", "price": 45.00 },
+      { "id": "p-shrimp", "name": "Camarón", "price": 45.00 },
+      { "id": "p-mixed", "name": "Mixto (Mar y Tierra)", "price": 55.00 }
+    ],
+    "filling": [
+      { "id": "f-avocado", "name": "Aguacate", "price": 15.00 },
+      { "id": "f-cheese", "name": "Queso Philadelphia", "price": 15.00 },
+      { "id": "f-cucumber", "name": "Pepino", "price": 0.00 },
+      { "id": "f-veggies", "name": "Vegetales Tempura", "price": 20.00 }
+    ],
+    "extras": [
+      { "id": "e-tampico", "name": "Tampico", "price": 10.00 },
+      { "id": "e-eel", "name": "Salsa de Anguila", "price": 5.00 },
+      { "id": "e-chipotle", "name": "Aderezo Chipotle", "price": 10.00 },
+      { "id": "e-sriracha", "name": "Sriracha", "price": 10.00 },
+      { "id": "e-ginger", "name": "Jengibre", "price": 10.00 }
+    ]
+  },
+  "starters": [
+    { "id": "st-kushiage", "name": "Brocheta Kushiage", "price": 48.00, "description": "Brocheta empanizada. Opciones: Queso, Pollo o Camarón (+$5).", "imageSrc": "./img/sushi/kushiage.png" },
+    { "id": "st-edamame", "name": "Edamames", "price": 115.00, "description": "Vainas de frijol de soya. Opciones: Picantes o Naturales.", "imageSrc": "./img/sushi/edamame.png" },
+    { "id": "st-chile", "name": "Hot Chile", "price": 75.00, "description": "Chile caribe empanizado relleno de camarón, pollo, res, tocino y quesos.", "imageSrc": "./img/sushi/hotchile.png" },
+    { "id": "st-bite", "name": "Hot Bite", "price": 70.00, "description": "Chile caribe relleno de queso philadelphia, chihuahua y camarón, envuelto en tocino.", "imageSrc": "./img/sushi/hotbite.png" },
+    { "id": "st-tostada", "name": "Tostadas de Atún", "price": 99.00, "description": "2 piezas. Tostadas de aguachile de atún con piña.", "imageSrc": "./img/sushi/tostada.png" },
+    { "id": "st-sashimi", "name": "Sashimi Mixto", "price": 260.00, "description": "Finas láminas de atún y salmón (200g).", "imageSrc": "./img/sushi/sashimi.png" }
+  ],
+  "rolls": [
+    { 
+      "id": "r-tocineto", 
+      "name": "Tocineto Roll", 
+      "price": 150.00, 
+      "description": "Pollo por dentro, tocino ahumado por fuera, sriracha y shichimi encima. Empanizado.", 
+      "imageSrc": "./img/sushi/tocineto.png",
+      "tastingNotes": ["Ahumado", "Crujiente", "Picante"]
+    },
+    { 
+      "id": "r-monchoso", 
+      "name": "Monchoso", 
+      "price": 155.00, 
+      "description": "Res, pollo y tocino por dentro. Bañado en aderezo sriracha, cebollín y anguila.", 
+      "imageSrc": "./img/sushi/monchoso.png",
+      "tastingNotes": ["Goloso", "Umami", "Intenso"]
+    },
+    { "id": "r-diego", "name": "Diego Roll", "price": 150.00, "description": "Res y tocino por dentro, surimi por fuera, pollo empanizado encima.", "imageSrc": "./img/sushi/diego.png" },
+    { "id": "r-ebi", "name": "Ebi Roll", "price": 120.00, "description": "Camarón por dentro, queso y aguacate. Empanizado.", "imageSrc": "./img/sushi/ebi.png" },
+    { "id": "r-mar", "name": "Mar y Tierra", "price": 125.00, "description": "Res y camarón por dentro. Empanizado.", "imageSrc": "./img/sushi/marytierra.png" },
+    { "id": "r-crunchy", "name": "Crunchy Roll", "price": 150.00, "description": "Salmón por dentro y tampico crujiente encima. Empanizado.", "imageSrc": "./img/sushi/crunchy.png" },
+    { "id": "r-kobe", "name": "Kobe Hot (Horneado)", "price": 155.00, "description": "Res por dentro. Horneado con topping de queso y tocino.", "imageSrc": "./img/sushi/kobe.png" },
+    { "id": "r-philmaki", "name": "Philmaki (Natural)", "price": 115.00, "description": "Camarón por dentro, queso philadelphia y ajonjolí por fuera.", "imageSrc": "./img/sushi/philmaki.png" },
+    { "id": "r-aguachile", "name": "Aguachile Roll", "price": 170.00, "description": "Tampico por dentro, aguacate y surimi por fuera. Con aguachile de camarón al centro.", "imageSrc": "./img/sushi/aguachile_roll.png" }
+  ],
+  "rice_noodles": [
+    { "id": "rn-yakimeshi", "name": "Yakimeshi Mixto", "price": 130.00, "description": "Arroz frito con huevo, tocino, verduras, pollo, res y camarón.", "imageSrc": "./img/sushi/yakimeshi.png" },
+    { "id": "rn-gohan", "name": "Gohan Especial", "price": 125.00, "description": "Arroz al vapor con tampico, aguacate, queso philadelphia y proteína mixta.", "imageSrc": "./img/sushi/gohan.png" },
+    { "id": "rn-bomba", "name": "Bomba", "price": 150.00, "description": "Bola de arroz empanizada rellena de camarón, surimi y queso.", "imageSrc": "./img/sushi/bomba.png" },
+    { "id": "rn-padthai", "name": "Pad Thai", "price": 170.00, "description": "Pasta Chantaboon estilo Thai con camarones, pollo, tofu y cacahuate.", "imageSrc": "./img/sushi/padthai.png" },
+    { "id": "rn-yakisoba", "name": "Yakisoba Sirloin", "price": 180.00, "description": "Pasta Yakisoba con brócoli, champiñones y sirloin (150g).", "imageSrc": "./img/sushi/yakisoba.png" }
+  ],
+  "drinks": [
+    { "id": "d-coca", "name": "Coca-Cola", "price": 45.00, "description": "Refresco 355ml.", "imageSrc": "./img/sushi/coca.png" },
+    { "id": "d-jazmin", "name": "Té de Jazmín", "price": 47.00, "description": "Té helado de la casa (Refill).", "imageSrc": "./img/sushi/te.png" },
+    { "id": "d-calpico", "name": "Calpico", "price": 50.00, "description": "Bebida refrescante a base de arroz.", "imageSrc": "./img/sushi/calpico.png" },
+    { "id": "d-limonada", "name": "Limonada Frutos Rojos", "price": 60.00, "description": "562 ml.", "imageSrc": "./img/sushi/limonada.png" },
+    { "id": "d-ramune", "name": "Ramune", "price": 69.00, "description": "Refresco japonés tradicional.", "imageSrc": "./img/sushi/ramune.png" }
+  ]
+}
