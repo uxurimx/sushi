@@ -1,0 +1,116 @@
+/* --- mobile.css --- */
+/* Estilos Base y Mobile First */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+/* --- Reset & Tipografía --- */
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Utilidades UI/UX --- */
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Efecto de presión táctil */
+.tap-press {
+    transition-property: transform;
+    transition-duration: 75ms;
+    transition-timing-function: ease-out;
+}
+.tap-press:active {
+    transform: scale(0.95);
+}
+
+/* --- Componentes Visuales --- */
+
+/* Hero Parallax */
+.parallax-hero {
+    background-color: black;
+    background-attachment: scroll; /* En móvil fixed a veces da problemas */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.parallax-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2) 60%);
+}
+
+/* Transiciones de Texto */
+#hero-restaurant-name:empty, 
+#hero-slogan:empty,
+#restaurant-name:empty {
+    opacity: 0;
+}
+#hero-restaurant-name, #hero-slogan, #restaurant-name {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+/* --- Navegación Horizontal (Tabs) --- */
+#menus-nav {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.menu-scroll-indicator {
+    position: absolute;
+    top: 0; bottom: 0; width: 40px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 20; pointer-events: auto;
+    font-size: 22px;
+    color: rgba(17,24,39,0.9);
+    background: linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0));
+    transition: opacity 0.15s ease;
+}
+.menu-scroll-indicator.right {
+    right: 0;
+    transform: rotate(0deg);
+    background: linear-gradient(to left, rgba(255,255,255,0.95), rgba(255,255,255,0));
+}
+.menu-scroll-indicator.left { left: 0; }
+.menu-scroll-indicator.hidden { display: none; }
+
+/* Dark mode para indicadores */
+.dark .menu-scroll-indicator { 
+    color: rgba(255,255,255,0.92); 
+    background: linear-gradient(to right, rgba(18,18,18,0.95), rgba(18,18,18,0)); 
+}
+.dark .menu-scroll-indicator.right { 
+    background: linear-gradient(to left, rgba(18,18,18,0.95), rgba(18,18,18,0)); 
+}
+
+/* --- Animaciones de Modales (Móvil) --- */
+.modal-fade-in { animation: fadeIn 0.3s ease-out; }
+.modal-slide-in { animation: slideIn 0.3s ease-out; }
+.modal-slide-in-bottom { animation: slideInBottom 0.3s ease-out; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideInBottom { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* --- Lógica de Pantallas (SPA) --- */
+#app-screen { display: none; }
+
+html.app-cargada #hero-screen { display: none; }
+html.app-cargada #app-screen { display: flex; }

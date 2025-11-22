@@ -1,0 +1,84 @@
+/* --- desktop.css --- */
+/* Estilos Exclusivos para Escritorio y Tablets Grandes (POS) */
+
+@media (min-width: 768px) {
+    
+    /* 1. Layout General */
+    #app-screen {
+        width: 100%;
+        flex-grow: 1;
+        max-width: none; /* Romper el contenedor móvil */
+    }
+
+    /* Ocultar elementos exclusivos de móvil */
+    #cart-button { display: none !important; }
+    
+    /* Si la app ya cargó, aseguramos ocultar el hero */
+    html.app-cargada #hero-screen { display: none; }
+
+    /* 2. Grilla de Productos (Grid View) */
+    /* Convertimos las listas verticales en cuadrículas */
+    #gallery-list, 
+    #drinks-list, 
+    .tab-panel .space-y-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    
+    /* Resetear márgenes automáticos de Tailwind space-y */
+    #gallery-list > *, 
+    #drinks-list > * {
+        margin-top: 0 !important; 
+    }
+
+    /* 3. Navegación */
+    #menus-nav {
+        justify-content: center; /* Centrar pestañas en pantalla grande */
+    }
+
+    /* 4. Modales Adaptados (Centrados tipo Popup) */
+    #detail-modal .modal-slide-in-bottom,
+    #cart-modal .modal-slide-in, 
+    #success-modal .modal-slide-in-bottom,
+    #confirm-modal .modal-slide-in-bottom {
+        max-width: 500px;
+        margin: auto;
+        border-radius: 12px;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        animation: desktopFadeIn 0.2s ease-out; 
+        max-height: 85vh;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Footer del builder integrado (no flotante) */
+    #builder-footer {
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+        border-radius: 0;
+        border-top: 2px solid #e5e7eb;
+        margin-top: 2rem;
+        background-color: transparent;
+        position: static; /* Dejar de ser absoluto */
+    }
+    
+    .dark #builder-footer {
+        border-top-color: #404040;
+        background-color: transparent;
+        box-shadow: none;
+    }
+
+    /* Ajuste del padding inferior del main */
+    main.pb-32 {
+        padding-bottom: 2rem !important;
+    }
+
+    /* Animación específica para desktop (sin slide desde abajo) */
+    @keyframes desktopFadeIn {
+        from { opacity: 0; transform: translateY(-48%); } 
+        to { opacity: 1; transform: translateY(-50%); } 
+    }
+}

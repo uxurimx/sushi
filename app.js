@@ -12,19 +12,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Unir este socket a la sala de la tienda para recibir pedidos en tiempo real
     socket.emit('join-store', CURRENT_STORE_SLUG);
 
-    // Escuchar nuevos pedidos (SOLO RELEVANTE SI ESTAMOS EN MODO POS/DESKTOP)
     socket.on('new-order', (order) => {
-        console.log('🔥 NUEVO PEDIDO RECIBIDO SOCKET:', order);
+        console.log('🔥 NUEVO PEDIDO:', order);
         
-        // Reproducir sonido
-        const audio = new Audio('./sounds/bell.mp3'); // Asegúrate de tener este archivo
+        // 1. Sonido
+        const audio = new Audio('./sounds/bell.mp3');
         audio.play().catch(e => console.log('Audio error', e));
 
+        // 2. Toaster
         showToaster(`¡Nuevo pedido de $${order.total}!`);
-        
-        // Aquí podrías agregar la lógica para inyectar la orden en la lista de "Ordenes Pendientes"
-        // si decides crear un panel de cocina.
-        // Por ahora, si es el POS Desktop, podrías actualizar la vista.
+
+        // 3. ACTUALIZAR LISTA DE PEDIDOS (NUEVO)
+        // Lo agregamos al principio del array
+        appState.pendingOrders.unshift(order);
+        renderOrdersList();
+    });
+
+    // Escuchar también cuando se completan (por si tienes 2 tablets en la misma tienda)
+    socket.on('order-completed', (orderId) => {
+        appState.pendingOrders = appState.pendingOrders.filter(o => o._id !== orderId);
+        renderOrdersList();
     });
 
     // --- VARIABLES GLOBALES ---
@@ -79,7 +86,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (res.ok) {
                 DB = await res.json();
                 renderApp();
+                
                 toggleSideMenu(false);
+                fetchPendingOrders();
                 showToaster('¡Tienda cargada exitosamente!');
             } else {
                 console.warn('Tienda no encontrada en servidor');
@@ -327,7 +336,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentTab: 'builder',
         customRoll: {}, // <--- Lo dejamos vacío inicialmente
         cart: loadCartFromStorage(),
-        proMode: localStorage.getItem('proMode') === 'true' // <--- NUEVO: Leer memoria
+        proMode: localStorage.getItem('proMode') === 'true', // <--- NUEVO: Leer memoria
+        pendingOrders: []
     };
 
     // CORRECCIÓN: Inicializar estructura dinámica basada en DB
@@ -1795,6 +1805,141 @@ document.addEventListener('DOMContentLoaded', async () => {
             cashInput.value = exactAmount; // Sin decimales extra si es entero
             calculateChange(); // Debería dar cambio $0.00
             closeNumpad();
+        });
+    }
+
+    // ==========================================
+    // 4. LÓGICA DEL PANEL DE PEDIDOS (COCINA)
+    // ==========================================
+
+    const tabPosCart = document.getElementById('tab-pos-cart');
+    const tabPosOrders = document.getElementById('tab-pos-orders');
+    const panelPosCart = document.getElementById('panel-pos-cart');
+    const panelPosOrders = document.getElementById('panel-pos-orders');
+    const incomingOrdersList = document.getElementById('incoming-orders-list');
+    const ordersBadge = document.getElementById('orders-badge');
+
+    // --- Pestañas ---
+    if(tabPosCart && tabPosOrders) {
+        tabPosCart.addEventListener('click', () => switchPosTab('cart'));
+        tabPosOrders.addEventListener('click', () => switchPosTab('orders'));
+    }
+
+    function switchPosTab(tab) {
+        if (tab === 'cart') {
+            panelPosCart.classList.remove('hidden');
+            panelPosOrders.classList.add('hidden');
+            
+            // Estilos activos
+            tabPosCart.classList.add('border-brand-primary', 'bg-white', 'dark:bg-dark-card', 'text-brand-secondary', 'dark:text-white');
+            tabPosCart.classList.remove('border-transparent', 'text-gray-500');
+            
+            tabPosOrders.classList.remove('border-brand-primary', 'bg-white', 'dark:bg-dark-card', 'text-brand-secondary', 'dark:text-white');
+            tabPosOrders.classList.add('border-transparent', 'text-gray-500');
+        } else {
+            panelPosCart.classList.add('hidden');
+            panelPosOrders.classList.remove('hidden');
+
+            // Estilos activos
+            tabPosOrders.classList.add('border-brand-primary', 'bg-white', 'dark:bg-dark-card', 'text-brand-secondary', 'dark:text-white');
+            tabPosOrders.classList.remove('border-transparent', 'text-gray-500');
+
+            tabPosCart.classList.remove('border-brand-primary', 'bg-white', 'dark:bg-dark-card', 'text-brand-secondary', 'dark:text-white');
+            tabPosCart.classList.add('border-transparent', 'text-gray-500');
+            
+            // Al ver los pedidos, podríamos querer quitar la animación del badge, pero mejor dejarla hasta que se completen
+        }
+    }
+
+    // --- API & Rendering ---
+
+    async function fetchPendingOrders() {
+        try {
+            const res = await fetch(`${API_URL}/api/orders/${CURRENT_STORE_SLUG}`);
+            if (res.ok) {
+                appState.pendingOrders = await res.json();
+                renderOrdersList();
+            }
+        } catch (e) {
+            console.error("Error fetching orders", e);
+        }
+    }
+
+    function renderOrdersList() {
+        if (!incomingOrdersList) return;
+
+        // Actualizar Badge
+        const count = appState.pendingOrders.length;
+        if (ordersBadge) {
+            ordersBadge.textContent = count;
+            if (count > 0) ordersBadge.classList.remove('hidden');
+            else ordersBadge.classList.add('hidden');
+        }
+
+        if (count === 0) {
+            incomingOrdersList.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-64 text-gray-400 opacity-50">
+                     <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                     <p class="text-sm">Todo limpio, chef.</p>
+                </div>`;
+            return;
+        }
+
+        incomingOrdersList.innerHTML = appState.pendingOrders.map(order => {
+            // Calcular tiempo transcurrido
+            const created = new Date(order.createdAt);
+            const now = new Date();
+            const diffMins = Math.floor((now - created) / 60000);
+            const timeString = diffMins < 1 ? 'Ahora' : `Hace ${diffMins} min`;
+            const shortId = order._id.slice(-4).toUpperCase();
+
+            return `
+            <div class="bg-white dark:bg-dark-card p-3 rounded-lg shadow-sm border-l-4 border-brand-primary animate-fade-in relative group">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span class="bg-gray-100 dark:bg-dark-border text-gray-600 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">#${shortId}</span>
+                        <span class="text-xs text-gray-400 ml-2 font-mono">${timeString}</span>
+                    </div>
+                    <p class="font-bold text-brand-primary">$${order.total.toFixed(2)}</p>
+                </div>
+                
+                <div class="space-y-1 mb-3">
+                    ${order.items.map(item => `
+                        <div class="text-sm leading-tight">
+                            <span class="font-bold text-gray-800 dark:text-gray-200">${item.quantity}x ${item.name}</span>
+                            ${item.notes ? `<span class="text-xs text-orange-500 block ml-4">📝 ${item.notes}</span>` : ''}
+                            ${item.isCustom ? `<span class="text-[10px] text-gray-400 block ml-4 leading-none">${item.description}</span>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="complete-order-btn w-full py-2 bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/40 font-bold text-sm rounded transition-colors flex items-center justify-center gap-2" data-id="${order._id}">
+                    <span>✅ Listo / Entregado</span>
+                </button>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Evento para completar orden
+    if (incomingOrdersList) {
+        incomingOrdersList.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.complete-order-btn');
+            if (!btn) return;
+
+            const orderId = btn.dataset.id;
+            // UI Optimista: Lo quitamos visualmente antes de que el server responda para que se sienta rápido
+            appState.pendingOrders = appState.pendingOrders.filter(o => o._id !== orderId);
+            renderOrdersList();
+
+            try {
+                await fetch(`${API_URL}/api/order/${orderId}/complete`, { method: 'PUT' });
+                // El socket nos avisará, pero ya lo quitamos localmente
+            } catch (err) {
+                console.error("Error completando orden", err);
+                showToaster("Error de conexión");
+                fetchPendingOrders(); // Revertir si falló
+            }
         });
     }
     
