@@ -969,6 +969,51 @@ document.addEventListener('DOMContentLoaded', async () => {
             clearCartBtn.classList.remove('hidden');
         }
 
+        // // 1. RENDERIZADO MÓVIL (Tu código actual)
+        // if (appState.cart.length === 0) {
+        //     cartItemsList.innerHTML = '<p class="text-gray-500...">Tu carrito está vacío.</p>';
+        // } else {
+        //     // ... tu .map actual ...
+        //     cartItemsList.innerHTML = appState.cart.map(item => { /* ... */ }).join('');
+        // }
+
+        // 2. RENDERIZADO DESKTOP (NUEVO CÓDIGO)
+        const desktopList = document.getElementById('desktop-cart-list');
+        const desktopTotal = document.getElementById('desktop-cart-total');
+        
+        if (desktopList && desktopTotal) {
+            desktopTotal.textContent = `$${appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`;
+
+            if (appState.cart.length === 0) {
+                desktopList.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-64 text-gray-400 opacity-50">
+                        <svg class="w-16 h-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <p>Esperando productos...</p>
+                    </div>`;
+            } else {
+                desktopList.innerHTML = appState.cart.map(item => `
+                    <div class="bg-white dark:bg-dark-bg p-3 rounded border border-gray-100 dark:border-dark-border shadow-sm animate-fade-in">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-sm dark:text-white">${item.name}</p>
+                                ${item.isCustom ? `<p class="text-xs text-gray-400">${item.description}</p>` : ''}
+                                <div class="flex items-center mt-2 space-x-2">
+                                     <button class="cart-quantity-btn bg-gray-100 dark:bg-dark-border hover:bg-gray-200 px-2 rounded text-sm" data-id="${item.id}" data-action="decrease">-</button>
+                                     <span class="text-sm font-bold w-4 text-center dark:text-white">${item.quantity}</span>
+                                     <button class="cart-quantity-btn bg-gray-100 dark:bg-dark-border hover:bg-gray-200 px-2 rounded text-sm" data-id="${item.id}" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-brand-secondary dark:text-white">$${(item.price * item.quantity).toFixed(2)}</p>
+                                <button class="cart-remove-btn text-xs text-red-400 hover:text-red-600 mt-1 underline" data-id="${item.id}">Eliminar</button>
+                            </div>
+                        </div>
+                        ${item.notes ? `<p class="text-xs text-orange-500 mt-1 bg-orange-50 p-1 rounded">📝 ${item.notes}</p>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
         // --- Actualizar badges en menú y bebidas ---
         const counts = {};
         appState.cart.forEach(it => { counts[it.id] = (counts[it.id] || 0) + it.quantity; });
@@ -986,6 +1031,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(appState.cart));
+        if (typeof calculateChange === 'function') calculateChange();
     }
 
     // Manejo de botones dentro del carrito (aumentar / disminuir / eliminar)
@@ -1453,6 +1499,104 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
         updateBuilderSummary();
+    }
+
+    // EVENTOS PARA EL POS DESKTOP
+    const desktopCartList = document.getElementById('desktop-cart-list');
+    if(desktopCartList){
+        desktopCartList.addEventListener('click', (e) => {
+            // Reutilizamos la lógica detectando las mismas clases
+            const quantityBtn = e.target.closest('.cart-quantity-btn');
+            const removeBtn = e.target.closest('.cart-remove-btn');
+
+            if (quantityBtn) {
+                const id = quantityBtn.dataset.id;
+                const action = quantityBtn.dataset.action;
+                const item = appState.cart.find(i => i.id === id);
+                if (!item) return;
+
+                if (action === 'increase') item.quantity += 1;
+                else if (action === 'decrease') {
+                    item.quantity -= 1;
+                    if (item.quantity <= 0) appState.cart = appState.cart.filter(i => i.id !== id);
+                }
+                updateCart();
+            }
+            if (removeBtn) {
+                const id = removeBtn.dataset.id;
+                appState.cart = appState.cart.filter(i => i.id !== id);
+                updateCart();
+            }
+        });
+    }
+    
+    const cashInput = document.getElementById('cash-input');
+    const changeDisplay = document.getElementById('change-display');
+
+    function calculateChange() {
+        if (!cashInput || !changeDisplay) return;
+        
+        const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const cash = parseFloat(cashInput.value) || 0;
+        const change = cash - total;
+
+        if (cash > 0) {
+            changeDisplay.textContent = `$${change.toFixed(2)}`;
+            // Color verde si alcanza, rojo si falta
+            if (change >= 0) {
+                changeDisplay.classList.remove('text-red-500', 'text-gray-400');
+                changeDisplay.classList.add('text-green-600');
+            } else {
+                changeDisplay.classList.remove('text-green-600', 'text-gray-400');
+                changeDisplay.classList.add('text-red-500');
+            }
+        } else {
+            changeDisplay.textContent = "$0.00";
+            changeDisplay.classList.remove('text-green-600', 'text-red-500');
+            changeDisplay.classList.add('text-gray-400');
+        }
+    }
+
+    // Escuchar cambios en el input de efectivo
+    if (cashInput) {
+        cashInput.addEventListener('input', calculateChange);
+    }
+
+    // --- BOTONES DEL FOOTER DESKTOP (Actualizados) ---
+    const desktopClearBtn = document.getElementById('desktop-clear-btn');
+    const desktopConfirmBtn = document.getElementById('desktop-confirm-btn');
+
+    if(desktopClearBtn) {
+        desktopClearBtn.addEventListener('click', () => {
+            if(appState.cart.length === 0) return;
+            if(confirm('¿Cancelar y borrar la orden actual?')) {
+                appState.cart = [];
+                if(cashInput) cashInput.value = ''; // Reset calculadora
+                updateCart();
+            }
+        });
+    }
+
+    // MODIFICADO: Finalizar orden LOCALMENTE (Opción 3)
+    if(desktopConfirmBtn) {
+        desktopConfirmBtn.addEventListener('click', () => {
+           if (appState.cart.length === 0) {
+                showToaster('El carrito está vacío');
+                return;
+           }
+           
+           // Aquí podrías guardar la orden en un historial local si quisieras
+           console.log('Orden finalizada en punto de venta:', appState.cart);
+           
+           // Limpiar todo
+           appState.cart = [];
+           if(cashInput) cashInput.value = ''; // Reset calculadora
+           updateCart();
+           
+           // Mostrar confirmación simple en lugar de abrir WhatsApp/Modales
+           showToaster('✅ ¡Orden Finalizada y Guardada!');
+           // Opcional: reproducir un sonido de caja registradora aquí
+        });
     }
     
     updateCart();

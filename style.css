@@ -145,3 +145,81 @@ html.app-cargada #app-screen {
 /* Dark mode adjustments for indicators */
 .dark .menu-scroll-indicator { color: rgba(255,255,255,0.92); background: linear-gradient(to right, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
 .dark .menu-scroll-indicator.right { background: linear-gradient(to left, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
+
+/* --- ESTILOS MODO POS (DESKTOP) --- */
+
+@media (min-width: 768px) {
+    /* El contenedor de la app ocupa el espacio restante */
+    #app-screen {
+        width: 100%;
+        flex-grow: 1;
+        max-width: none; /* Quitar límite de ancho */
+    }
+
+    /* Ocultar el botón flotante del carrito en escritorio */
+    #cart-button {
+        display: none !important;
+    }
+
+    /* Ocultar el Hero en escritorio si ya cargó la app */
+    html.app-cargada #hero-screen {
+        display: none;
+    }
+
+    /* Ajustar la grilla de productos para aprovechar el espacio ancho */
+    /* Convertimos las listas de 1 columna a Grid */
+    #gallery-list, #drinks-list, .tab-panel .space-y-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+    /* Resetear márgenes de los hijos del grid */
+    #gallery-list > *, #drinks-list > * {
+        margin-top: 0 !important; /* Tailwind space-y añade margin-top */
+    }
+    
+    /* Hacer el menú de navegación más grande */
+    #menus-nav {
+        justify-content: center; /* Centrar pestañas */
+    }
+
+    /* Modales centrados en vez de slide-up */
+    #detail-modal .modal-slide-in-bottom,
+    #cart-modal .modal-slide-in, 
+    #success-modal .modal-slide-in-bottom {
+        max-width: 500px;
+        margin: auto;
+        border-radius: 12px;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        animation: fadeIn 0.2s ease-out; 
+        max-height: 90vh;
+    }
+    
+    /* Sobreescribir animaciones de slide para desktop */
+    @keyframes slideInBottom { from { opacity:0; transform: translateY(-45%); } to { opacity:1; transform: translateY(-50%); } }
+    
+    #builder-footer {
+        width: 100%;
+        max-width: none;
+        box-shadow: none; /* Quitar sombra superior */
+        border-radius: 0; /* Quitar bordes redondeados superiores */
+        border-top: 2px solid #e5e7eb; /* Línea separadora sólida */
+        margin-top: 2rem; /* Espacio para separarlo del contenido */
+        background-color: transparent; /* Que tome el fondo del main */
+    }
+
+    /* Ajuste para modo oscuro */
+    .dark #builder-footer {
+        border-top-color: #404040;
+        background-color: transparent;
+        box-shadow: none;
+    }
+
+    /* Asegurar que el main no tenga padding bottom extra en desktop */
+    main.pb-32 {
+        padding-bottom: 2rem !important;
+    }
+}
+
