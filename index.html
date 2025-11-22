@@ -181,8 +181,7 @@
                  <div class="flex items-center space-x-3">
                      <div class="relative flex-grow">
                          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                         <input type="number" id="cash-input" placeholder="0.00" class="w-full pl-7 pr-3 py-2 rounded border border-gray-300 dark:border-dark-border dark:bg-dark-bg focus:ring-2 focus:ring-brand-primary focus:outline-none dark:text-white font-bold" min="0" step="0.01">
-                     </div>
+                    <input type="text" id="cash-input" placeholder="Tocar para ingresar" readonly class="cursor-pointer w-full pl-7 pr-3 py-2 rounded border border-gray-300 dark:border-dark-border dark:bg-dark-bg focus:ring-2 focus:ring-brand-primary focus:outline-none dark:text-white font-bold text-right text-lg" value="">                     </div>
                      <div class="text-right">
                           <p class="text-xs text-gray-500">Cambio:</p>
                           <p id="change-display" class="font-bold text-xl text-gray-400">$0.00</p>
@@ -407,5 +406,50 @@
     </div>
 </div>
     </div> <script src="app.js"></script>
+    <div id="numpad-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center">
+    <div id="numpad-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+
+    <div class="relative bg-white dark:bg-dark-card w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-100 p-4">
+        
+        <div class="mb-4 text-center">
+            <h3 class="text-sm font-bold text-gray-500 uppercase mb-2">Ingresa Cantidad</h3>
+            <div class="flex items-center justify-between bg-gray-100 dark:bg-dark-bg p-4 rounded-xl border-2 border-brand-primary/20">
+                <span class="text-gray-500 text-2xl font-light">$</span>
+                <span id="numpad-display" class="text-4xl font-extrabold text-brand-secondary dark:text-white tracking-wider">0</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4">
+            <button class="quick-cash-btn py-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-bold rounded-lg text-sm hover:bg-green-200" data-value="50">$50</button>
+            <button class="quick-cash-btn py-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-bold rounded-lg text-sm hover:bg-green-200" data-value="100">$100</button>
+            <button class="quick-cash-btn py-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-bold rounded-lg text-sm hover:bg-green-200" data-value="200">$200</button>
+            <button class="quick-cash-btn py-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-bold rounded-lg text-sm hover:bg-green-200" data-value="500">$500</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="1">1</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="2">2</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="3">3</button>
+
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="4">4</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="5">5</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="6">6</button>
+
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="7">7</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="8">8</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="9">9</button>
+
+            <button class="numpad-action py-4 bg-red-50 text-red-500 font-bold rounded-xl shadow-sm hover:bg-red-100 active:scale-95 transition-transform" data-action="clear">C</button>
+            <button class="numpad-key py-4 bg-gray-50 dark:bg-dark-border text-xl font-bold rounded-xl shadow-sm hover:bg-gray-200 active:scale-95 transition-transform dark:text-white" data-key="0">0</button>
+            <button class="numpad-action py-4 bg-brand-secondary text-white font-bold rounded-xl shadow-sm hover:bg-gray-700 active:scale-95 transition-transform flex items-center justify-center" data-action="confirm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </button>
+        </div>
+        
+        <button id="numpad-exact-btn" class="w-full mt-3 py-3 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-bold rounded-xl hover:bg-blue-100 active:scale-95 transition">
+            Pago Exacto ($0.00)
+        </button>
+    </div>
+</div>
 </body>
 </html>

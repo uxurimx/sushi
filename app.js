@@ -1598,6 +1598,92 @@ document.addEventListener('DOMContentLoaded', async () => {
            // Opcional: reproducir un sonido de caja registradora aquí
         });
     }
+
+    // ==========================================
+    // 3. LÓGICA DEL NUMPAD TÁCTIL (POS)
+    // ==========================================
+    const numpadModal = document.getElementById('numpad-modal');
+    const numpadOverlay = document.getElementById('numpad-overlay');
+    const numpadDisplay = document.getElementById('numpad-display');
+    const numpadExactBtn = document.getElementById('numpad-exact-btn');
+    let currentNumpadValue = "0";
+
+    // Función para abrir el Numpad
+    if (cashInput) {
+        cashInput.addEventListener('click', () => {
+            // Si ya tiene valor, ponerlo en el display
+            currentNumpadValue = cashInput.value ? cashInput.value : "";
+            updateNumpadDisplay();
+            
+            // Actualizar botón de "Exacto" con el total actual del carrito
+            const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            numpadExactBtn.textContent = `Pago Exacto ($${total.toFixed(2)})`;
+            numpadExactBtn.dataset.total = total; // Guardamos el valor
+
+            numpadModal.classList.remove('hidden');
+        });
+    }
+
+    function closeNumpad() {
+        numpadModal.classList.add('hidden');
+    }
+
+    function updateNumpadDisplay() {
+        numpadDisplay.textContent = currentNumpadValue || "0";
+    }
+
+    // Cerrar al tocar fuera
+    if (numpadOverlay) numpadOverlay.addEventListener('click', closeNumpad);
+
+    // Eventos del Grid Numérico
+    document.querySelectorAll('.numpad-key').forEach(key => {
+        key.addEventListener('click', () => {
+            const num = key.dataset.key;
+            if (currentNumpadValue === "0") currentNumpadValue = num;
+            else currentNumpadValue += num;
+            updateNumpadDisplay();
+        });
+    });
+
+    // Eventos de Acciones (Borrar / Confirmar)
+    document.querySelectorAll('.numpad-action').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            
+            if (action === 'clear') {
+                currentNumpadValue = "0";
+                updateNumpadDisplay();
+            } 
+            
+            if (action === 'confirm') {
+                // Pasar valor al input real
+                cashInput.value = currentNumpadValue;
+                // Disparar cálculo de cambio manualmente
+                calculateChange();
+                closeNumpad();
+            }
+        });
+    });
+
+    // Eventos de Billetes Rápidos ($50, $100...)
+    document.querySelectorAll('.quick-cash-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentNumpadValue = btn.dataset.value;
+            cashInput.value = currentNumpadValue;
+            calculateChange();
+            closeNumpad();
+        });
+    });
+
+    // Evento Botón Exacto
+    if (numpadExactBtn) {
+        numpadExactBtn.addEventListener('click', () => {
+            const exactAmount = numpadExactBtn.dataset.total;
+            cashInput.value = exactAmount; // Sin decimales extra si es entero
+            calculateChange(); // Debería dar cambio $0.00
+            closeNumpad();
+        });
+    }
     
     updateCart();
 
