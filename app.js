@@ -1,31 +1,93 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+
+    // --- CONFIGURACIÓN BACKEND ---
+    const API_URL = 'http://localhost:3000'; // Cambiar por tu URL de producción (Render/Heroku)
+    const socket = io(API_URL);
+
+    // Detectar tienda por URL (ej: miapp.com?store=kiromi) o usar default
+    const urlParams = new URLSearchParams(window.location.search);
+    let CURRENT_STORE_SLUG = urlParams.get('store') || 'demo-sushi'; // 'demo-sushi' debe existir en tu MongoDB
+
+    // Unir este socket a la sala de la tienda para recibir pedidos en tiempo real
+    socket.emit('join-store', CURRENT_STORE_SLUG);
+
+    // Escuchar nuevos pedidos (SOLO RELEVANTE SI ESTAMOS EN MODO POS/DESKTOP)
+    socket.on('new-order', (order) => {
+        console.log('🔥 NUEVO PEDIDO RECIBIDO SOCKET:', order);
+        
+        // Reproducir sonido
+        const audio = new Audio('./sounds/bell.mp3'); // Asegúrate de tener este archivo
+        audio.play().catch(e => console.log('Audio error', e));
+
+        showToaster(`¡Nuevo pedido de $${order.total}!`);
+        
+        // Aquí podrías agregar la lógica para inyectar la orden en la lista de "Ordenes Pendientes"
+        // si decides crear un panel de cocina.
+        // Por ahora, si es el POS Desktop, podrías actualizar la vista.
+    });
+
     // --- VARIABLES GLOBALES ---
     let DB = null;
     
     // --- FUNCIONES DE GESTIÓN DE DATOS ---
     
     // Función principal para cargar/recargar la app
-    async function loadDatabase(url) {
+    // async function loadDatabase(url) {
+    //     try {
+    //         const res = await fetch(url);
+    //         if (res.ok) {
+    //             DB = await res.json();
+    //             // Guardamos la preferencia en localStorage
+    //             localStorage.setItem('lastDbUrl', url);
+    //             renderApp(); // <- Función mágica que actualiza todo
+                
+    //             // Cerrar menú lateral si está abierto
+    //             toggleSideMenu(false);
+                
+    //             // Feedback visual
+    //             showToaster('¡Menú actualizado!');
+    //         } else {
+    //             console.warn('DB no encontrada:', url);
+    //             showToaster('Error cargando menú');
+    //         }
+    //     } catch (e) {
+    //         console.error('Error fatal:', e);
+    //     }
+    // }
+
+    async function loadDatabase(slugOrUrl) {
         try {
-            const res = await fetch(url);
+            // Si viene una URL completa (legado), extraemos slug o usamos la lógica nueva
+            let endpoint = `${API_URL}/api/store/${CURRENT_STORE_SLUG}`;
+            
+            // Si el usuario cambia de tienda con los botones laterales, actualizamos el slug
+            if (slugOrUrl && !slugOrUrl.includes('/')) {
+                CURRENT_STORE_SLUG = slugOrUrl;
+                endpoint = `${API_URL}/api/store/${CURRENT_STORE_SLUG}`;
+                
+                // Reconectar socket a la nueva tienda
+                socket.emit('join-store', CURRENT_STORE_SLUG);
+                
+                // Actualizar URL del navegador sin recargar (UX Pro)
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('store', CURRENT_STORE_SLUG);
+                window.history.pushState({}, '', newUrl);
+            }
+
+            const res = await fetch(endpoint);
             if (res.ok) {
                 DB = await res.json();
-                // Guardamos la preferencia en localStorage
-                localStorage.setItem('lastDbUrl', url);
-                renderApp(); // <- Función mágica que actualiza todo
-                
-                // Cerrar menú lateral si está abierto
+                renderApp();
                 toggleSideMenu(false);
-                
-                // Feedback visual
-                showToaster('¡Menú actualizado!');
+                showToaster('¡Tienda cargada exitosamente!');
             } else {
-                console.warn('DB no encontrada:', url);
-                showToaster('Error cargando menú');
+                console.warn('Tienda no encontrada en servidor');
+                showToaster('Error: Tienda no existe');
             }
         } catch (e) {
             console.error('Error fatal:', e);
+            // Fallback opcional: cargar json local si el servidor cae
         }
     }
 
@@ -1111,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Confirmar pedido: cerrar carrito, mostrar modal de éxito y guardar snapshot del pedido
-    placeOrderBtn.addEventListener('click', () => {
+    placeOrderBtn.addEventListener('click', async () => {
         // En una app real aquí se enviaría al servidor
         console.log('Pedido Confirmado:', appState.cart);
 
@@ -1130,6 +1192,57 @@ document.addEventListener('DOMContentLoaded', async () => {
             })),
             total: totalPrice
         };
+
+        // const totalPrice = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        const orderData = {
+            storeSlug: CURRENT_STORE_SLUG,
+            items: appState.cart,
+            total: totalPrice,
+            paymentMethod: 'cash' // Podrías agregar un selector en el checkout
+        };
+
+        try {
+            // 2. Deshabilitar botón para evitar doble click
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.textContent = "Enviando...";
+
+            // 3. Enviar a Node.js
+            const response = await fetch(`${API_URL}/api/order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('Pedido guardado en nube ID:', result.orderId);
+                
+                // Crear objeto lastOrder para WhatsApp (manteniendo compatibilidad)
+                lastOrder = {
+                    id: result.orderId.substring(result.orderId.length - 6).toUpperCase(), // ID corto
+                    items: appState.cart,
+                    total: totalPrice
+                };
+
+                // Cerrar modal y mostrar éxito
+                cartModal.style.display = 'none';
+                successModal.style.display = 'block';
+                
+                // Limpiar carrito localmente
+                // (Nota: Lo limpias al cerrar el modal de éxito en tu código actual, así que está bien)
+            } else {
+                alert('Error al enviar pedido: ' + result.error);
+            }
+
+        } catch (error) {
+            console.error('Error de red:', error);
+            alert('No se pudo conectar con el servidor. Revisa tu conexión.');
+        } finally {
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.textContent = "Confirmar Pedido";
+        }
 
         // Cerrar modal de carrito y abrir modal de éxito
         cartModal.style.display = 'none';
