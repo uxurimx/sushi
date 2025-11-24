@@ -477,53 +477,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         //     }
         // }
 
-        // Gallery
-        const galleryList = document.getElementById('gallery-list');
-        if (galleryList && DB.gallery) {
-            galleryList.innerHTML = DB.gallery.map(it => `
+        // --- PEGAR ESTO EN app.js DENTRO DE renderApp() (Reemplazando las secciones Gallery y Drinks antiguas) ---
+
+        // Helper para crear items consistentemente
+        const createItemHTML = (it) => {
+            const metaData = it.techSheet ? JSON.stringify(it.techSheet) : '';
+            const notesData = it.tastingNotes ? JSON.stringify(it.tastingNotes) : '';
+            // AQUÍ ESTÁ LA CLAVE: Crear el array de medios
+            const mediaList = it.media || [{ type: 'image', url: it.imageSrc || './img/default.png' }];
+            const mediaData = JSON.stringify(mediaList);
+
+            return `
                 <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
                      data-id="${escapeHtml(it.id)}"
                      data-name="${escapeHtml(it.name)}"
                      data-price="${Number(it.price).toFixed(2)}"
-                     data-description="${escapeHtml(it.description)}"
-                     data-image-src="${escapeHtml(it.imageSrc)}">
-                    <img src="${escapeHtml(it.imageSrc)}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+                     data-description="${escapeHtml(it.description || '')}"
+                     data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}"
+                     data-meta='${metaData}'
+                     data-notes='${notesData}'
+                     data-media='${mediaData}'> <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
                     <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
                     <div class="flex-grow">
                         <h3 class="font-bold text-lg dark:text-white">${escapeHtml(it.name)}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description)}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(it.description || '')}</p>
                         <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
                     </div>
                     <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </button>
                 </div>
-            `).join('');
+            `;
+        };
+
+        // Renderizar Gallery
+        const galleryList = document.getElementById('gallery-list');
+        if (galleryList && DB.gallery) {
+            galleryList.innerHTML = DB.gallery.map(it => createItemHTML(it)).join('');
         }
 
-        // Drinks (render as gallery-item-container so they show image + detail modal)
+        // Renderizar Drinks
         const drinksList = document.getElementById('drinks-list');
         if (drinksList && DB.drinks) {
-            drinksList.innerHTML = DB.drinks.map(d => `
-                <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
-                     data-id="${escapeHtml(d.id)}"
-                     data-name="${escapeHtml(d.name)}"
-                     data-price="${Number(d.price).toFixed(2)}"
-                     data-description="${escapeHtml(d.description || '')}"
-                     data-image-src="${escapeHtml(d.imageSrc || './img/default_drink.png')}">
-                    <img src="${escapeHtml(d.imageSrc || './img/default_drink.png')}" alt="${escapeHtml(d.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
-                    <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
-                    <div class="flex-grow">
-                        <h3 class="font-bold text-lg dark:text-white">${escapeHtml(d.name)}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${escapeHtml(d.description || '')}</p>
-                        <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(d.price).toFixed(2)}</p>
-                    </div>
-                    <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(d.id)}" data-name="${escapeHtml(d.name)}" data-price="${Number(d.price).toFixed(2)}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    </button>
-                </div>
-            `).join('');
+            drinksList.innerHTML = DB.drinks.map(d => createItemHTML(d)).join('');
         }
+
+        // --- IMPORTANTE: Re-asignar eventos ---
+        // Al final de renderApp(), asegúrate de llamar a esta función para que los clicks funcionen
+        reattachGalleryEvents();
     }
 
     // Render any additional menus defined in DB.menus (e.g., desserts)
@@ -823,74 +824,111 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- LÓGICA DEL MODAL DE DETALLES ---
 
     function openDetailModal(data) {
-        // 1. Llenar datos básicos (Igual que antes)
-        detailModalImage.src = data.imageSrc;
-        detailModalImage.alt = data.name;
-        detailModalName.textContent = data.name;
-        detailModalDescription.textContent = data.description;
-        detailModalPrice.textContent = `$${parseFloat(data.price).toFixed(2)}`;
-        
-        // Guardar datos en el botón
-        detailModalAddBtn.dataset.id = data.id;
-        detailModalAddBtn.dataset.name = data.name;
-        detailModalAddBtn.dataset.price = data.price;
+    // 1. Textos y Precio
+    detailModalName.textContent = data.name;
+    detailModalDescription.textContent = data.description;
+    detailModalPrice.textContent = `$${parseFloat(data.price).toFixed(2)}`;
+    
+    detailModalAddBtn.dataset.id = data.id;
+    detailModalAddBtn.dataset.name = data.name;
+    detailModalAddBtn.dataset.price = data.price;
 
-        // 2. --- LÓGICA PRO: Renderizar Ficha Técnica y Notas ---
-        
-        // Buscamos si ya existe el contenedor "pro-details", si existe lo borramos para empezar limpio
-        const existingPro = document.getElementById('pro-details-container');
-        if(existingPro) existingPro.remove();
+    // 2. CONSTRUCCIÓN DEL CARRUSEL DE MEDIOS
+    const carouselContainer = document.getElementById('detail-media-carousel');
+    const dotsContainer = document.getElementById('detail-media-dots');
+    
+    // Limpiar contenido previo
+    carouselContainer.innerHTML = '';
+    dotsContainer.innerHTML = '';
 
-        // Si hay datos Pro, creamos el HTML
-        if (appState.proMode && (data.techSheet || (data.tastingNotes && data.tastingNotes.length > 0))) {
-            const proContainer = document.createElement('div');
-            proContainer.id = 'pro-details-container';
-            proContainer.className = 'mt-6 pt-6 border-t border-gray-200 dark:border-dark-border';
+    const mediaList = data.media && data.media.length > 0 
+        ? data.media 
+        : [{ type: 'image', url: data.imageSrc }];
 
-            let htmlContent = '';
+    // Generar Slides
+    mediaList.forEach((mediaItem, index) => {
+        let slideElement;
 
-            // A. Notas de Cata (Tags/Pills)
-            if (data.tastingNotes && data.tastingNotes.length > 0) {
-                htmlContent += `
-                    <div class="mb-5">
-                        <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Notas de Cata</h4>
-                        <div class="flex flex-wrap gap-2">
-                            ${data.tastingNotes.map(note => `
-                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800">
-                                    ${escapeHtml(note)}
-                                </span> 
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // B. Ficha Técnica (Grid)
-            if (data.techSheet) {
-                htmlContent += `
-                    <div>
-                        <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Ficha Técnica</h4>
-                        <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
-                            ${Object.entries(data.techSheet).map(([key, value]) => `
-                                <div>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs">${escapeHtml(key)}</p>
-                                    <p class="font-semibold dark:text-white">${escapeHtml(value)}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            proContainer.innerHTML = htmlContent;
-            
-            // Insertar después de la descripción
-            detailModalDescription.parentNode.insertBefore(proContainer, detailModalDescription.nextSibling);
+        if (mediaItem.type === 'video') {
+            // Video: Autoplay, Muted, Loop para que funcione bien en móvil
+            slideElement = document.createElement('video');
+            slideElement.src = mediaItem.url;
+            slideElement.muted = true;
+            slideElement.autoplay = true;
+            slideElement.loop = true;
+            slideElement.playsInline = true; // Crucial para iOS
+            slideElement.controls = false;   // Estilo Instagram (sin controles feos)
+        } else {
+            // Imagen
+            slideElement = document.createElement('img');
+            slideElement.src = mediaItem.url;
+            slideElement.alt = data.name;
         }
 
-        // Mostrar modal
-        detailModal.style.display = 'block';
+        // Añadir al DOM
+        carouselContainer.appendChild(slideElement);
+
+        // Generar Punto (Dot) solo si hay más de 1 item
+        if (mediaList.length > 1) {
+            const dot = document.createElement('div');
+            dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        }
+    });
+
+    // Evento de Scroll para actualizar los puntos activos
+    if (mediaList.length > 1) {
+        carouselContainer.onscroll = () => {
+            const scrollLeft = carouselContainer.scrollLeft;
+            const width = carouselContainer.offsetWidth;
+            const activeIndex = Math.round(scrollLeft / width);
+            
+            Array.from(dotsContainer.children).forEach((dot, idx) => {
+                if (idx === activeIndex) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        };
     }
+
+    // 3. Renderizar Ficha Técnica (Misma lógica PRO que ya tenías)
+    const existingPro = document.getElementById('pro-details-container');
+    if(existingPro) existingPro.remove();
+
+    if (appState.proMode && (data.techSheet || (data.tastingNotes && data.tastingNotes.length > 0))) {
+        const proContainer = document.createElement('div');
+        proContainer.id = 'pro-details-container';
+        proContainer.className = 'mt-6 pt-6 border-t border-gray-200 dark:border-dark-border';
+        
+        let htmlContent = '';
+        if (data.tastingNotes && data.tastingNotes.length > 0) {
+            htmlContent += `
+                <div class="mb-5">
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Notas</h4>
+                    <div class="flex flex-wrap gap-2">
+                        ${data.tastingNotes.map(note => `
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800">${escapeHtml(note)}</span> 
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+        if (data.techSheet) {
+            htmlContent += `
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Detalles Técnicos</h4>
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                        ${Object.entries(data.techSheet).map(([key, value]) => `
+                            <div><p class="text-gray-500 dark:text-gray-400 text-xs">${escapeHtml(key)}</p><p class="font-semibold dark:text-white">${escapeHtml(value)}</p></div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+        proContainer.innerHTML = htmlContent;
+        detailModalDescription.parentNode.insertBefore(proContainer, detailModalDescription.nextSibling);
+    }
+
+    // Mostrar modal
+    detailModal.style.display = 'block';
+}
 
     function closeDetailModal() {
         detailModal.style.display = 'none';
@@ -1523,31 +1561,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             const metaData = it.techSheet ? JSON.stringify(it.techSheet) : '';
             const notesData = it.tastingNotes ? JSON.stringify(it.tastingNotes) : '';
 
+            const mediaList = it.media || [{ type: 'image', url: it.imageSrc || './img/default.png' }];
+            const mediaData = JSON.stringify(mediaList);
+
             return `
-            <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
-                 data-id="${escapeHtml(it.id)}"
-                 data-name="${escapeHtml(it.name)}"
-                 data-price="${Number(it.price).toFixed(2)}"
-                 data-description="${escapeHtml(it.description || '')}"
-                 data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}"
-                 data-meta='${metaData}' 
-                 data-notes='${notesData}'>
-                
-                <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
-                <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
-                <div class="flex-grow">
-                    ${(appState.proMode && it.techSheet) ? '<span class="text-[10px] font-bold uppercase tracking-wider text-brand-primary mb-1 block">Specialty Grade</span>' : ''}
-                    
-                    <h3 class="font-bold text-lg dark:text-white leading-tight">${escapeHtml(it.name)}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">${escapeHtml(it.description || '')}</p>
-                    <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
-                </div>
-                
-                <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                </button>
-            </div>`;
-        };
+    <div class="gallery-item-container tap-press relative cursor-pointer flex items-center space-x-4 bg-brand-white dark:bg-dark-card p-3 rounded-lg shadow-sm dark:shadow-none dark:border dark:border-dark-border"
+            data-id="${escapeHtml(it.id)}"
+            data-name="${escapeHtml(it.name)}"
+            data-price="${Number(it.price).toFixed(2)}"
+            data-description="${escapeHtml(it.description || '')}"
+            data-image-src="${escapeHtml(it.imageSrc || './img/default.png')}"
+            data-meta='${metaData}' 
+            data-notes='${notesData}'
+            data-media='${mediaData}'> <img src="${escapeHtml(it.imageSrc || './img/default.png')}" alt="${escapeHtml(it.name)}" class="w-20 h-20 rounded-md object-cover flex-shrink-0">
+        <span class="item-badge absolute top-2 right-2 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+        <div class="flex-grow">
+            ${(appState.proMode && it.techSheet) ? '<span class="text-[10px] font-bold uppercase tracking-wider text-brand-primary mb-1 block">Specialty Grade</span>' : ''}
+            
+            <h3 class="font-bold text-lg dark:text-white leading-tight">${escapeHtml(it.name)}</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">${escapeHtml(it.description || '')}</p>
+            <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">$${Number(it.price).toFixed(2)}</p>
+        </div>
+        
+        <button class="add-gallery-btn tap-press p-3 bg-brand-primary/10 dark:bg-brand-primary/20 text-brand-primary dark:text-brand-primary/80 rounded-full transform transition-transform hover:scale-110" data-id="${escapeHtml(it.id)}" data-name="${escapeHtml(it.name)}" data-price="${Number(it.price).toFixed(2)}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        </button>
+    </div>`;
+};
 
         DB.menus.forEach(m => {
             if (m.id === 'builder') return;
@@ -1577,51 +1617,69 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('.gallery-item-container').forEach(item => {
             item.addEventListener('click', () => {
                 
-                // DETECCIÓN DE MODO: ¿Escritorio o Móvil?
-                const isDesktop = window.innerWidth >= 768;
+                const id = item.dataset.id; // Solo necesitamos el ID
+                let product = null;
 
-                // Recopilar datos del item
-                let techSheet = null;
-                let tastingNotes = null;
-                try {
-                    if(item.dataset.meta) techSheet = JSON.parse(item.dataset.meta);
-                    if(item.dataset.notes) tastingNotes = JSON.parse(item.dataset.notes);
-                } catch(e) { console.error("Error parsing JSON data", e); }
+                // --- CORRECCIÓN MAESTRA: BÚSQUEDA DIRECTA ---
+                // En lugar de confiar en el HTML (que se rompe), buscamos el dato original en DB
+                
+                // 1. Buscamos en Gallery
+                if (DB.gallery) product = DB.gallery.find(p => p.id === id);
+                
+                // 2. Si no está, buscamos en Drinks
+                if (!product && DB.drinks) product = DB.drinks.find(p => p.id === id);
+                
+                // 3. Si no está, buscamos en cualquier otro menú dinámico (Postres, Extras, etc)
+                if (!product && DB.menus) {
+                    DB.menus.forEach(m => {
+                        if (DB[m.id] && Array.isArray(DB[m.id])) {
+                            const found = DB[m.id].find(p => p.id === id);
+                            if (found) product = found;
+                        }
+                    });
+                }
 
+                if (!product) {
+                    console.error("Producto no encontrado en memoria:", id);
+                    return;
+                }
+
+                // Preparamos los datos limpios directamente de la fuente
+                // Esto garantiza que el array 'media' llegue perfecto al modal
                 const productData = {
-                    id: item.dataset.id,
-                    name: item.dataset.name,
-                    price: parseFloat(item.dataset.price),
-                    description: item.dataset.description,
-                    imageSrc: item.dataset.imageSrc,
+                    ...product, 
                     quantity: 1,
-                    notes: '',
-                    techSheet: techSheet,
-                    tastingNotes: tastingNotes
+                    notes: ''
                 };
 
-                if (isDesktop) {
-                    // --- MODO POS/DESKTOP: AÑADIR DIRECTO ---
-                    // Agrega directo al carrito sin preguntar
+                // --- MODO DE APERTURA ---
+                // Esto asegura que veas el modal incluso si estás en PC (para probar)
+                // Si quieres que en PC se añada directo al carrito, cambia 'true' por 'false'
+                const forceModalOpen = true; 
+                const isDesktop = window.innerWidth >= 768;
+
+                if (isDesktop && !forceModalOpen) {
                     addItemToCart(productData);
-                    
-                    // Opcional: Feedback visual sutil en la tarjeta (animación CSS ya incluida en active)
                 } else {
-                    // --- MODO MÓVIL/CLIENTE: ABRIR DETALLE ---
                     openDetailModal(productData);
                 }
             });
         });
 
-        // El evento del botón "+" pequeño sigue funcionando igual (añade directo)
-        // aunque en desktop lo ocultamos con CSS, en móvil sigue siendo útil.
+        // Evento del botón "+" pequeño (se mantiene igual, solo añade al carrito)
         document.querySelectorAll('.add-gallery-btn').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.stopPropagation();
+                
+                // Buscar precio actualizado por si acaso
+                const id = button.dataset.id;
+                // Intentamos buscar en DB para asegurar precio correcto, o usamos dataset como fallback
+                const fallbackPrice = parseFloat(button.dataset.price);
+                
                 const cartItem = {
-                    id: button.dataset.id,
+                    id: id,
                     name: button.dataset.name,
-                    price: parseFloat(button.dataset.price),
+                    price: fallbackPrice,
                     quantity: 1,
                     notes: ''
                 };

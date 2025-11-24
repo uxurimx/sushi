@@ -114,3 +114,26 @@ body {
 
 html.app-cargada #hero-screen { display: none; }
 html.app-cargada #app-screen { display: flex; }
+
+/* --- Carrusel de Medios (Detalles) --- */
+#detail-media-carousel video,
+#detail-media-carousel img {
+    flex: 0 0 100%;       /* Ocupar todo el ancho */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;    /* Recortar para llenar */
+    scroll-snap-align: center; /* Centrar al soltar */
+}
+
+/* Indicadores de posición */
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+.carousel-dot.active {
+    background-color: white;
+    transform: scale(1.2);
+}

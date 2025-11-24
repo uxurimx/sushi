@@ -255,31 +255,38 @@
             </div>
         </div>
 
-        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">           <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
-            
-            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
-                <div class="relative">
-                    <img id="detail-modal-image" src="https://placehold.co/400x400/CCCCCC/FFFFFF?text=Sushi" alt="Detalle del rollo" class="w-full h-64 object-cover rounded-t-xl">
-                    <button id="close-detail-btn" class="tap-press absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/75">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">
+    <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+    
+    <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+        
+        <div class="relative group">
+            <div id="detail-media-carousel" class="flex w-full h-80 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth bg-gray-100 dark:bg-zinc-800">
                 </div>
 
-                <div class="p-6 overflow-y-auto no-scrollbar">
-                    <h2 id="detail-modal-name" class="text-3xl font-bold mb-2 dark:text-white">Nombre del Rollo</h2>
-                    <p id="detail-modal-description" class="text-gray-600 dark:text-gray-300 mb-6">Descripción detallada del producto irá aquí para que el cliente pueda leer todo sobre él.</p>
-                </div>
+            <div id="detail-media-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10 pointer-events-none"></div>
 
-                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border">
-                    <div class="flex items-center justify-between">
-                        <span id="detail-modal-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
-                        <button id="detail-modal-add-btn" class="tap-press bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105">
-                            Añadir al Pedido
-                        </button>
-                    </div>
-                </footer>
-            </div>
+            <button id="close-detail-btn" class="tap-press absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/75 z-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
+
+        <div class="p-6 overflow-y-auto no-scrollbar flex-grow">
+            <h2 id="detail-modal-name" class="text-3xl font-bold mb-2 dark:text-white">Nombre del Rollo</h2>
+            <p id="detail-modal-description" class="text-gray-600 dark:text-gray-300 mb-6">Descripción del producto...</p>
+        </div>
+
+        <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border">
+            <div class="flex items-center justify-between">
+                <span id="detail-modal-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
+                <button id="detail-modal-add-btn" class="tap-press bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105">
+                    Añadir al Pedido
+                </button>
+            </div>
+        </footer>
+
+    </div>
+</div>
 
         <div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
             

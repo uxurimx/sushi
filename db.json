@@ -37,10 +37,16 @@
   "gallery": [
     {
       "id": "gallery-1",
-      "name": "🐉 Rollo Dragón",
+      "name": "Rollo Dragón",
       "price": 150.00,
       "description": "Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa.",
       "imageSrc": "./img/sushi_dragon.png",
+      "media": [
+        { "type": "video", "url": "./videos/video1.mp4" },
+        { "type": "image", "url": "./img/sushi_dragon.png" },
+        { "type": "image", "url": "./img/sushi_arcoiris.png" },
+        { "type": "image", "url": "./img/sushi_veggie.png" }
+      ],
        "techSheet": {
         "Origen": "Fusión Nikkei",
         "Corte": "Anguila Unagi Premium",
@@ -49,7 +55,7 @@
     },
     {
       "id": "gallery-2",
-      "name": "🌈 Rollo Arcoíris",
+      "name": "Rollo Arcoíris",
       "price": 140.50,
       "description": "Cangrejo y pepino, cubierto de salmón, atún y aguacate.",
       "imageSrc": "./img/sushi_arcoiris.png",
@@ -57,7 +63,7 @@
     },
     {
       "id": "gallery-3",
-      "name": "🥗 Rollo Veggie",
+      "name": "Rollo Veggie",
       "price": 110.00,
       "description": "Tofu, aguacate, pepino y zanahoria, envuelto en sésamo.",
       "imageSrc": "./img/sushi_veggie.png",
@@ -65,7 +71,7 @@
     }
   ],
   "drinks": [
-    { "id": "drink-1", "name": "🥤 Coca-Cola", "price": 30.00, "description": "Refrescante bebida gaseosa clásica.", "imageSrc": "./img/coca.png" },
-    { "id": "drink-2", "name": "🍵 Té Verde", "price": 20.50, "description": "Té verde frío preparado al estilo japonés.", "imageSrc": "./img/teverde.png" }
+    { "id": "drink-1", "name": "Coca-Cola", "price": 30.00, "description": "Refrescante bebida gaseosa clásica.", "imageSrc": "./img/coca.png" },
+    { "id": "drink-2", "name": "Té Verde", "price": 20.50, "description": "Té verde frío preparado al estilo japonés.", "imageSrc": "./img/teverde.png" }
   ]
 }
