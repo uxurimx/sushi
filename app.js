@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         appState.pendingOrders = appState.pendingOrders.filter(o => o._id !== orderId);
         renderOrdersList();
     });
+    
 
     // --- VARIABLES GLOBALES ---
     let DB = null;
@@ -235,7 +236,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
     loadTheme();
-
     // Generar menús dinámicamente desde DB (si existe)
     if (DB && Array.isArray(DB.menus)) {
         const menusNav = document.getElementById('menus-nav');
@@ -1576,28 +1576,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     function reattachGalleryEvents() {
         document.querySelectorAll('.gallery-item-container').forEach(item => {
             item.addEventListener('click', () => {
-                // Recuperamos los JSONs guardados en los atributos data
+                
+                // DETECCIÓN DE MODO: ¿Escritorio o Móvil?
+                const isDesktop = window.innerWidth >= 768;
+
+                // Recopilar datos del item
                 let techSheet = null;
                 let tastingNotes = null;
-                
                 try {
                     if(item.dataset.meta) techSheet = JSON.parse(item.dataset.meta);
                     if(item.dataset.notes) tastingNotes = JSON.parse(item.dataset.notes);
                 } catch(e) { console.error("Error parsing JSON data", e); }
 
-                openDetailModal({
+                const productData = {
                     id: item.dataset.id,
                     name: item.dataset.name,
-                    price: item.dataset.price,
+                    price: parseFloat(item.dataset.price),
                     description: item.dataset.description,
                     imageSrc: item.dataset.imageSrc,
-                    techSheet: techSheet,    // <--- NUEVO
-                    tastingNotes: tastingNotes // <--- NUEVO
-                });
+                    quantity: 1,
+                    notes: '',
+                    techSheet: techSheet,
+                    tastingNotes: tastingNotes
+                };
+
+                if (isDesktop) {
+                    // --- MODO POS/DESKTOP: AÑADIR DIRECTO ---
+                    // Agrega directo al carrito sin preguntar
+                    addItemToCart(productData);
+                    
+                    // Opcional: Feedback visual sutil en la tarjeta (animación CSS ya incluida en active)
+                } else {
+                    // --- MODO MÓVIL/CLIENTE: ABRIR DETALLE ---
+                    openDetailModal(productData);
+                }
             });
         });
 
-        // Eventos de botón + (añadir directo)
+        // El evento del botón "+" pequeño sigue funcionando igual (añade directo)
+        // aunque en desktop lo ocultamos con CSS, en móvil sigue siendo útil.
         document.querySelectorAll('.add-gallery-btn').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1942,7 +1959,75 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-    
+
+    const storesContainer = document.getElementById('stores-list-container');
+
+    async function loadStoresList() {
+        if (!storesContainer) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/stores`);
+            if (res.ok) {
+                const stores = await res.json();
+                renderStoreButtons(stores);
+            } else {
+                storesContainer.innerHTML = '<p class="text-xs text-red-400 pl-2">Error cargando lista</p>';
+            }
+        } catch (e) {
+            console.error('Error fetching stores list:', e);
+            storesContainer.innerHTML = '<p class="text-xs text-red-400 pl-2">Sin conexión</p>';
+        }
+    }
+
+    function renderStoreButtons(stores) {
+        storesContainer.innerHTML = stores.map(store => `
+            <button class="dynamic-store-btn tap-press w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors text-left ${store.slug === CURRENT_STORE_SLUG ? 'bg-gray-100 dark:bg-dark-border border border-brand-primary/30' : ''}" 
+                data-slug="${store.slug}">
+                <span class="text-2xl">${store.emoji}</span>
+                <div>
+                    <p class="font-bold text-brand-secondary dark:text-white">${escapeHtml(store.name)}</p>
+                    <p class="text-xs text-gray-500">${escapeHtml(store.slogan || 'Ver menú')}</p>
+                </div>
+            </button>
+        `).join('');
+
+        // Asignar eventos a los nuevos botones dinámicos
+        document.querySelectorAll('.dynamic-store-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const slug = btn.dataset.slug;
+                
+                // Evitar recargar si ya estamos en esa tienda
+                if (slug === CURRENT_STORE_SLUG) {
+                    toggleSideMenu(false);
+                    return;
+                }
+
+                // Lógica de cambio de tienda
+                if (appState.cart.length > 0) {
+                    if (confirm('Cambiar de tienda vaciará tu carrito actual. ¿Continuar?')) {
+                        appState.cart = [];
+                        updateCart();
+                        changeStore(slug);
+                    }
+                } else {
+                    changeStore(slug);
+                }
+            });
+        });
+    }
+
+    function changeStore(slug) {
+        // 1. Cargar nueva DB usando tu función existente que ya soporta slugs
+        loadDatabase(slug);
+        
+        // 2. Cerrar menú
+        toggleSideMenu(false);
+
+        // 3. Actualizar visualmente la lista para marcar el activo (opcional, pero buena UX)
+        // Volvemos a cargar la lista para actualizar el estilo del botón seleccionado
+        loadStoresList(); 
+    }
+    loadStoresList();
     updateCart();
 
 }); // Fin de DOMContentLoaded

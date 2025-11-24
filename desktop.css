@@ -1,43 +1,128 @@
 /* --- desktop.css --- */
-/* Estilos Exclusivos para Escritorio y Tablets Grandes (POS) */
-
 @media (min-width: 768px) {
-    
+
     /* 1. Layout General */
     #app-screen {
         width: 100%;
         flex-grow: 1;
-        max-width: none; /* Romper el contenedor móvil */
+        max-width: none; 
     }
 
-    /* Ocultar elementos exclusivos de móvil */
     #cart-button { display: none !important; }
-    
-    /* Si la app ya cargó, aseguramos ocultar el hero */
-    html.app-cargada #hero-screen { display: none; }
+    #hero-screen { display: none !important; }
+    #app-screen { display: flex !important; }
 
-    /* 2. Grilla de Productos (Grid View) */
-    /* Convertimos las listas verticales en cuadrículas */
+    /* 2. CONFIGURACIÓN DE LA GRILLA (Aquí está la clave de los 5 por fila) */
     #gallery-list, 
     #drinks-list, 
     .tab-panel .space-y-3 {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1rem;
+        /* minmax(160px, 1fr) hace que las tarjetas sean estrechas (aprox 5-6 por fila en pantallas normales) */
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+        gap: 0.75rem; /* Espacio entre tarjetas reducido */
+        align-items: start;
+        padding-bottom: 2rem;
     }
     
-    /* Resetear márgenes automáticos de Tailwind space-y */
     #gallery-list > *, 
     #drinks-list > * {
         margin-top: 0 !important; 
     }
 
-    /* 3. Navegación */
-    #menus-nav {
-        justify-content: center; /* Centrar pestañas en pantalla grande */
+    #menus-nav { justify-content: center; }
+
+    /* 3. DISEÑO DE TARJETA "CATÁLOGO" COMPACTO */
+    .gallery-item-container {
+        flex-direction: column; /* Vertical */
+        align-items: stretch !important;
+        padding: 0 !important;
+        overflow: hidden;
+        height: 100%; 
+        min-height: 220px; /* Altura mínima asegurada */
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        border-radius: 8px; /* Bordes ligeramente redondeados */
+        transition: all 0.15s ease-out;
+        position: relative;
     }
 
-    /* 4. Modales Adaptados (Centrados tipo Popup) */
+    .dark .gallery-item-container {
+        background-color: #262626;
+        border-color: #404040;
+    }
+
+    .gallery-item-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+        border-color: #DC2626;
+        z-index: 10;
+    }
+
+    .gallery-item-container:active {
+        transform: scale(0.96);
+    }
+
+    /* IMAGEN (Cuadrada o rectangular vertical) */
+    .gallery-item-container img {
+        width: 100% !important;
+        height: 120px !important; /* Altura fija compacta */
+        object-fit: cover;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* CONTENEDOR DE TEXTO */
+    .gallery-item-container > div {
+        padding: 8px 10px; /* Padding reducido */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-grow: 1;
+        text-align: center; /* Texto centrado estilo catálogo */
+    }
+
+    /* TITULO DEL PRODUCTO */
+    .gallery-item-container h3 {
+        font-size: 0.95rem !important; /* Texto un poco más pequeño */
+        line-height: 1.2;
+        font-weight: 700;
+        margin-bottom: 4px;
+        
+        /* Limitar a 2 líneas para evitar que rompa el diseño */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* PRECIO */
+    .gallery-item-container p.font-bold.text-gray-900 {
+        font-size: 1.1rem !important;
+        color: #DC2626 !important;
+        margin-top: auto; /* Empujar precio al fondo */
+    }
+    .dark .gallery-item-container p.font-bold.text-gray-900 {
+        color: #F87171 !important;
+    }
+
+    /* OCULTAR ELEMENTOS SOBRANTES */
+    .gallery-item-container p.text-sm.text-gray-600, /* Descripción */
+    .gallery-item-container .add-gallery-btn, /* Botón flotante */
+    .gallery-item-container span.text-\[10px\] { /* Badge specialty */
+        display: none !important; 
+    }
+
+    /* BADGE DE CANTIDAD (Contador rojo) */
+    .gallery-item-container .item-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        top: 6px;
+        right: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* AJUSTES DE MODALES EN DESKTOP */
     #detail-modal .modal-slide-in-bottom,
     #cart-modal .modal-slide-in, 
     #success-modal .modal-slide-in-bottom,
@@ -49,36 +134,17 @@
         top: 50%;
         transform: translateY(-50%);
         animation: desktopFadeIn 0.2s ease-out; 
-        max-height: 85vh;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-
-    /* Footer del builder integrado (no flotante) */
-    #builder-footer {
-        width: 100%;
-        max-width: none;
-        box-shadow: none;
-        border-radius: 0;
-        border-top: 2px solid #e5e7eb;
-        margin-top: 2rem;
-        background-color: transparent;
-        position: static; /* Dejar de ser absoluto */
     }
     
-    .dark #builder-footer {
-        border-top-color: #404040;
-        background-color: transparent;
-        box-shadow: none;
-    }
-
-    /* Ajuste del padding inferior del main */
-    main.pb-32 {
-        padding-bottom: 2rem !important;
-    }
-
-    /* Animación específica para desktop (sin slide desde abajo) */
     @keyframes desktopFadeIn {
         from { opacity: 0; transform: translateY(-48%); } 
         to { opacity: 1; transform: translateY(-50%); } 
     }
+
+    #builder-footer {
+        width: 100%; max-width: none; box-shadow: none; border-radius: 0;
+        border-top: 2px solid #e5e7eb; margin-top: 2rem; background-color: transparent;
+    }
+    .dark #builder-footer { border-top-color: #404040; }
+    main.pb-32 { padding-bottom: 2rem !important; }
 }
