@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // --- CONFIGURACIÓN BACKEND ---
-    const API_URL = 'http://localhost:3000'; // Cambiar por tu URL de producción (Render/Heroku)
+    const API_URL = 'https://px-menu.duckdns.org'; // Cambiar por tu URL de producción (Render/Heroku)
     const socket = io(API_URL);
 
     // Detectar tienda por URL (ej: miapp.com?store=kiromi) o usar default
