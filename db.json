@@ -42,10 +42,10 @@
       "description": "Fino camarón tempura y aguacate por dentro, cubierto de láminas de anguila y bañado en salsa dulce de la casa.",
       "imageSrc": "./img/sushi_dragon.png",
       "media": [
-        { "type": "video", "url": "./videos/video1.mp4" },
+        { "type": "image", "url": "./img/sushi_dragon3.png" },
         { "type": "image", "url": "./img/sushi_dragon.png" },
-        { "type": "image", "url": "./img/sushi_arcoiris.png" },
-        { "type": "image", "url": "./img/sushi_veggie.png" }
+        { "type": "image", "url": "./img/sushi_dragon2.png" },
+        { "type": "video", "url": "./videos/video1.mp4" }
       ],
        "techSheet": {
         "Origen": "Fusión Nikkei",
