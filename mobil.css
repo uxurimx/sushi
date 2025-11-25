@@ -69,8 +69,10 @@ body {
 
 /* --- Navegación Horizontal (Tabs) --- */
 #menus-nav {
+    /* height: 48px !important; */
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    overflow-y: hidden;
 }
 
 .menu-scroll-indicator {
